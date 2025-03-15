@@ -1,6 +1,6 @@
 import { GridState, Player } from '@battle-snakes/shared';
 
-class GameState {
+export default class GameState {
   private gridState: GridState;
   private players: Map<String, Player>;
 
@@ -17,7 +17,16 @@ class GameState {
     return this.gridState;
   }
 
+  public getPlayers(): Map<String, Player> {
+    console.log(this.players);
+    return this.players;
+  }
+
   public addPlayer(socketId: string) {
     this.players.set(socketId, { id: socketId, segments: [], direction: 'up', color: '#000000' });
+  }
+
+  public removePlayer(socketId: string) {
+    this.players.delete(socketId);
   }
 }

@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { io, Socket } from 'socket.io-client';
-import { GameEvents } from '@battle-snakes/shared';
+import { GameEvents, Player } from '@battle-snakes/shared';
 
 // TODO: Make this configurable.
 const SOCKET_URL = 'http://localhost:3001';
@@ -8,6 +8,7 @@ const SOCKET_URL = 'http://localhost:3001';
 export function useSocket() {
   const [socket, setSocket] = useState<Socket | null>(null);
   const [serverMessage, setServerMessage] = useState<string>('');
+  const [players, setPlayers] = useState<string[]>([]);
 
   useEffect(() => {
     const newSocket = io(SOCKET_URL);
@@ -20,8 +21,8 @@ export function useSocket() {
       setServerMessage(message);
     });
 
-    newSocket.on(GameEvents.PLAYER_JOIN, (data: any) => {
-      console.log('Player joined', data);
+    newSocket.on(GameEvents.PLAYER_JOIN, (data: string[]) => {
+      setPlayers([...data]);
     });
 
     newSocket.on('disconnect', () => {
@@ -35,5 +36,5 @@ export function useSocket() {
     };
   }, []);
 
-  return { socket, serverMessage };
+  return { socket, serverMessage, players };
 }

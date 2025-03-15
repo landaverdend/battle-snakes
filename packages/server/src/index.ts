@@ -1,6 +1,7 @@
 import { createServer } from 'http';
 import { Server } from 'socket.io';
 import { GameEvents } from '@battle-snakes/shared';
+import GameState from './game/GameState';
 
 const httpServer = createServer();
 const io = new Server(httpServer, {
@@ -10,15 +11,21 @@ const io = new Server(httpServer, {
   },
 });
 
-io.on('connection', (socket) => {
-  console.log('Client connected:', socket.id);
+const gameState = new GameState(10, 10);
 
-  // Send a welcome message to the connected client
-  socket.emit('serverMessage', 'Hello from the Battle Snakes server! Your ID is' + socket.id);
-  socket.emit(GameEvents.PLAYER_JOIN, { playerId: socket.id });
+io.on('connection', (socket) => {
+  console.log('Client connected: ', socket.id);
+
+  socket.emit('serverMessage', 'Welcome ' + socket.id + '! You are connected to the server!');
+  gameState.addPlayer(socket.id);
+
+  io.emit(GameEvents.PLAYER_JOIN, Array.from(gameState.getPlayers().keys()));
 
   socket.on('disconnect', () => {
-    console.log('Client disconnected:', socket.id);
+    console.log('Client disconnected: ', socket.id);
+
+    gameState.removePlayer(socket.id);
+    io.emit(GameEvents.PLAYER_JOIN, Array.from(gameState.getPlayers().keys()));
   });
 });
 
