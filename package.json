@@ -10,7 +10,8 @@
     "build": "npm run build --workspaces",
     "dev": "npm run dev --workspaces --if-present",
     "test": "npm run test --workspaces --if-present",
-    "clean": "npm run clean --workspaces --if-present"
+    "clean": "npm run clean --workspaces --if-present",
+    "clean:all": "rm -rf node_modules packages/*/node_modules"
   },
   "keywords": [
     "snake",
