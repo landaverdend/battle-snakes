@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { io, Socket } from 'socket.io-client';
+import { Point } from '@battle-snakes/shared';
 
 // TODO: Make this configurable.
 const SOCKET_URL = 'http://localhost:3001';
