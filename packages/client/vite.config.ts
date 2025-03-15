@@ -12,4 +12,12 @@ export default defineConfig({
       '@components': '/src/components',
     },
   },
+  optimizeDeps: {
+    include: ['@battle-snakes/shared'], // Explicitly include the shared package
+  },
+  build: {
+    commonjsOptions: {
+      include: [/@battle-snakes\/shared/, /node_modules/],
+    },
+  },
 });
