@@ -1,4 +1,5 @@
 import { useSocket } from '../hooks/useSocket';
+import Canvas from './canvas/Canvas';
 
 export default function App() {
   const { serverMessage, players } = useSocket();
@@ -11,6 +12,9 @@ export default function App() {
         {players.map((player) => (
           <span key={player}>{player}</span>
         ))}
+      </div>
+      <div style={{ width: '50vw', height: '50vw' }}>
+        <Canvas width={30} height={30} />
       </div>
     </div>
   );
