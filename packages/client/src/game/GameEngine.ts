@@ -29,10 +29,9 @@ export class GameEngine {
   }
 
   resize(width: number, height: number) {
-    if (this.ctx.canvas.width !== width || this.ctx.canvas.height !== height) {
-      this.ctx.canvas.width = width;
-      this.ctx.canvas.height = height;
-    }
+    // Update internal dimensions
+    this.width = width;
+    this.height = height;
   }
 
   gameLoop() {
@@ -55,8 +54,8 @@ export class GameEngine {
   }
 
   drawGrid() {
-    const cellWidth = this.width / 15;
-    const cellHeight = this.height / 15;
+    const cellWidth = this.width / 5;
+    const cellHeight = this.height / 5;
 
     // Draw vertical lines
     for (let x = 0; x <= this.width; x++) {

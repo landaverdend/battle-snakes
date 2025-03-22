@@ -24,6 +24,10 @@ const Canvas = ({ width, height }: CanvasProps) => {
 
     const resizeCanvas = () => {
       const { width, height } = container.getBoundingClientRect();
+      
+      // Update canvas dimensions to match container
+      canvas.width = width;
+      canvas.height = height;
 
       // Let the game engine handle the resize
       gameEngineRef.current?.resize(width, height);
