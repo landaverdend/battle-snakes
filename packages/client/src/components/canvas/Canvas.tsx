@@ -1,4 +1,6 @@
 import { useEffect, useRef } from 'react';
+import { GameEngine } from '../../game/GameEngine';
+import './canvas.css';
 
 interface CanvasProps {
   width: number; // Grid width
@@ -8,6 +10,7 @@ interface CanvasProps {
 const Canvas = ({ width, height }: CanvasProps) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
+  const gameEngineRef = useRef<GameEngine | null>(null);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -17,79 +20,32 @@ const Canvas = ({ width, height }: CanvasProps) => {
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
 
+    gameEngineRef.current = new GameEngine(ctx, ctx.canvas.width, ctx.canvas.height);
+
     const resizeCanvas = () => {
-      // Get the container's dimensions
-      const { width: containerWidth, height: containerHeight } = container.getBoundingClientRect();
+      const { width, height } = container.getBoundingClientRect();
 
-      // Make the canvas square using the smaller dimension
-      const size = Math.min(containerWidth, containerHeight);
-
-      // Set canvas size
-      canvas.width = size;
-      canvas.height = size;
-
-      // Render after resize
-      render();
-    };
-
-    const render = () => {
-      // Clear the canvas
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-      // Draw grid
-      const cellWidth = canvas.width / width;
-      const cellHeight = canvas.height / height;
-
-      // Draw vertical lines
-      for (let x = 0; x <= width; x++) {
-        ctx.beginPath();
-        ctx.moveTo(x * cellWidth, 0);
-        ctx.lineTo(x * cellWidth, canvas.height);
-        ctx.strokeStyle = '#ddd';
-        ctx.stroke();
-      }
-
-      // Draw horizontal lines
-      for (let y = 0; y <= height; y++) {
-        ctx.beginPath();
-        ctx.moveTo(0, y * cellHeight);
-        ctx.lineTo(canvas.width, y * cellHeight);
-        ctx.strokeStyle = '#ddd';
-        ctx.stroke();
-      }
+      // Let the game engine handle the resize
+      gameEngineRef.current?.resize(width, height);
     };
 
     // Set up ResizeObserver
     const resizeObserver = new ResizeObserver(resizeCanvas);
     resizeObserver.observe(container);
 
-    // Initial resize
+    // Initial resize and start
     resizeCanvas();
+    gameEngineRef.current.start();
 
     // Cleanup
     return () => {
-      resizeObserver.disconnect();
+      gameEngineRef.current?.stop;
     };
   }, [width, height]);
 
-
   return (
-    <div
-      ref={containerRef}
-      style={{
-        width: '100%',
-        height: '100%',
-        display: 'flex',
-        justifyContent: 'center',
-        alignItems: 'center',
-      }}>
-      <canvas
-        ref={canvasRef}
-        style={{
-          border: '1px solid #000',
-          backgroundColor: '#fff',
-        }}
-      />
+    <div ref={containerRef} className="canvas-container">
+      <canvas ref={canvasRef} />
     </div>
   );
 };

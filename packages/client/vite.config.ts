@@ -10,6 +10,7 @@ export default defineConfig({
     alias: {
       '@': '/src',
       '@components': '/src/components',
+      '@game': '/src/game',
     },
   },
   optimizeDeps: {
