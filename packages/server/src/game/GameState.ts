@@ -8,7 +8,7 @@ export default class GameState {
     let cells = [];
 
     for (let i = 0; i < width; i++) {
-      cells.push(new Array(height).fill(CellType.Empty));
+      cells.push(new Array(height).fill({ type: CellType.Empty }));
     }
 
     this.gridState = {

@@ -17,6 +17,7 @@ export class NetworkManager {
     });
 
     this.socket.on(GameEvents.STATE_UPDATE, (state: GameState) => {
+      console.log('State update ', state);
       ClientGameState.getInstance().updateState(state);
     });
 

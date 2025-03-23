@@ -1,5 +1,4 @@
 import { GameState } from '@battle-snakes/shared';
-
 export class ClientGameState {
   private static instance: ClientGameState;
   private gameState: GameState;

@@ -7,10 +7,16 @@ export enum CellType {
   Snake = 1,
   Food = 2,
 }
+
+export type GridCell = {
+  type: CellType;
+  playerId?: string;
+};
+
 export interface GridState {
   width: number;
   height: number;
-  cells: CellType[][];
+  cells: GridCell[][];
 }
 
 export enum GameEvents {
