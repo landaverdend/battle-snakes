@@ -1,7 +1,7 @@
 import { Renderer } from './Renderer';
 import { NetworkManager } from './NetworkManager';
 
-export class Game {
+export class GameClient {
   private renderer: Renderer;
   private network: NetworkManager;
   private isRunning: boolean = false;

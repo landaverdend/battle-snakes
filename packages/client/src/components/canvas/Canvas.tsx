@@ -1,6 +1,6 @@
 import { useEffect, useRef } from 'react';
 import './canvas.css';
-import { Game } from '../../game/Game';
+import { GameClient } from '../../game/GameClient';
 
 interface CanvasProps {
   width: number; // Grid width
@@ -10,7 +10,7 @@ interface CanvasProps {
 const Canvas = ({ width, height }: CanvasProps) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
-  const gameRef = useRef<Game | null>(null);
+  const gameRef = useRef<GameClient | null>(null);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -20,7 +20,7 @@ const Canvas = ({ width, height }: CanvasProps) => {
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
 
-    gameRef.current = new Game(ctx);
+    gameRef.current = new GameClient(ctx);
     gameRef.current.start();
 
     const resizeCanvas = () => {

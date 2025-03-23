@@ -20,9 +20,6 @@ export enum GameEvents {
 
 export interface GameState {
   players: Record<string, Player>;
-  gridSize: {
-    width: number;
-    height: number;
-  };
+  gridState: GridState;
   gameStatus: GameStatus;
 }

@@ -11,13 +11,15 @@ const io = new Server(httpServer, {
   },
 });
 
-const gameState = new GameState(10, 10);
+const gameState = new GameState(20, 20);
 
 io.on('connection', (socket) => {
   socket.emit('serverMessage', 'Welcome ' + socket.id + '! You are connected to the server!');
   gameState.addPlayer(socket.id);
 
-  io.emit(GameEvents.STATE_UPDATE, gameState.serialize());
+  setInterval(() => {
+    io.emit(GameEvents.STATE_UPDATE, gameState.serialize());
+  }, 1000);
 
   socket.on('disconnect', () => {
     console.log('Client disconnected: ', socket.id);
