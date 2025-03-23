@@ -14,12 +14,10 @@ const io = new Server(httpServer, {
 const gameState = new GameState(10, 10);
 
 io.on('connection', (socket) => {
-  console.log('Client connected: ', socket.id);
-
   socket.emit('serverMessage', 'Welcome ' + socket.id + '! You are connected to the server!');
   gameState.addPlayer(socket.id);
 
-  io.emit(GameEvents.PLAYER_JOIN, Array.from(gameState.getPlayers().keys()));
+  io.emit(GameEvents.STATE_UPDATE, gameState.serialize());
 
   socket.on('disconnect', () => {
     console.log('Client disconnected: ', socket.id);

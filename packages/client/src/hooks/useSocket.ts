@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { io, Socket } from 'socket.io-client';
-import { GameEvents } from '@battle-snakes/shared';
+import { GameEvents, GridState } from '@battle-snakes/shared';
 
 // TODO: Make this configurable.
 const SOCKET_URL = 'http://localhost:3001';
@@ -22,8 +22,16 @@ export function useSocket() {
     });
 
     newSocket.on(GameEvents.PLAYER_JOIN, (data: string[]) => {
+      console.log('Received PLAYER_JOIN event:', data);
       setPlayers([...data]);
     });
+
+    console.log(GameEvents.STATE_UPDATE);
+    newSocket.on(GameEvents.STATE_UPDATE, (data: any) => {});
+
+    // newSocket.onAny((eventName, ...args) => {
+    //   console.log('Received event:', eventName, args);
+    // });
 
     newSocket.on('disconnect', () => {
       console.log('Disconnected from server');

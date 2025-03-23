@@ -15,6 +15,7 @@ export interface GridState {
 
 export enum GameEvents {
   PLAYER_JOIN = 'game:player_join',
+  STATE_UPDATE = 'game:state_update',
 }
 
 export interface GameState {

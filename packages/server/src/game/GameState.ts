@@ -18,7 +18,6 @@ export default class GameState {
   }
 
   public getPlayers(): Map<String, Player> {
-    console.log(this.players);
     return this.players;
   }
 
@@ -28,5 +27,12 @@ export default class GameState {
 
   public removePlayer(socketId: string) {
     this.players.delete(socketId);
+  }
+
+  public serialize() {
+    return {
+      gridState: this.gridState,
+      players: Object.fromEntries(this.players),
+    };
   }
 }
