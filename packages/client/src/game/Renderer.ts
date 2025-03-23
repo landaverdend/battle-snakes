@@ -1,4 +1,3 @@
-import { GameState } from '@battle-snakes/shared';
 import { ClientGameState } from './ClientGameState';
 
 export class Renderer {
@@ -31,6 +30,7 @@ export class Renderer {
 
     // Stick drawing logic here...
     this.drawGrid();
+    this.drawPlayers();
   }
 
   drawGrid() {
@@ -57,5 +57,27 @@ export class Renderer {
       this.ctx.strokeStyle = '#ddd';
       this.ctx.stroke();
     }
+  }
+
+  private drawPlayers() {
+    const state = this.gameState.getState();
+    const { players } = state;
+    const { width, height } = state.gridState;
+
+    const cellWidth = this.canvasWidth / width;
+    const cellHeight = this.canvasHeight / height;
+
+    Object.values(players).forEach((player) => {
+      this.ctx.fillStyle = player.color;
+      
+      // draw each segment of the player's snake.
+      player.segments.forEach((segment) => {
+        const x = segment.x * cellWidth;
+        const y = segment.y * cellHeight;
+
+        const padding = 2;
+        this.ctx.fillRect(x + padding, y + padding, cellWidth - padding * 2, cellHeight - padding * 2);
+      });
+    });
   }
 }

@@ -1,4 +1,5 @@
-import { CellType, GridState, Player } from '@battle-snakes/shared';
+import { CellType, GridState, getRandomPosition } from '@battle-snakes/shared';
+import { Player } from './Player';
 
 export default class GameState {
   private gridState: GridState;
@@ -28,7 +29,8 @@ export default class GameState {
   }
 
   public addPlayer(socketId: string) {
-    this.players.set(socketId, { id: socketId, segments: [], direction: 'up', color: '#000000' });
+    const { width, height } = this.getGridState();
+    this.players.set(socketId, new Player(socketId, { startPosition: getRandomPosition(width, height) }));
   }
 
   public removePlayer(socketId: string) {

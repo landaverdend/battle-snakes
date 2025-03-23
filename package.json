@@ -6,7 +6,7 @@
   ],
   "scripts": {
     "dev": "npm run nuke && npm run start",
-    "nuke": "rm -rf node_modules packages/*/node_modules packages/*/dist && npm i",
+    "nuke": "rm -rf node_modules packages/*/node_modules packages/*/dist packages/*/*.tsbuildinfo && npm i",
     "start": "cd packages/shared && npm run build && cd ../.. && concurrently \"npm run dev:client\" \"npm run dev:server\"",
     "dev:client": "npm run dev -w @battle-snakes/client",
     "dev:server": "npm run dev -w @battle-snakes/server"

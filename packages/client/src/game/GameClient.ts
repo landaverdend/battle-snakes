@@ -7,6 +7,7 @@ export class GameClient {
   private isRunning: boolean = false;
   private animationFrameId: number | null = null;
 
+
   constructor(ctx: CanvasRenderingContext2D) {
     this.renderer = new Renderer(ctx);
     this.network = new NetworkManager();
