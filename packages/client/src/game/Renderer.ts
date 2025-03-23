@@ -1,31 +1,18 @@
-export class GameEngine {
+export class Renderer {
   private ctx: CanvasRenderingContext2D;
-  private isRunning: boolean = false;
-  private animationFrameId: number | null = null;
   private width: number;
   private height: number;
 
-  constructor(ctx: CanvasRenderingContext2D, width: number, height: number) {
+  constructor(ctx: CanvasRenderingContext2D) {
     this.ctx = ctx;
-    this.width = width;
-    this.height = height;
-
-    console.log(width, height);
+    this.width = ctx.canvas.width;
+    this.height = ctx.canvas.height;
   }
 
-  start() {
-    if (this.isRunning) return;
-
-    this.isRunning = true;
-    this.gameLoop();
-  }
-
-  stop() {
-    this.isRunning = false;
-
-    if (this.animationFrameId !== null) {
-      cancelAnimationFrame(this.animationFrameId);
-    }
+  public initialize(ctx: CanvasRenderingContext2D) {
+    this.ctx = ctx;
+    this.width = ctx.canvas.width;
+    this.height = ctx.canvas.height;
   }
 
   resize(width: number, height: number) {
@@ -34,23 +21,11 @@ export class GameEngine {
     this.height = height;
   }
 
-  gameLoop() {
-    if (!this.isRunning) return;
-
-    this.update();
-    this.draw();
-  }
-
-  update() {
-    // stick logic here...
-  }
-
-  draw() {
+  render() {
     this.ctx.clearRect(0, 0, this.width, this.height);
 
     // Stick drawing logic here...
     this.drawGrid();
-    this.animationFrameId = requestAnimationFrame(() => this.gameLoop());
   }
 
   drawGrid() {

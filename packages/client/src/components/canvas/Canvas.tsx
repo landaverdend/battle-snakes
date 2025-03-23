@@ -1,6 +1,6 @@
 import { useEffect, useRef } from 'react';
-import { GameEngine } from '../../game/GameEngine';
 import './canvas.css';
+import { Game } from '../../game/Game';
 
 interface CanvasProps {
   width: number; // Grid width
@@ -10,7 +10,7 @@ interface CanvasProps {
 const Canvas = ({ width, height }: CanvasProps) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
-  const gameEngineRef = useRef<GameEngine | null>(null);
+  const gameRef = useRef<Game | null>(null);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -20,17 +20,17 @@ const Canvas = ({ width, height }: CanvasProps) => {
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
 
-    gameEngineRef.current = new GameEngine(ctx, ctx.canvas.width, ctx.canvas.height);
+    gameRef.current = new Game(ctx);
+    gameRef.current.start();
 
     const resizeCanvas = () => {
       const { width, height } = container.getBoundingClientRect();
-      
+
       // Update canvas dimensions to match container
       canvas.width = width;
       canvas.height = height;
-
-      // Let the game engine handle the resize
-      gameEngineRef.current?.resize(width, height);
+      
+      gameRef.current?.resize(width, height);
     };
 
     // Set up ResizeObserver
@@ -39,12 +39,9 @@ const Canvas = ({ width, height }: CanvasProps) => {
 
     // Initial resize and start
     resizeCanvas();
-    gameEngineRef.current.start();
 
     // Cleanup
-    return () => {
-      gameEngineRef.current?.stop;
-    };
+    return () => {};
   }, [width, height]);
 
   return (

@@ -29,10 +29,6 @@ export function useSocket() {
     console.log(GameEvents.STATE_UPDATE);
     newSocket.on(GameEvents.STATE_UPDATE, (data: any) => {});
 
-    // newSocket.onAny((eventName, ...args) => {
-    //   console.log('Received event:', eventName, args);
-    // });
-
     newSocket.on('disconnect', () => {
       console.log('Disconnected from server');
     });
