@@ -1,14 +1,20 @@
-import { GridState, Player } from '@battle-snakes/shared';
+import { CellType, GridState, Player } from '@battle-snakes/shared';
 
 export default class GameState {
   private gridState: GridState;
   private players: Map<String, Player>;
 
   constructor(width: number, height: number) {
+    let cells = [];
+
+    for (let i = 0; i < width; i++) {
+      cells.push(new Array(height).fill(CellType.Empty));
+    }
+
     this.gridState = {
       width: width,
       height: height,
-      cells: [[]],
+      cells: cells,
     };
     this.players = new Map();
   }
