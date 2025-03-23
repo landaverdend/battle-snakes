@@ -1,27 +1,12 @@
 import { Player } from '../types';
+import { GridState } from './gridTypes';
 
 export type GameStatus = 'waiting' | 'playing' | 'finished';
-
-export enum CellType {
-  Empty = 0,
-  Snake = 1,
-  Food = 2,
-}
-
-export type GridCell = {
-  type: CellType;
-  playerId?: string;
-};
-
-export interface GridState {
-  width: number;
-  height: number;
-  cells: GridCell[][];
-}
 
 export enum GameEvents {
   PLAYER_JOIN = 'game:player_join',
   STATE_UPDATE = 'game:state_update',
+  MOVE_REQUEST = 'game:move_request',
 }
 
 export interface GameState {

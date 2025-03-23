@@ -29,4 +29,8 @@ export class NetworkManager {
   public disconnect() {
     this.socket.disconnect();
   }
+
+  public getSocket(): Socket {
+    return this.socket;
+  }
 }

@@ -1,9 +1,12 @@
-import { CellType, GridState, getRandomPosition } from '@battle-snakes/shared';
+import { CellType, GridState, Point, getRandomPosition } from '@battle-snakes/shared';
 import { Player } from './Player';
 
 export default class GameState {
   private gridState: GridState;
   private players: Map<String, Player>;
+
+  private tickRate: number = 200; // ms between moves.
+  private tickInterval: NodeJS.Timer | null = null;
 
   constructor(width: number, height: number) {
     let cells = [];
@@ -17,7 +20,43 @@ export default class GameState {
       height: height,
       cells: cells,
     };
+
     this.players = new Map();
+  }
+
+  startGameLoop() {
+    this.tickInterval = setInterval(() => {
+      this.update();
+    }, this.tickRate);
+  }
+
+  update() {
+    for (const [_, player] of this.players) {
+      this.movePlayer(player);
+    }
+  }
+
+  movePlayer(player: Player) {
+    const head = player.segments[0] as Point;
+    const newHead = { ...head };
+
+    switch (player.direction) {
+      case 'up':
+        newHead.y--;
+        break;
+      case 'down':
+        newHead.y++;
+        break;
+      case 'left':
+        newHead.x--;
+        break;
+      case 'right':
+        newHead.x++;
+        break;
+    }
+
+    player.segments.unshift(newHead);
+    player.segments.pop();
   }
 
   public getGridState(): GridState {
@@ -35,6 +74,10 @@ export default class GameState {
 
   public removePlayer(socketId: string) {
     this.players.delete(socketId);
+  }
+
+  public getTickRate() {
+    return this.tickRate;
   }
 
   public serialize() {

@@ -1,6 +1,6 @@
 import { createServer } from 'http';
 import { Server } from 'socket.io';
-import { GameEvents } from '@battle-snakes/shared';
+import { Direction, GameEvents } from '@battle-snakes/shared';
 import GameState from './game/GameState';
 
 const httpServer = createServer();
@@ -12,14 +12,23 @@ const io = new Server(httpServer, {
 });
 
 const gameState = new GameState(20, 20);
+gameState.startGameLoop();
 
 io.on('connection', (socket) => {
-  socket.emit('serverMessage', 'Welcome ' + socket.id + '! You are connected to the server!');
   gameState.addPlayer(socket.id);
 
   setInterval(() => {
     io.emit(GameEvents.STATE_UPDATE, gameState.serialize());
-  }, 1000);
+  }, gameState.getTickRate());
+
+  socket.on(GameEvents.MOVE_REQUEST, (direction: Direction) => {
+    const player = gameState.getPlayers().get(socket.id);
+
+    if (player) {
+      // Validate move (prevent 180-degree turns)
+      player.direction = direction;
+    }
+  });
 
   socket.on('disconnect', () => {
     console.log('Client disconnected: ', socket.id);
