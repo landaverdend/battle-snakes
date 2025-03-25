@@ -5,7 +5,7 @@ export default class GameState {
   private gridState: GridState;
   private players: Map<String, Player>;
 
-  private tickRate: number = 200; // ms between moves.
+  private tickRate: number = 100; // ms between moves.
   private tickInterval: NodeJS.Timer | null = null;
 
   constructor(width: number, height: number) {

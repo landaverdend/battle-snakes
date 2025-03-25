@@ -6,6 +6,7 @@ export class GameClient {
   private renderer: Renderer;
   private network: NetworkManager;
   private inputManager: InputManager;
+
   private isRunning: boolean = false;
   private animationFrameId: number | null = null;
 
@@ -13,7 +14,6 @@ export class GameClient {
     this.renderer = new Renderer(ctx);
     this.network = new NetworkManager();
     this.inputManager = new InputManager(this.network.getSocket());
-  
   }
 
   public start() {

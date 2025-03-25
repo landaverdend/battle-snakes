@@ -2,11 +2,21 @@ import { Direction, GameEvents } from '@battle-snakes/shared';
 import { Socket } from 'socket.io-client';
 
 export class InputManager {
-  constructor(socket: Socket) {
-    let direction: Direction | null = null;
+  private socket: Socket;
+  private handleKeydown: (event: KeyboardEvent) => void;
 
-    document.addEventListener('keydown', (event) => {
-      console.log('keydown event!');
+  constructor(socket: Socket) {
+    this.socket = socket;
+
+    this.handleKeydown = this.createKeydownHandler();
+    document.addEventListener('keydown', this.handleKeydown);
+  }
+
+  private createKeydownHandler() {
+    return (event: KeyboardEvent) => {
+      event.preventDefault();
+      let direction: Direction | null = null;
+
       switch (event.key) {
         case 'ArrowUp':
         case 'w':
@@ -27,8 +37,12 @@ export class InputManager {
       }
 
       if (direction) {
-        socket.emit(GameEvents.MOVE_REQUEST, direction);
+        this.socket.emit(GameEvents.MOVE_REQUEST, direction);
       }
-    });
+    };
+  }
+
+  public destroy() {
+    document.removeEventListener('keydown', this.handleKeydown);
   }
 }
