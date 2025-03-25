@@ -1,4 +1,4 @@
-import { Direction, getRandomNumber, OppositeDirection, Point } from '@battle-snakes/shared';
+import { Direction, GameState, GridState, OppositeDirection, Point } from '@battle-snakes/shared';
 
 type PlayerConfigOptions = {
   color?: string;
@@ -27,5 +27,23 @@ export class Player {
   // Prevent 180-degree turns (on everything except for the first segment)
   public isValidMove(proposedMove: Direction) {
     return this.segments.length === 1 || OppositeDirection[this.direction] !== proposedMove;
+  }
+
+  hasCollided(gameState: GameState) {
+
+    if (this.isWallCollision(gameState.gridState)) return true;
+    
+
+    return false;
+  }
+
+  isWallCollision(gridState: GridState) {
+    const { x, y } = this.segments[0] as Point;
+    const { width, height } = gridState;
+
+    const isXOutOfBounds = x < 0 || x >= width;
+    const isYOutOfBounds = y < 0 || y >= height;
+
+    return isXOutOfBounds || isYOutOfBounds;
   }
 }

@@ -30,7 +30,10 @@ export class GameManager {
 
   private update() {
     this.gameState.updatePositions();
+    this.gameState.checkCollisions();
+
     this.networkManager.broadCastGameState();
+  
   }
 
   // TODO: implement stopping/

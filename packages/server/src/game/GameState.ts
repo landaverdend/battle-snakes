@@ -3,7 +3,10 @@ import { Player } from './Player';
 
 export default class GameState {
   private gridState: GridState;
-  private players: Map<String, Player>;
+  private players: Map<string, Player>;
+  private foodPositions: Point[];
+
+  private deadPlayers: Map<string, string>;
 
   private tickRate: number = 100; // ms between moves.
 
@@ -12,8 +15,8 @@ export default class GameState {
       width: width,
       height: height,
     };
-
     this.players = new Map();
+    this.foodPositions = [];
   }
 
   // Update the player positions based off of their respective directions.
@@ -46,6 +49,16 @@ export default class GameState {
     player.segments.pop();
   }
 
+  public checkCollisions() {
+    for (const [playerId, player] of this.players) {
+      if (player.hasCollided(this.serialize())) {
+        console.log('player has collided! ', playerId);
+
+        this.removePlayer(playerId.toString());
+      }
+    }
+  }
+
   public getPlayers(): Map<String, Player> {
     return this.players;
   }
@@ -53,6 +66,10 @@ export default class GameState {
   public addPlayer(socketId: string) {
     const { width, height } = this.gridState;
     this.players.set(socketId, new Player(socketId, { startPosition: getRandomPosition(width, height) }));
+  }
+
+  public addDeadPlayer(socketId: string, message: string) {
+    this.deadPlayers.set(socketId, message);
   }
 
   public removePlayer(socketId: string) {
