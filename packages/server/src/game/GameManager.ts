@@ -30,10 +30,13 @@ export class GameManager {
 
   private update() {
     this.gameState.updatePositions();
-    this.gameState.checkCollisions();
+    const collisions = this.gameState.checkCollisions();
+
+    if (collisions.length > 0) {
+      collisions.forEach((collision) => this.networkManager.broadcastGameAction(collision));
+    }
 
     this.networkManager.broadCastGameState();
-  
   }
 
   // TODO: implement stopping/

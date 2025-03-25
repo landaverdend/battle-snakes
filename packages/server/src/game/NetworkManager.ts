@@ -1,6 +1,6 @@
 import { Server, Socket } from 'socket.io';
 import { createServer } from 'http';
-import { Direction, GameEvents } from '@battle-snakes/shared';
+import { Direction, GameAction, GameEvents } from '@battle-snakes/shared';
 import GameState from './GameState';
 
 const PORT = process.env['PORT'] || 3001;
@@ -53,5 +53,9 @@ export class NetworkManager {
 
   public broadCastGameState() {
     this.io.emit(GameEvents.STATE_UPDATE, this.gameState.serialize());
+  }
+
+  public broadcastGameAction(action: GameAction) {
+    this.io.emit(GameEvents.GAME_ACTION, action);
   }
 }

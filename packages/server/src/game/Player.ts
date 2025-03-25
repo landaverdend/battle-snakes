@@ -1,4 +1,4 @@
-import { Direction, GameState, GridState, OppositeDirection, Point } from '@battle-snakes/shared';
+import { Direction, GridState, OppositeDirection, Point } from '@battle-snakes/shared';
 
 type PlayerConfigOptions = {
   color?: string;
@@ -7,6 +7,7 @@ type PlayerConfigOptions = {
 
 export class Player {
   private id: string;
+  private isAlive: boolean;
 
   segments: Point[];
   direction: Direction;
@@ -15,6 +16,7 @@ export class Player {
   constructor(id: string, { color, startPosition }: PlayerConfigOptions) {
     this.id = id;
 
+    this.isAlive = true;
     this.segments = [startPosition];
     this.direction = 'up';
     this.color = color || this.getRandomColor();
@@ -29,12 +31,17 @@ export class Player {
     return this.segments.length === 1 || OppositeDirection[this.direction] !== proposedMove;
   }
 
-  hasCollided(gameState: GameState) {
+  public isDead() {
+    return !this.isAlive;
+  }
 
-    if (this.isWallCollision(gameState.gridState)) return true;
-    
+  hasCollided(gridState: GridState, players: Map<string, Player>) {
+    let hasCollided = false;
+    if (this.isWallCollision(gridState)) hasCollided = true;
 
-    return false;
+    if (hasCollided) this.isAlive = false;
+
+    return hasCollided;
   }
 
   isWallCollision(gridState: GridState) {

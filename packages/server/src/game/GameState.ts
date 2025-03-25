@@ -1,12 +1,10 @@
-import { GridState, Point, getRandomPosition } from '@battle-snakes/shared';
+import { GameAction, GridState, Point, getRandomPosition } from '@battle-snakes/shared';
 import { Player } from './Player';
 
 export default class GameState {
   private gridState: GridState;
   private players: Map<string, Player>;
   private foodPositions: Point[];
-
-  private deadPlayers: Map<string, string>;
 
   private tickRate: number = 100; // ms between moves.
 
@@ -22,6 +20,7 @@ export default class GameState {
   // Update the player positions based off of their respective directions.
   updatePositions() {
     for (const [_, player] of this.players) {
+      if (player.isDead()) continue;
       this.movePlayer(player);
     }
   }
@@ -50,13 +49,18 @@ export default class GameState {
   }
 
   public checkCollisions() {
-    for (const [playerId, player] of this.players) {
-      if (player.hasCollided(this.serialize())) {
-        console.log('player has collided! ', playerId);
+    let collisions: GameAction[] = [];
 
-        this.removePlayer(playerId.toString());
+    for (const [playerId, player] of this.players) {
+      if (player.isDead()) continue;
+
+      if (player.hasCollided(this.gridState, this.players)) {
+        collisions.push({ type: 'death', playerId: playerId });
+        // this.removePlayer(playerId.toString());
       }
     }
+
+    return collisions;
   }
 
   public getPlayers(): Map<String, Player> {
@@ -68,10 +72,6 @@ export default class GameState {
     this.players.set(socketId, new Player(socketId, { startPosition: getRandomPosition(width, height) }));
   }
 
-  public addDeadPlayer(socketId: string, message: string) {
-    this.deadPlayers.set(socketId, message);
-  }
-
   public removePlayer(socketId: string) {
     this.players.delete(socketId);
   }
@@ -81,12 +81,6 @@ export default class GameState {
   }
 
   public serialize() {
-    const snakePositions: Record<string, Point[]> = {};
-
-    this.players.forEach((player, id) => {
-      snakePositions[id.toString()] = player.segments;
-    });
-
     return {
       gridState: this.gridState,
       players: Object.fromEntries(this.players.entries()),

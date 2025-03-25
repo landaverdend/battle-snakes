@@ -1,4 +1,4 @@
-import { GameEvents, GameState } from '@battle-snakes/shared';
+import { GameAction, GameEvents, GameState } from '@battle-snakes/shared';
 import { io, Socket } from 'socket.io-client';
 import { ClientGameState } from './ClientGameState';
 
@@ -18,6 +18,13 @@ export class NetworkManager {
 
     this.socket.on(GameEvents.STATE_UPDATE, (state: GameState) => {
       ClientGameState.getInstance().updateState(state);
+    });
+
+    this.socket.on(GameEvents.GAME_ACTION, (action: GameAction) => {
+      console.log('game action: ', action);
+      if (action.type === 'death') {
+        alert(`Player ${action.playerId} has died!`);
+      }
     });
 
     this.socket.on('disconnect', () => {

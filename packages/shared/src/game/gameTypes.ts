@@ -7,6 +7,13 @@ export enum GameEvents {
   PLAYER_JOIN = 'game:player_join',
   STATE_UPDATE = 'game:state_update',
   MOVE_REQUEST = 'game:move_request',
+  GAME_ACTION = 'game:game_action',
+}
+
+export interface GameAction {
+  type: 'kill' | 'death' | 'spawn';
+  playerId: string;
+  targetId?: string;
 }
 
 // A smarter way of handling state updates
