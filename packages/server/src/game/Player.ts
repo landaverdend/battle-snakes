@@ -1,4 +1,4 @@
-import { Direction, getRandomNumber, Point } from '@battle-snakes/shared';
+import { Direction, getRandomNumber, OppositeDirection, Point } from '@battle-snakes/shared';
 
 type PlayerConfigOptions = {
   color?: string;
@@ -22,5 +22,10 @@ export class Player {
 
   public getRandomColor() {
     return '#' + (((1 << 24) * Math.random()) | 0).toString(16).padStart(6, '0');
+  }
+
+  // Prevent 180-degree turns (on everything except for the first segment)
+  public isValidMove(proposedMove: Direction) {
+    return this.segments.length === 1 || OppositeDirection[this.direction] !== proposedMove;
   }
 }
