@@ -1,4 +1,4 @@
-import { CellType, GridState, Point, getRandomPosition } from '@battle-snakes/shared';
+import { GridState, Point, StateUpdate, getRandomPosition } from '@battle-snakes/shared';
 import { Player } from './Player';
 
 export default class GameState {
@@ -8,16 +8,9 @@ export default class GameState {
   private tickRate: number = 100; // ms between moves.
 
   constructor(width: number, height: number) {
-    let cells = [];
-
-    for (let i = 0; i < width; i++) {
-      cells.push(new Array(height).fill({ type: CellType.Empty }));
-    }
-
     this.gridState = {
       width: width,
       height: height,
-      cells: cells,
     };
 
     this.players = new Map();
@@ -70,10 +63,17 @@ export default class GameState {
     return this.tickRate;
   }
 
-  public serialize() {
+  public serialize(): StateUpdate {
+    const snakePositions: Record<string, Point[]> = {};
+
+    this.players.forEach((player, id) => {
+      snakePositions[id.toString()] = player.segments;
+    });
+
     return {
       gridState: this.gridState,
-      players: Object.fromEntries(this.players),
+      players: Object.fromEntries(this.players.entries()),
+      foodPositions: [],
     };
   }
 }

@@ -17,5 +17,5 @@ export type GridCell = {
 export interface GridState {
   width: number;
   height: number;
-  cells: GridCell[][];
+  cells?: GridCell[][]; // Server only needs to know the width and height
 }

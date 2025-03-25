@@ -1,4 +1,4 @@
-import { GameEvents, GameState } from '@battle-snakes/shared';
+import { GameEvents, StateUpdate } from '@battle-snakes/shared';
 import { io, Socket } from 'socket.io-client';
 import { ClientGameState } from './ClientGameState';
 
@@ -16,8 +16,7 @@ export class NetworkManager {
       console.log('Connected to server');
     });
 
-    this.socket.on(GameEvents.STATE_UPDATE, (state: GameState) => {
-      // console.log('state update', state);
+    this.socket.on(GameEvents.STATE_UPDATE, (state: StateUpdate) => {
       ClientGameState.getInstance().updateState(state);
     });
 
