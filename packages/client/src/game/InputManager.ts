@@ -14,7 +14,7 @@ export class InputManager {
 
   private createKeydownHandler() {
     return (event: KeyboardEvent) => {
-      event.preventDefault();
+      event.preventDefault(); 
       let direction: Direction | null = null;
 
       switch (event.key) {

@@ -1,5 +1,5 @@
-import { Player } from '../types';
 import { GridState } from './gridTypes';
+import { Player } from './playerTypes';
 
 export type GameStatus = 'waiting' | 'playing' | 'finished';
 

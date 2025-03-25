@@ -1,3 +1,8 @@
+export interface Point {
+  x: number;
+  y: number;
+}
+
 export enum CellType {
   Empty = 0,
   Snake = 1,
