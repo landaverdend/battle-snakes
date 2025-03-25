@@ -6,7 +6,6 @@ export default class GameState {
   private players: Map<String, Player>;
 
   private tickRate: number = 100; // ms between moves.
-  private tickInterval: NodeJS.Timer | null = null;
 
   constructor(width: number, height: number) {
     let cells = [];
@@ -24,13 +23,8 @@ export default class GameState {
     this.players = new Map();
   }
 
-  startGameLoop() {
-    this.tickInterval = setInterval(() => {
-      this.update();
-    }, this.tickRate);
-  }
-
-  update() {
+  // Update the player positions based off of their respective directions.
+  updatePositions() {
     for (const [_, player] of this.players) {
       this.movePlayer(player);
     }
@@ -59,16 +53,12 @@ export default class GameState {
     player.segments.pop();
   }
 
-  public getGridState(): GridState {
-    return this.gridState;
-  }
-
   public getPlayers(): Map<String, Player> {
     return this.players;
   }
 
   public addPlayer(socketId: string) {
-    const { width, height } = this.getGridState();
+    const { width, height } = this.gridState;
     this.players.set(socketId, new Player(socketId, { startPosition: getRandomPosition(width, height) }));
   }
 
