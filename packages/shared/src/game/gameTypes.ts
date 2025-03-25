@@ -9,14 +9,8 @@ export enum GameEvents {
   MOVE_REQUEST = 'game:move_request',
 }
 
-export interface GameState {
-  players: Record<string, Player>;
-  gridState: GridState;
-  gameStatus: GameStatus;
-}
-
 // A smarter way of handling state updates
-export interface StateUpdate {
+export interface GameState {
   gridState: GridState;
   foodPositions: Point[];
   players: Record<string, Player>;

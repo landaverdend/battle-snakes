@@ -1,4 +1,4 @@
-import { GridState, Point, StateUpdate, getRandomPosition } from '@battle-snakes/shared';
+import { GridState, Point, getRandomPosition } from '@battle-snakes/shared';
 import { Player } from './Player';
 
 export default class GameState {
@@ -63,7 +63,7 @@ export default class GameState {
     return this.tickRate;
   }
 
-  public serialize(): StateUpdate {
+  public serialize() {
     const snakePositions: Record<string, Point[]> = {};
 
     this.players.forEach((player, id) => {

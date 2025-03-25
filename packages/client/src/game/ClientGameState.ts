@@ -1,4 +1,4 @@
-import { CellType, GameState, GridCell, StateUpdate } from '@battle-snakes/shared';
+import { CellType, GameState, GridCell } from '@battle-snakes/shared';
 export class ClientGameState {
   private static instance: ClientGameState;
   private gameState: GameState;
@@ -10,7 +10,7 @@ export class ClientGameState {
         width: 25, // default grid size matching server
         height: 25,
       },
-      gameStatus: 'waiting',
+      foodPositions: [],
     };
   }
 
@@ -21,18 +21,17 @@ export class ClientGameState {
     return ClientGameState.instance;
   }
 
-  public updateState(newState: StateUpdate) {
-    
+  public updateState(newState: GameState) {
     if (!this.gameState.gridState.cells) {
       this.initializeGridState(newState);
     }
 
     this.gameState.players = newState.players;
+    this.gameState.foodPositions = newState.foodPositions;
   }
 
-  private initializeGridState(newState: StateUpdate) {
-    console.log('initializing grid state....');
-
+  // Initialize the grid state if it's not already made.
+  private initializeGridState(newState: GameState) {
     const cells: GridCell[][] = [];
 
     for (let i = 0; i < newState.gridState.height; i++) {
