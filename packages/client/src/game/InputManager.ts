@@ -1,5 +1,6 @@
-import { Direction, GameEvents } from '@battle-snakes/shared';
+import { Direction, GameEvents, OppositeDirection, Player } from '@battle-snakes/shared';
 import { Socket } from 'socket.io-client';
+import { ClientGameState } from './ClientGameState';
 
 export class InputManager {
   private socket: Socket;
@@ -14,7 +15,7 @@ export class InputManager {
 
   private createKeydownHandler() {
     return (event: KeyboardEvent) => {
-      event.preventDefault(); 
+      event.preventDefault();
       let direction: Direction | null = null;
 
       switch (event.key) {
@@ -36,10 +37,18 @@ export class InputManager {
           break;
       }
 
-      if (direction) {
+      if (this.checkValidInput(direction)) {
         this.socket.emit(GameEvents.MOVE_REQUEST, direction);
       }
     };
+  }
+
+  public checkValidInput(proposedDirection: Direction | null) {
+    if (!proposedDirection || !this.socket.id) return false;
+
+    const player = ClientGameState.getInstance().getState().players[this.socket.id] as Player;
+
+    return player.segments.length === 1 || proposedDirection !== OppositeDirection[player.direction];
   }
 
   public destroy() {
