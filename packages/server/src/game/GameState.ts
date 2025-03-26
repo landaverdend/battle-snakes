@@ -20,31 +20,8 @@ export default class GameState {
   updatePositions() {
     for (const [_, player] of this.players) {
       if (player.isDead()) continue;
-      this.movePlayer(player);
+      player.move();
     }
-  }
-
-  movePlayer(player: Player) {
-    const head = player.segments[0] as Point;
-    const newHead = new Point(head.x, head.y);
-
-    switch (player.direction) {
-      case 'up':
-        newHead.y--;
-        break;
-      case 'down':
-        newHead.y++;
-        break;
-      case 'left':
-        newHead.x--;
-        break;
-      case 'right':
-        newHead.x++;
-        break;
-    }
-
-    player.segments.unshift(newHead);
-    player.segments.pop();
   }
 
   public checkCollisions() {

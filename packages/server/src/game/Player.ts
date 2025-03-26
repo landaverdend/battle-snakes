@@ -8,6 +8,7 @@ type PlayerConfigOptions = {
 export class Player {
   private id: string;
   private isAlive: boolean;
+  private shouldGrow: boolean = false;
 
   segments: Point[];
   direction: Direction;
@@ -28,12 +29,40 @@ export class Player {
 
   // Prevent 180-degree turns (on everything except for the first segment)
   public isValidMove(proposedMove: Direction) {
-    return this.segments.length === 1 || OppositeDirection[this.direction] !== proposedMove;
+    return OppositeDirection[this.direction] !== proposedMove;
+  }
+
+  public move() {
+    const head = this.segments[0] as Point;
+    const newHead = new Point(head.x, head.y);
+
+    switch (this.direction) {
+      case 'up':
+        newHead.y--;
+        break;
+      case 'down':
+        newHead.y++;
+        break;
+      case 'left':
+        newHead.x--;
+        break;
+      case 'right':
+        newHead.x++;
+        break;
+    }
+
+    this.segments.unshift(newHead);
+
+    if (!this.shouldGrow) {
+      this.segments.pop();
+    } else {
+      this.shouldGrow = false;
+    }
   }
 
   // TODO: it.
   public grow() {
-    console.log('grow');
+    this.shouldGrow = true;
   }
 
   public isDead() {

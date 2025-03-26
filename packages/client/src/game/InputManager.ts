@@ -48,7 +48,7 @@ export class InputManager {
 
     const player = ClientGameState.getInstance().getState().players[this.socket.id] as Player;
 
-    return player.segments.length === 1 || proposedDirection !== OppositeDirection[player.direction];
+    return proposedDirection !== OppositeDirection[player.direction];
   }
 
   public destroy() {
