@@ -9,9 +9,10 @@ export class Player {
   private id: string;
   private isAlive: boolean;
   private shouldGrow: boolean = false;
-
+  private pendingDirection: Direction;
+  private direction: Direction;
   segments: Point[];
-  direction: Direction;
+
   color: string;
 
   constructor(id: string, { color, startPosition }: PlayerConfigOptions) {
@@ -20,6 +21,7 @@ export class Player {
     this.isAlive = true;
     this.segments = [startPosition];
     this.direction = 'up';
+    this.pendingDirection = 'up';
     this.color = color || this.getRandomColor();
   }
 
@@ -29,10 +31,18 @@ export class Player {
 
   // Prevent 180-degree turns (on everything except for the first segment)
   public isValidMove(proposedMove: Direction) {
-    return OppositeDirection[this.direction] !== proposedMove;
+    return OppositeDirection[this.pendingDirection] !== proposedMove;
+  }
+
+  public setDirection(newDirection: Direction) {
+    if (this.isValidMove(newDirection)) {
+      this.pendingDirection = newDirection;
+    }
   }
 
   public move() {
+    this.direction = this.pendingDirection;
+
     const head = this.segments[0] as Point;
     const newHead = new Point(head.x, head.y);
 

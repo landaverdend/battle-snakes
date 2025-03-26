@@ -41,7 +41,7 @@ export class NetworkManager {
     socket.on(GameEvents.MOVE_REQUEST, (direction: Direction) => {
       const player = this.gameState.getPlayers().get(socket.id);
       if (player && player.isValidMove(direction)) {
-        player.direction = direction;
+        player.setDirection(direction);
       }
     });
 
