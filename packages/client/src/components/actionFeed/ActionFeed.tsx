@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { GameAction } from '@battle-snakes/shared';
 import { ActionFeedManager } from '@game/ActionFeedManager';
+import './action-feed.css';
 
 export function ActionFeed() {
   const [actions, setActions] = useState<GameAction[]>([]);
@@ -26,7 +27,9 @@ export function ActionFeed() {
     <div className="action-feed-container">
       <h3>Action Feed</h3>
       {actions.map((action) => (
-        <span className="action-item">Player: '{action.playerId}' hit the wall...</span>
+        <span key={crypto.randomUUID()} className="action-item">
+          Player: '{action.playerId}' hit the wall...
+        </span>
       ))}
     </div>
   );

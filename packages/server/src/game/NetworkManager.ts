@@ -2,6 +2,7 @@ import { Server, Socket } from 'socket.io';
 import { createServer } from 'http';
 import { Direction, GameAction, GameEvents } from '@battle-snakes/shared';
 import GameState from './GameState';
+import { TICK_RATE } from '../config/gameConfig';
 
 const PORT = process.env['PORT'] || 3001;
 
@@ -35,7 +36,7 @@ export class NetworkManager {
 
     setInterval(() => {
       this.io.emit(GameEvents.STATE_UPDATE, this.gameState.serialize());
-    }, this.gameState.getTickRate());
+    }, TICK_RATE);
 
     socket.on(GameEvents.MOVE_REQUEST, (direction: Direction) => {
       const player = this.gameState.getPlayers().get(socket.id);

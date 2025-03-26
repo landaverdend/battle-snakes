@@ -3,12 +3,9 @@ import './canvas.css';
 import { GameClient } from '../../game/GameClient';
 import { ActionFeed } from '../actionFeed/ActionFeed';
 
-interface CanvasProps {
-  width: number; // Grid width
-  height: number; // Grid height
-}
+interface CanvasProps {}
 
-const Canvas = ({ width, height }: CanvasProps) => {
+const Canvas = ({}: CanvasProps) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const gameRef = useRef<GameClient | null>(null);
@@ -43,7 +40,7 @@ const Canvas = ({ width, height }: CanvasProps) => {
 
     // Cleanup
     return () => {};
-  }, [width, height]);
+  }, []);
 
   return (
     <div ref={containerRef} className="canvas-container">

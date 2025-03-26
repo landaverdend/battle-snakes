@@ -1,3 +1,4 @@
+import { DEFAULT_GRID_SIZE, TICK_RATE } from '../config/gameConfig';
 import GameState from './GameState';
 import { NetworkManager } from './NetworkManager';
 
@@ -5,11 +6,11 @@ export class GameManager {
   private gameState: GameState;
   private networkManager: NetworkManager;
 
-  private gameLoopInterval: NodeJS.Timer | null = null;
+  private gameLoopInterval: NodeJS.Timeout | null = null;
   private isRunning = false;
 
   constructor() {
-    this.gameState = new GameState(25, 25);
+    this.gameState = new GameState(DEFAULT_GRID_SIZE, DEFAULT_GRID_SIZE);
     this.networkManager = new NetworkManager(this.gameState);
   }
 
@@ -19,13 +20,20 @@ export class GameManager {
     this.networkManager.initialize();
   }
 
+  public stop() {
+    if (this.gameLoopInterval) {
+      clearInterval(this.gameLoopInterval);
+      this.gameLoopInterval = null;
+    }
+  }
+
   private startGameLoop() {
     if (this.isRunning) return;
 
     this.isRunning = true;
     this.gameLoopInterval = setInterval(() => {
       this.update();
-    }, this.gameState.getTickRate());
+    }, TICK_RATE);
   }
 
   private update() {
@@ -38,7 +46,4 @@ export class GameManager {
 
     this.networkManager.broadCastGameState();
   }
-
-  // TODO: implement stopping/
-  public stop() {}
 }

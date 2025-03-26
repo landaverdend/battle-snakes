@@ -1,12 +1,11 @@
 import { GameAction, GridState, Point, getRandomPosition } from '@battle-snakes/shared';
 import { Player } from './Player';
+import { DEFAULT_FOOD_COUNT } from '../config/gameConfig';
 
 export default class GameState {
   private gridState: GridState;
   private players: Map<string, Player>;
   private foodPositions: Point[];
-
-  private tickRate: number = 100; // ms between moves.
 
   constructor(width: number, height: number) {
     this.gridState = {
@@ -27,7 +26,7 @@ export default class GameState {
 
   movePlayer(player: Player) {
     const head = player.segments[0] as Point;
-    const newHead = { ...head };
+    const newHead = new Point(head.x, head.y);
 
     switch (player.direction) {
       case 'up':
@@ -62,6 +61,43 @@ export default class GameState {
     return collisions;
   }
 
+  /**
+   * TODO:
+   * 1) We need to check to make sure that this food position is not already occupied by a player OR food.
+   * 2)
+   */
+  public placeFood() {
+    if (this.foodPositions.length < DEFAULT_FOOD_COUNT) {
+      const newFoodPosition = getRandomPosition(this.gridState.width, this.gridState.height);
+
+      while (!this.isSpaceOccupied(newFoodPosition)) {
+        this.foodPositions.push(newFoodPosition);
+      }
+    }
+  }
+
+  // Run through and check if a space is occupied by:
+  // 1) A player
+  // 2) Food
+  // 3) Future items?
+  private isSpaceOccupied(position: Point): boolean {
+    for (const player of this.players.values()) {
+      for (const segment of player.segments) {
+        if (segment.x === position.x && segment.y === position.y) {
+          return true;
+        }
+      }
+    }
+
+    for (const foodPosition of this.foodPositions) {
+      if (foodPosition.x === position.x && foodPosition.y === position.y) {
+        return true;
+      }
+    }
+
+    return false;
+  }
+
   public getPlayers(): Map<String, Player> {
     return this.players;
   }
@@ -73,10 +109,6 @@ export default class GameState {
 
   public removePlayer(socketId: string) {
     this.players.delete(socketId);
-  }
-
-  public getTickRate() {
-    return this.tickRate;
   }
 
   public serialize() {
