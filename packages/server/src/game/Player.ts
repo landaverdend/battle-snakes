@@ -31,17 +31,26 @@ export class Player {
     return this.segments.length === 1 || OppositeDirection[this.direction] !== proposedMove;
   }
 
+  // TODO: it.
+  public grow() {
+    console.log('grow');
+  }
+
   public isDead() {
     return !this.isAlive;
   }
 
-  hasCollided(gridState: GridState, players: Map<string, Player>, foodPositions: Point[]) {
-    let hasCollided = false;
-    if (this.isWallCollision(gridState)) hasCollided = true;
+  public setIsAlive(isAlive: boolean) {
+    this.isAlive = isAlive;
+  }
 
-    if (hasCollided) this.isAlive = false;
+  /**
+   * Check if the player has collided with a wall or another player.
+   */
+  checkDeathCollision(gridState: GridState, players: Map<string, Player>) {
+    if (this.isWallCollision(gridState)) return true;
 
-    return hasCollided;
+    return false;
   }
 
   isWallCollision(gridState: GridState) {
@@ -54,5 +63,9 @@ export class Player {
     return isXOutOfBounds || isYOutOfBounds;
   }
 
-  
+  checkFoodCollision(foodPositions: Point[]): boolean {
+    const head = this.segments[0] as Point;
+
+    return foodPositions.some((foodPos) => foodPos.equals(head));
+  }
 }

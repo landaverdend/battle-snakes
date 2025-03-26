@@ -20,5 +20,5 @@ yarn-error.log*
 
 # TypeScript
 *.tsbuildinfo
-
+.cursorignore
 /packages/server/.env

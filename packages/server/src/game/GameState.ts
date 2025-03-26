@@ -53,8 +53,19 @@ export default class GameState {
     for (const [playerId, player] of this.players) {
       if (player.isDead()) continue;
 
-      if (player.hasCollided(this.gridState, this.players, this.foodPositions)) {
+      if (player.checkDeathCollision(this.gridState, this.players)) {
+        player.setIsAlive(false);
         collisions.push({ type: 'death', playerId: playerId });
+        continue; // skip the rest of the checks if the player is dead
+      }
+
+      // When player collides with food, the following happens:
+      // 1. the player grows
+      // 2. food is removed from the game state. (it will be placed again in the next tick)
+      // 3. the player's score is incremented.
+      if (player.checkFoodCollision(this.foodPositions)) {
+        player.grow();
+        this.foodPositions = this.foodPositions.filter((foodPos) => !foodPos.equals(player.segments[0] as Point));
       }
     }
 
@@ -63,8 +74,6 @@ export default class GameState {
 
   /**
    * TODO:
-   * 1) We need to check to make sure that this food position is not already occupied by a player OR food.
-   * 2)
    */
   public placeFood() {
     if (this.foodPositions.length >= DEFAULT_FOOD_COUNT) return;
@@ -74,7 +83,7 @@ export default class GameState {
     while (this.foodPositions.length < DEFAULT_FOOD_COUNT && !this.isSpaceOccupied(newFoodPosition)) {
       this.foodPositions.push(newFoodPosition);
       newFoodPosition = getRandomPosition(this.gridState.width, this.gridState.height);
-    } 
+    }
   }
 
   // Run through and check if a space is occupied by:
@@ -114,6 +123,10 @@ export default class GameState {
     this.players.delete(socketId);
   }
 
+  /**
+   * Serialize the game state into a client-friendly format.
+   * @returns
+   */
   public serialize() {
     return {
       gridState: this.gridState,
