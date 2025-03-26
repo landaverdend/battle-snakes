@@ -53,7 +53,7 @@ export default class GameState {
     for (const [playerId, player] of this.players) {
       if (player.isDead()) continue;
 
-      if (player.hasCollided(this.gridState, this.players)) {
+      if (player.hasCollided(this.gridState, this.players, this.foodPositions)) {
         collisions.push({ type: 'death', playerId: playerId });
       }
     }
@@ -67,13 +67,14 @@ export default class GameState {
    * 2)
    */
   public placeFood() {
-    if (this.foodPositions.length < DEFAULT_FOOD_COUNT) {
-      const newFoodPosition = getRandomPosition(this.gridState.width, this.gridState.height);
+    if (this.foodPositions.length >= DEFAULT_FOOD_COUNT) return;
 
-      while (!this.isSpaceOccupied(newFoodPosition)) {
-        this.foodPositions.push(newFoodPosition);
-      }
-    }
+    let newFoodPosition = getRandomPosition(this.gridState.width, this.gridState.height);
+
+    while (this.foodPositions.length < DEFAULT_FOOD_COUNT && !this.isSpaceOccupied(newFoodPosition)) {
+      this.foodPositions.push(newFoodPosition);
+      newFoodPosition = getRandomPosition(this.gridState.width, this.gridState.height);
+    } 
   }
 
   // Run through and check if a space is occupied by:
@@ -83,17 +84,19 @@ export default class GameState {
   private isSpaceOccupied(position: Point): boolean {
     for (const player of this.players.values()) {
       for (const segment of player.segments) {
-        if (segment.x === position.x && segment.y === position.y) {
+        if (segment.equals(position)) {
           return true;
         }
       }
     }
 
     for (const foodPosition of this.foodPositions) {
-      if (foodPosition.x === position.x && foodPosition.y === position.y) {
+      if (foodPosition.equals(position)) {
         return true;
       }
     }
+
+    // TODO: check for future items.
 
     return false;
   }
@@ -115,7 +118,7 @@ export default class GameState {
     return {
       gridState: this.gridState,
       players: Object.fromEntries(this.players.entries()),
-      foodPositions: [],
+      foodPositions: this.foodPositions,
     };
   }
 }

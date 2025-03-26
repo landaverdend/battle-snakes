@@ -38,11 +38,13 @@ export class GameManager {
 
   private update() {
     this.gameState.updatePositions();
-    const collisions = this.gameState.checkCollisions();
 
+    const collisions = this.gameState.checkCollisions();
     if (collisions.length > 0) {
       collisions.forEach((collision) => this.networkManager.broadcastGameAction(collision));
     }
+
+    this.gameState.placeFood();
 
     this.networkManager.broadCastGameState();
   }

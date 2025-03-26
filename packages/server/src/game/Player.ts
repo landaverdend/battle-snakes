@@ -35,7 +35,7 @@ export class Player {
     return !this.isAlive;
   }
 
-  hasCollided(gridState: GridState, players: Map<string, Player>) {
+  hasCollided(gridState: GridState, players: Map<string, Player>, foodPositions: Point[]) {
     let hasCollided = false;
     if (this.isWallCollision(gridState)) hasCollided = true;
 
@@ -53,4 +53,6 @@ export class Player {
 
     return isXOutOfBounds || isYOutOfBounds;
   }
+
+  
 }

@@ -31,6 +31,7 @@ export class Renderer {
     // Stick drawing logic here...
     this.drawGrid();
     this.drawPlayers();
+    this.drawFood();
   }
 
   drawGrid() {
@@ -69,7 +70,7 @@ export class Renderer {
 
     Object.values(players).forEach((player) => {
       this.ctx.fillStyle = player.color;
-      
+
       // draw each segment of the player's snake.
       player.segments.forEach((segment) => {
         const x = segment.x * cellWidth;
@@ -78,6 +79,31 @@ export class Renderer {
         const padding = 2;
         this.ctx.fillRect(x + padding, y + padding, cellWidth - padding * 2, cellHeight - padding * 2);
       });
+    });
+  }
+
+  private drawFood() {
+    const { foodPositions } = this.gameState.getState();
+    const { width, height } = this.gameState.getState().gridState;
+
+    const cellWidth = this.canvasWidth / width;
+    const cellHeight = this.canvasHeight / height;
+
+    foodPositions.forEach((position) => {
+      this.ctx.fillStyle = 'red';
+
+      // Calculate center point of the cell
+      const centerX = position.x * cellWidth + cellWidth / 2;
+      const centerY = position.y * cellHeight + cellHeight / 2;
+
+      // Use consistent padding with player segments (2px on each side)
+      const padding = 2;
+      const radius = (cellWidth - padding * 2) / 2; // Radius that fits within the cell with padding
+
+      // Draw circle
+      this.ctx.beginPath();
+      this.ctx.arc(centerX, centerY, radius, 0, Math.PI * 2);
+      this.ctx.fill();
     });
   }
 }
