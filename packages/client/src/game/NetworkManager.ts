@@ -1,6 +1,7 @@
 import { GameAction, GameEvents, GameState } from '@battle-snakes/shared';
 import { io, Socket } from 'socket.io-client';
 import { ClientGameState } from './ClientGameState';
+import { ActionFeedManager } from './ActionFeedManager';
 
 const SOCKET_URL = 'http://localhost:3001';
 export class NetworkManager {
@@ -21,10 +22,7 @@ export class NetworkManager {
     });
 
     this.socket.on(GameEvents.GAME_ACTION, (action: GameAction) => {
-      console.log('game action: ', action);
-      if (action.type === 'death') {
-        alert(`Player ${action.playerId} has died!`);
-      }
+      ActionFeedManager.getInstance().addAction(action);
     });
 
     this.socket.on('disconnect', () => {

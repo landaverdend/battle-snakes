@@ -1,0 +1,10 @@
+.action-feed-container {
+  display: flex;
+  flex-direction: column;
+
+  min-width: 200px;
+}
+
+.action-item {
+  width: 100%;
+}

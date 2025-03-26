@@ -1,6 +1,7 @@
 import { useEffect, useRef } from 'react';
 import './canvas.css';
 import { GameClient } from '../../game/GameClient';
+import { ActionFeed } from '../actionFeed/ActionFeed';
 
 interface CanvasProps {
   width: number; // Grid width
@@ -47,6 +48,7 @@ const Canvas = ({ width, height }: CanvasProps) => {
   return (
     <div ref={containerRef} className="canvas-container">
       <canvas ref={canvasRef} />
+      <ActionFeed />
     </div>
   );
 };

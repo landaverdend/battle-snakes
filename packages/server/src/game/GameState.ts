@@ -56,7 +56,6 @@ export default class GameState {
 
       if (player.hasCollided(this.gridState, this.players)) {
         collisions.push({ type: 'death', playerId: playerId });
-        // this.removePlayer(playerId.toString());
       }
     }
 
