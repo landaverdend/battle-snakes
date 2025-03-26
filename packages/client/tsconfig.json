@@ -3,7 +3,13 @@
   "compilerOptions": {
     "outDir": "./dist",
     "rootDir": "./src",
-    "jsx": "react-jsx"
+    "jsx": "react-jsx",
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["src/*"],
+      "@components/*": ["src/components/*"],
+      "@game/*": ["src/game/*"]
+    }
   },
   "include": ["src/**/*"],
   "references": [{ "path": "../shared" }]

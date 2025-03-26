@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { GameAction } from '@battle-snakes/shared';
-import { ActionFeedManager } from '../../game/ActionFeedManager';
+import { ActionFeedManager } from '@game/ActionFeedManager';
 
 export function ActionFeed() {
   const [actions, setActions] = useState<GameAction[]>([]);

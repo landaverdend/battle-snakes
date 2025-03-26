@@ -1,5 +1,6 @@
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
+import path from 'path';
 
 export default defineConfig({
   plugins: [react()],
@@ -8,9 +9,9 @@ export default defineConfig({
   },
   resolve: {
     alias: {
-      '@': '/src',
-      '@components': '/src/components',
-      '@game': '/src/game',
+      '@': path.resolve(__dirname, './src'),
+      '@components': path.resolve(__dirname, './src/components'),
+      '@game': path.resolve(__dirname, './src/game'),
     },
   },
   optimizeDeps: {

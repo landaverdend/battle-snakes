@@ -1,4 +1,4 @@
-import { CellType, GameAction, GameState, GridCell } from '@battle-snakes/shared';
+import { CellType, GameState, GridCell } from '@battle-snakes/shared';
 export class ClientGameState {
   private static instance: ClientGameState;
   private gameState: GameState;
