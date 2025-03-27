@@ -1,13 +1,13 @@
 import { useEffect, useState } from 'react';
-import { GameAction } from '@battle-snakes/shared';
+import { GameEvent } from '@battle-snakes/shared';
 import { ActionFeedManager } from '@game/ActionFeedManager';
 import './action-feed.css';
 
 export function ActionFeed() {
-  const [actions, setActions] = useState<GameAction[]>([]);
+  const [actions, setActions] = useState<GameEvent[]>([]);
 
   useEffect(() => {
-    const handleActionUpdate = (newActions: GameAction[]) => {
+    const handleActionUpdate = (newActions: GameEvent[]) => {
       setActions(newActions);
     };
 

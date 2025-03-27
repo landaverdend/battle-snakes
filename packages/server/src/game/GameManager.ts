@@ -40,15 +40,22 @@ export class GameManager {
     this.gameState.updatePositions();
 
     const collisions = this.gameState.checkCollisions();
-    if (collisions.length > 0) {
-      collisions.forEach((collision) => this.networkManager.broadcastGameAction(collision));
-    }
-    
-    this.gameState.placeFood();
 
+    if (collisions.length > 0) {
+      collisions.forEach((collision) => {
+        switch (collision.type) {
+          case 'snake':
+          case 'wall':
+            this.networkManager.broadcastGameEvent({ type: 'death', playerId: collision.id, targetId: collision.impactedId });
+            break;
+        }
+      });
+    }
+
+    this.gameState.placeFood();
     this.gameState.updateOccupiedCells();
 
-    
+    // Finally update the game state and broadcast it to all clients.
     this.networkManager.broadCastGameState();
   }
 }

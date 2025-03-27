@@ -1,6 +1,6 @@
 import { Server, Socket } from 'socket.io';
 import { createServer } from 'http';
-import { Direction, GameAction, GameEvents } from '@battle-snakes/shared';
+import { Direction, GameEvent, GameEvents } from '@battle-snakes/shared';
 import GameState from './GameState';
 import { TICK_RATE } from '../config/gameConfig';
 
@@ -56,7 +56,7 @@ export class NetworkManager {
     this.io.emit(GameEvents.STATE_UPDATE, this.gameState.serialize());
   }
 
-  public broadcastGameAction(action: GameAction) {
+  public broadcastGameEvent(action: GameEvent) {
     this.io.emit(GameEvents.GAME_ACTION, action);
   }
 }

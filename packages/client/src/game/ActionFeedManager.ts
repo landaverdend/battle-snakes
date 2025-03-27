@@ -1,9 +1,9 @@
-import { GameAction } from '@battle-snakes/shared';
+import { GameEvent } from '@battle-snakes/shared';
 
 export class ActionFeedManager {
   private static instance: ActionFeedManager;
-  private actionFeed: GameAction[] = [];
-  private listeners: ((actions: GameAction[]) => void)[] = [];
+  private actionFeed: GameEvent[] = [];
+  private listeners: ((actions: GameEvent[]) => void)[] = [];
 
   private constructor() {}
 
@@ -14,20 +14,20 @@ export class ActionFeedManager {
     return ActionFeedManager.instance;
   }
 
-  public addListener(listener: (actions: GameAction[]) => void) {
+  public addListener(listener: (actions: GameEvent[]) => void) {
     this.listeners.push(listener);
   }
 
-  public removeListener(listener: (actions: GameAction[]) => void) {
+  public removeListener(listener: (actions: GameEvent[]) => void) {
     this.listeners = this.listeners.filter((l) => l !== listener);
   }
 
-  public addAction(action: GameAction) {
+  public addAction(action: GameEvent) {
     this.actionFeed = [action, ...this.actionFeed].slice(0, 10);
     this.notifyListeners();
   }
 
-  public getActions(): GameAction[] {
+  public getActions(): GameEvent[] {
     return this.actionFeed;
   }
 

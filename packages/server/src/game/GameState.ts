@@ -1,4 +1,4 @@
-import { CellType, GameAction, GridCell, GridState, Point, getRandomPosition } from '@battle-snakes/shared';
+import { CellType, Collision, GameEvent, GridCell, GridState, Point, getRandomPosition } from '@battle-snakes/shared';
 import { Player } from './Player';
 import { DEFAULT_FOOD_COUNT } from '../config/gameConfig';
 
@@ -48,31 +48,30 @@ export default class GameState {
     }
   }
 
-  public checkCollisions() {
-    let collisions: GameAction[] = [];
+  // Iterate through all players and check for collisions, handle state updates and return events to broadcast.
+  public checkCollisions(): Collision[] {
+    const collisions: Collision[] = [];
 
-    for (const [playerId, player] of this.players) {
+    for (const [_, player] of this.players) {
       if (player.isDead()) continue;
 
-      const head = player.segments[0] as Point;
-      const headKey = head.toString();
-      const cellAtHead = this.occupiedCells.get(headKey);
+      const collision = player.checkCollision(this.gridState, this.occupiedCells);
 
-      if (player.isOutOfBounds(this.gridState) || cellAtHead?.type === CellType.Snake) {
-        player.setIsAlive(false);
-
-        if (cellAtHead?.type === CellType.Snake) {
-          collisions.push({ type: 'death', playerId, targetId: cellAtHead.playerId });
-        } else {
-          collisions.push({ type: 'death', playerId });
+      if (collision) {
+        // Handle collision effects
+        switch (collision.type) {
+          case 'wall':
+          case 'snake':
+            player.setDead();
+            break;
+          case 'food':
+            player.grow(5);
+            const head = player.segments[0] as Point;
+            this.foodPositions = this.foodPositions.filter((food) => !food.equals(head));
+            break;
         }
-        continue;
-      }
 
-      // Food collision
-      if (cellAtHead?.type === CellType.Food) {
-        player.grow(5);
-        this.foodPositions = this.foodPositions.filter((food) => food.toString() !== headKey);
+        collisions.push(collision);
       }
     }
 

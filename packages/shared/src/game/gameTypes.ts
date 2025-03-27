@@ -10,10 +10,17 @@ export enum GameEvents {
   GAME_ACTION = 'game:game_action',
 }
 
-export interface GameAction {
-  type: 'kill' | 'death' | 'spawn';
+export interface GameEvent {
+  type: 'death' | 'spawn';
   playerId: string;
-  targetId?: string | undefined;
+  targetId?: string | undefined; // only used for death events where the player is killed by another player.
+}
+
+export type CollisionType = 'snake' | 'wall' | 'food';
+export interface Collision {
+  id: string;
+  impactedId?: string;
+  type: CollisionType;
 }
 
 // A smarter way of handling state updates
