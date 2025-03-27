@@ -6,7 +6,7 @@ import { CollisionType } from './GameManager';
 export default class GameState {
   private gridState: GridState;
   private players: Map<string, Player>;
-  private foodPositions: Point[];
+  private foodPositions: Set<string> = new Set();
   private occupiedCells: Map<string, GridCell> = new Map();
 
   constructor(width: number, height: number) {
@@ -16,7 +16,6 @@ export default class GameState {
     };
 
     this.players = new Map();
-    this.foodPositions = [];
   }
 
   // Update the player positions based off of their respective directions.
@@ -65,7 +64,7 @@ export default class GameState {
             break;
           case 'food':
             player.grow(5);
-            this.foodPositions = this.foodPositions.filter((food) => !food.equals(player.segments[0] as Point));
+            this.foodPositions.delete(player.getHead().toString());
             break;
         }
         collisions.push(collision);
@@ -76,12 +75,12 @@ export default class GameState {
   }
 
   public placeFood() {
-    if (this.foodPositions.length >= DEFAULT_FOOD_COUNT) return;
+    if (this.foodPositions.size >= DEFAULT_FOOD_COUNT) return;
 
     const position = this.getAvailablePosition();
 
     if (position) {
-      this.foodPositions.push(position);
+      this.foodPositions.add(position.toString());
       this.occupiedCells.set(position.toString(), { type: CellType.Food });
     }
   }

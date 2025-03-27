@@ -29,6 +29,10 @@ export class Player {
     this.color = color || this.getRandomColor();
   }
 
+  public getHead() {
+    return this.segments[0] as Point;
+  }
+
   public getId() {
     return this.id;
   }
@@ -51,7 +55,7 @@ export class Player {
   public move() {
     this.direction = this.pendingDirection;
 
-    const head = this.segments[0] as Point;
+    const head = this.getHead();
     const newHead = new Point(head.x, head.y);
 
     switch (this.direction) {
@@ -91,7 +95,7 @@ export class Player {
   }
 
   public checkCollision(gridState: GridState, occupiedCells: Map<string, GridCell>): CollisionType | undefined {
-    const head = this.segments[0] as Point;
+    const head = this.getHead();
     const headKey = head.toString();
     const cellAtHead = occupiedCells.get(headKey);
 
@@ -127,7 +131,7 @@ export class Player {
   }
 
   isOutOfBounds({ width, height }: GridState) {
-    const { x, y } = this.segments[0] as Point;
+    const { x, y } = this.getHead();
 
     const isXOutOfBounds = x < 0 || x >= width;
     const isYOutOfBounds = y < 0 || y >= height;
