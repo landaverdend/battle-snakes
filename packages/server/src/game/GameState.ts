@@ -1,4 +1,4 @@
-import { CellType, GridCell, GridState, Point, getRandomPosition } from '@battle-snakes/shared';
+import { CellType, GridCell, GridState, Point, getRandomNumber, getRandomPosition } from '@battle-snakes/shared';
 import { Player } from './Player';
 import { DEFAULT_FOOD_COUNT } from '../config/gameConfig';
 import { CollisionType } from './GameManager';
@@ -78,15 +78,11 @@ export default class GameState {
   public placeFood() {
     if (this.foodPositions.length >= DEFAULT_FOOD_COUNT) return;
 
-    while (this.foodPositions.length < DEFAULT_FOOD_COUNT) {
-      const newFoodPosition = getRandomPosition(this.gridState.width, this.gridState.height);
-      const positionKey = newFoodPosition.toString();
+    const position = this.getAvailablePosition();
 
-      // Check if position is already occupied using O(1) lookup
-      if (!this.isSpaceOccupied(newFoodPosition)) {
-        this.foodPositions.push(newFoodPosition);
-        this.occupiedCells.set(positionKey, { type: CellType.Food });
-      }
+    if (position) {
+      this.foodPositions.push(position);
+      this.occupiedCells.set(position.toString(), { type: CellType.Food });
     }
   }
 
@@ -117,5 +113,27 @@ export default class GameState {
       players: Object.fromEntries(this.players.entries()),
       occupiedCells: Object.fromEntries(this.occupiedCells.entries()),
     };
+  }
+
+  private getAvailablePosition(): Point | undefined {
+    const { width, height } = this.gridState;
+    const totalPositions = width * height;
+    const occupiedCount = this.occupiedCells.size;
+
+    // If there are no available positions, return undefined. ( this is rare )
+    if (occupiedCount === totalPositions) return undefined;
+
+    let target = getRandomNumber(0, totalPositions - occupiedCount);
+
+    for (let x = 0; x < width; x++) {
+      for (let y = 0; y < height; y++) {
+        const pos = new Point(x, y);
+
+        if (!this.occupiedCells.has(pos.toString())) {
+          if (target === 0) return pos;
+          target--;
+        }
+      }
+    }
   }
 }
