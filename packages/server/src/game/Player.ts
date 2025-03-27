@@ -1,4 +1,5 @@
-import { CellType, Collision, Direction, GridCell, GridState, OppositeDirection, Point } from '@battle-snakes/shared';
+import { CellType, Direction, GridCell, GridState, OppositeDirection, Point } from '@battle-snakes/shared';
+import { CollisionType } from './GameManager';
 
 type PlayerConfigOptions = {
   color?: string;
@@ -89,28 +90,37 @@ export class Player {
     this.isAlive = false;
   }
 
-  public checkCollision(gridState: GridState, occupiedCells: Map<string, GridCell>): Collision | undefined {
+  public checkCollision(gridState: GridState, occupiedCells: Map<string, GridCell>): CollisionType | undefined {
     const head = this.segments[0] as Point;
     const headKey = head.toString();
     const cellAtHead = occupiedCells.get(headKey);
 
-    // Check wall collision
+    // Wall collision
     if (this.isOutOfBounds(gridState)) {
-      return { id: this.id, type: 'wall' };
-    }
-
-    // Check snake collision
-    if (cellAtHead?.type === CellType.Snake) {
       return {
-        id: this.id,
-        type: 'snake',
-        impactedId: this.id,
+        type: 'death',
+        cause: 'wall',
+        playerId: this.id,
       };
     }
 
-    // Check food collision
+    // Snake collision
+    if (cellAtHead?.type === CellType.Snake) {
+      return {
+        type: 'death',
+        cause: 'snake',
+        playerId: this.id,
+        targetId: cellAtHead.playerId,
+      };
+    }
+
+    // Food collision
     if (cellAtHead?.type === CellType.Food) {
-      return { id: this.id, type: 'food' };
+      return {
+        type: 'food',
+        cause: 'food',
+        playerId: this.id,
+      };
     }
 
     return undefined;

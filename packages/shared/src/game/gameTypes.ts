@@ -16,13 +16,6 @@ export interface GameEvent {
   targetId?: string | undefined; // only used for death events where the player is killed by another player.
 }
 
-export type CollisionType = 'snake' | 'wall' | 'food';
-export interface Collision {
-  id: string;
-  impactedId?: string;
-  type: CollisionType;
-}
-
 // A smarter way of handling state updates
 export interface GameState {
   gridState: GridState;

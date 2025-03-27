@@ -1,6 +1,7 @@
-import { CellType, Collision, GameEvent, GridCell, GridState, Point, getRandomPosition } from '@battle-snakes/shared';
+import { CellType, GridCell, GridState, Point, getRandomPosition } from '@battle-snakes/shared';
 import { Player } from './Player';
 import { DEFAULT_FOOD_COUNT } from '../config/gameConfig';
+import { CollisionType } from './GameManager';
 
 export default class GameState {
   private gridState: GridState;
@@ -49,28 +50,24 @@ export default class GameState {
   }
 
   // Iterate through all players and check for collisions, handle state updates and return events to broadcast.
-  public checkCollisions(): Collision[] {
-    const collisions: Collision[] = [];
+  public trackAndHandleCollisions(): CollisionType[] {
+    const collisions: CollisionType[] = [];
 
-    for (const [_, player] of this.players) {
+    for (const player of this.players.values()) {
       if (player.isDead()) continue;
 
       const collision = player.checkCollision(this.gridState, this.occupiedCells);
-
       if (collision) {
         // Handle collision effects
         switch (collision.type) {
-          case 'wall':
-          case 'snake':
+          case 'death':
             player.setDead();
             break;
           case 'food':
             player.grow(5);
-            const head = player.segments[0] as Point;
-            this.foodPositions = this.foodPositions.filter((food) => !food.equals(head));
+            this.foodPositions = this.foodPositions.filter((food) => !food.equals(player.segments[0] as Point));
             break;
         }
-
         collisions.push(collision);
       }
     }

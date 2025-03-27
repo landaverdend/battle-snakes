@@ -29,11 +29,6 @@ export class Renderer {
   render() {
     this.ctx.clearRect(0, 0, this.canvasWidth, this.canvasHeight);
 
-    const state = this.gameState.getState();
-    const { width, height } = state.gridState;
-    const cellWidth = this.canvasWidth / width;
-    const cellHeight = this.canvasHeight / height;
-
     // Draw grid first (as background)
     this.drawGrid();
     this.drawCells();

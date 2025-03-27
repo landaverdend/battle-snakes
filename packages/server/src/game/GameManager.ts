@@ -2,6 +2,13 @@ import { DEFAULT_GRID_SIZE, TICK_RATE } from '../config/gameConfig';
 import GameState from './GameState';
 import { NetworkManager } from './NetworkManager';
 
+export type CollisionType = {
+  type: 'death' | 'food';
+  cause: 'wall' | 'snake' | 'food';
+  playerId: string;
+  targetId?: string | undefined; // for snake collisions
+};
+
 export class GameManager {
   private gameState: GameState;
   private networkManager: NetworkManager;
@@ -39,23 +46,19 @@ export class GameManager {
   private update() {
     this.gameState.updatePositions();
 
-    const collisions = this.gameState.checkCollisions();
-
-    if (collisions.length > 0) {
-      collisions.forEach((collision) => {
-        switch (collision.type) {
-          case 'snake':
-          case 'wall':
-            this.networkManager.broadcastGameEvent({ type: 'death', playerId: collision.id, targetId: collision.impactedId });
-            break;
-        }
-      });
-    }
+    const collisions = this.gameState.trackAndHandleCollisions();
+    collisions.forEach((collision) => {
+      if (collision.type === 'death') {
+        this.networkManager.broadcastGameEvent({
+          type: 'death',
+          playerId: collision.playerId,
+          targetId: collision.targetId,
+        });
+      }
+    });
 
     this.gameState.placeFood();
     this.gameState.updateOccupiedCells();
-
-    // Finally update the game state and broadcast it to all clients.
     this.networkManager.broadCastGameState();
   }
 }
