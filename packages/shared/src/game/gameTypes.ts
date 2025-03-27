@@ -1,4 +1,4 @@
-import { GridState, Point } from './gridTypes';
+import { GridCell, GridState } from './gridTypes';
 import { Player } from './playerTypes';
 
 export type GameStatus = 'waiting' | 'playing' | 'finished';
@@ -19,6 +19,6 @@ export interface GameAction {
 // A smarter way of handling state updates
 export interface GameState {
   gridState: GridState;
-  foodPositions: Point[];
   players: Record<string, Player>;
+  occupiedCells: Record<string, GridCell>;
 }

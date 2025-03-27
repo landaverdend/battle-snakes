@@ -1,4 +1,4 @@
-import { GameAction, GridState, Point, getRandomPosition } from '@battle-snakes/shared';
+import { CellType, GameAction, GridCell, GridState, Point, getRandomPosition } from '@battle-snakes/shared';
 import { Player } from './Player';
 import { DEFAULT_FOOD_COUNT } from '../config/gameConfig';
 
@@ -6,12 +6,14 @@ export default class GameState {
   private gridState: GridState;
   private players: Map<string, Player>;
   private foodPositions: Point[];
+  private occupiedCells: Map<string, GridCell> = new Map();
 
   constructor(width: number, height: number) {
     this.gridState = {
       width: width,
       height: height,
     };
+
     this.players = new Map();
     this.foodPositions = [];
   }
@@ -24,6 +26,24 @@ export default class GameState {
     }
   }
 
+  updateOccupiedCells() {
+    this.occupiedCells.clear();
+
+    // Add snake segments
+    for (const player of this.players.values()) {
+      for (const segment of player.segments) {
+        this.occupiedCells.set(segment.toString(), {
+          type: CellType.Snake,
+          color: player.color,
+        });
+      }
+    }
+
+    // Add all food - O(f) where f is food count
+    for (const food of this.foodPositions) {
+      this.occupiedCells.set(food.toString(), { type: CellType.Food });
+    }
+  }
 
   public checkCollisions() {
     let collisions: GameAction[] = [];
@@ -31,61 +51,43 @@ export default class GameState {
     for (const [playerId, player] of this.players) {
       if (player.isDead()) continue;
 
-      if (player.checkDeathCollision(this.gridState, this.players)) {
+      const head = player.segments[0] as Point;
+      const headKey = head.toString();
+      const cellAtHead = this.occupiedCells.get(headKey);
+
+      if (player.isOutOfBounds(this.gridState)) {
         player.setIsAlive(false);
-        collisions.push({ type: 'death', playerId: playerId });
-        continue; // skip the rest of the checks if the player is dead
+        collisions.push({ type: 'death', playerId });
+        continue;
       }
 
-      // When player collides with food, the following happens:
-      // 1. the player grows
-      // 2. food is removed from the game state. (it will be placed again in the next tick)
-      // 3. the player's score is incremented.
-      if (player.checkFoodCollision(this.foodPositions)) {
-        player.grow(5);
-        this.foodPositions = this.foodPositions.filter((foodPos) => !foodPos.equals(player.segments[0] as Point));
+      // Food collision
+      if (cellAtHead?.type === CellType.Food) {
+        player.grow(1);
+        this.foodPositions = this.foodPositions.filter((food) => food.toString() !== headKey);
       }
     }
 
     return collisions;
   }
 
-  /**
-   * TODO:
-   */
   public placeFood() {
     if (this.foodPositions.length >= DEFAULT_FOOD_COUNT) return;
 
-    let newFoodPosition = getRandomPosition(this.gridState.width, this.gridState.height);
+    while (this.foodPositions.length < DEFAULT_FOOD_COUNT) {
+      const newFoodPosition = getRandomPosition(this.gridState.width, this.gridState.height);
+      const positionKey = newFoodPosition.toString();
 
-    while (this.foodPositions.length < DEFAULT_FOOD_COUNT && !this.isSpaceOccupied(newFoodPosition)) {
-      this.foodPositions.push(newFoodPosition);
-      newFoodPosition = getRandomPosition(this.gridState.width, this.gridState.height);
+      // Check if position is already occupied using O(1) lookup
+      if (!this.isSpaceOccupied(newFoodPosition)) {
+        this.foodPositions.push(newFoodPosition);
+        this.occupiedCells.set(positionKey, { type: CellType.Food });
+      }
     }
   }
 
-  // Run through and check if a space is occupied by:
-  // 1) A player
-  // 2) Food
-  // 3) Future items?
-  private isSpaceOccupied(position: Point): boolean {
-    for (const player of this.players.values()) {
-      for (const segment of player.segments) {
-        if (segment.equals(position)) {
-          return true;
-        }
-      }
-    }
-
-    for (const foodPosition of this.foodPositions) {
-      if (foodPosition.equals(position)) {
-        return true;
-      }
-    }
-
-    // TODO: check for future items.
-
-    return false;
+  public isSpaceOccupied(position: Point): boolean {
+    return this.occupiedCells.has(position.toString());
   }
 
   public getPlayers(): Map<String, Player> {
@@ -109,7 +111,7 @@ export default class GameState {
     return {
       gridState: this.gridState,
       players: Object.fromEntries(this.players.entries()),
-      foodPositions: this.foodPositions,
+      occupiedCells: Object.fromEntries(this.occupiedCells.entries()),
     };
   }
 }

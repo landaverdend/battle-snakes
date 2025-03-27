@@ -89,14 +89,13 @@ export class Player {
    * Check if the player has collided with a wall or another player.
    */
   checkDeathCollision(gridState: GridState, players: Map<string, Player>) {
-    if (this.isWallCollision(gridState)) return true;
+    if (this.isOutOfBounds(gridState)) return true;
 
     return false;
   }
 
-  isWallCollision(gridState: GridState) {
+  isOutOfBounds({ width, height }: GridState) {
     const { x, y } = this.segments[0] as Point;
-    const { width, height } = gridState;
 
     const isXOutOfBounds = x < 0 || x >= width;
     const isYOutOfBounds = y < 0 || y >= height;

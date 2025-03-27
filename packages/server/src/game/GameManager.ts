@@ -43,9 +43,12 @@ export class GameManager {
     if (collisions.length > 0) {
       collisions.forEach((collision) => this.networkManager.broadcastGameAction(collision));
     }
-
+    
     this.gameState.placeFood();
 
+    this.gameState.updateOccupiedCells();
+
+    
     this.networkManager.broadCastGameState();
   }
 }

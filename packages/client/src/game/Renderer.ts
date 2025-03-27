@@ -1,3 +1,4 @@
+import { CellType, Point } from '@battle-snakes/shared';
 import { ClientGameState } from './ClientGameState';
 
 export class Renderer {
@@ -28,82 +29,80 @@ export class Renderer {
   render() {
     this.ctx.clearRect(0, 0, this.canvasWidth, this.canvasHeight);
 
-    // Stick drawing logic here...
+    const state = this.gameState.getState();
+    const { width, height } = state.gridState;
+    const cellWidth = this.canvasWidth / width;
+    const cellHeight = this.canvasHeight / height;
+
+    // Draw grid first (as background)
     this.drawGrid();
-    this.drawPlayers();
-    this.drawFood();
+    this.drawCells();
+  }
+
+  private drawCells() {
+    const state = this.gameState.getState();
+
+    const { width, height } = state.gridState;
+    const cellWidth = this.canvasWidth / width;
+    const cellHeight = this.canvasHeight / height;
+
+    for (const [point, cellData] of Object.entries(state.occupiedCells)) {
+      const { x, y } = Point.parseString(point);
+
+      switch (cellData.type) {
+        case CellType.Snake:
+          this.drawSnakeCell(x, y, cellWidth, cellHeight, cellData.color!);
+          break;
+        case CellType.Food:
+          this.drawFoodCell(x, y, cellWidth, cellHeight);
+          break;
+      }
+    }
+  }
+
+  private drawSnakeCell(x: number, y: number, cellWidth: number, cellHeight: number, color: string) {
+    this.ctx.fillStyle = color;
+    const padding = 2;
+    this.ctx.fillRect(x * cellWidth + padding, y * cellHeight + padding, cellWidth - padding * 2, cellHeight - padding * 2);
+  }
+
+  private drawFoodCell(x: number, y: number, cellWidth: number, cellHeight: number) {
+    this.ctx.fillStyle = 'red';
+
+    // Calculate center point of the cell
+    const centerX = x * cellWidth + cellWidth / 2;
+    const centerY = y * cellHeight + cellHeight / 2;
+
+    const padding = 2;
+    const radius = (cellWidth - padding * 2) / 2;
+
+    // Draw circle
+    this.ctx.beginPath();
+    this.ctx.arc(centerX, centerY, radius, 0, Math.PI * 2);
+    this.ctx.fill();
   }
 
   drawGrid() {
     const { width, height } = this.gameState.getState().gridState;
-
     const cellWidth = this.canvasWidth / width;
     const cellHeight = this.canvasHeight / height;
 
+    this.ctx.strokeStyle = '#ddd';
+
     // Draw vertical lines
-    for (let x = 0; x <= this.canvasWidth; x++) {
+    for (let x = 0; x <= width; x++) {
       this.ctx.beginPath();
       this.ctx.moveTo(x * cellWidth, 0);
       this.ctx.lineTo(x * cellWidth, this.canvasHeight);
-      this.ctx.strokeStyle = '#ddd';
-
       this.ctx.stroke();
     }
 
     // Draw horizontal lines
-    for (let y = 0; y <= this.canvasHeight; y++) {
+    for (let y = 0; y <= height; y++) {
       this.ctx.beginPath();
       this.ctx.moveTo(0, y * cellHeight);
       this.ctx.lineTo(this.canvasWidth, y * cellHeight);
-      this.ctx.strokeStyle = '#ddd';
       this.ctx.stroke();
     }
-  }
-
-  private drawPlayers() {
-    const state = this.gameState.getState();
-    const { players } = state;
-    const { width, height } = state.gridState;
-
-    const cellWidth = this.canvasWidth / width;
-    const cellHeight = this.canvasHeight / height;
-
-    Object.values(players).forEach((player) => {
-      this.ctx.fillStyle = player.color;
-
-      // draw each segment of the player's snake.
-      player.segments.forEach((segment) => {
-        const x = segment.x * cellWidth;
-        const y = segment.y * cellHeight;
-
-        const padding = 2;
-        this.ctx.fillRect(x + padding, y + padding, cellWidth - padding * 2, cellHeight - padding * 2);
-      });
-    });
-  }
-
-  private drawFood() {
-    const { foodPositions } = this.gameState.getState();
-    const { width, height } = this.gameState.getState().gridState;
-
-    const cellWidth = this.canvasWidth / width;
-    const cellHeight = this.canvasHeight / height;
-
-    foodPositions.forEach((position) => {
-      this.ctx.fillStyle = 'red';
-
-      // Calculate center point of the cell
-      const centerX = position.x * cellWidth + cellWidth / 2;
-      const centerY = position.y * cellHeight + cellHeight / 2;
-
-      // Use consistent padding with player segments (2px on each side)
-      const padding = 2;
-      const radius = (cellWidth - padding * 2) / 2; // Radius that fits within the cell with padding
-
-      // Draw circle
-      this.ctx.beginPath();
-      this.ctx.arc(centerX, centerY, radius, 0, Math.PI * 2);
-      this.ctx.fill();
-    });
   }
 }

@@ -10,6 +10,23 @@ export class Point {
   public equals(point: Point): boolean {
     return this.x === point.x && this.y === point.y;
   }
+
+  public toString() {
+    return `${this.x},${this.y}`;
+  }
+
+  public static parseString(str: string): Point {
+    const parts = str.split(',');
+
+    const x = Number(parts[0]);
+    const y = Number(parts[1]);
+
+    if (isNaN(x) || isNaN(y)) {
+      throw new Error(`Invalid point values: ${str}`);
+    }
+
+    return new Point(x, y);
+  }
 }
 
 export enum CellType {
@@ -21,10 +38,10 @@ export enum CellType {
 export type GridCell = {
   type: CellType;
   playerId?: string;
+  color?: string;
 };
 
 export interface GridState {
   width: number;
   height: number;
-  cells?: GridCell[][]; // Server only needs to know the width and height
 }
