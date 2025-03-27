@@ -8,9 +8,12 @@ type PlayerConfigOptions = {
 export class Player {
   private id: string;
   private isAlive: boolean;
-  private shouldGrow: boolean = false;
+
   private pendingDirection: Direction;
   private direction: Direction;
+
+  private growthQueue: number = 0;
+
   segments: Point[];
 
   color: string;
@@ -63,16 +66,15 @@ export class Player {
 
     this.segments.unshift(newHead);
 
-    if (!this.shouldGrow) {
-      this.segments.pop();
+    if (this.growthQueue > 0) {
+      this.growthQueue--;
     } else {
-      this.shouldGrow = false;
+      this.segments.pop();
     }
   }
 
-  // TODO: it.
-  public grow() {
-    this.shouldGrow = true;
+  public grow(segments: number) {
+    this.growthQueue += segments;
   }
 
   public isDead() {

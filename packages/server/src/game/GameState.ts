@@ -24,6 +24,7 @@ export default class GameState {
     }
   }
 
+
   public checkCollisions() {
     let collisions: GameAction[] = [];
 
@@ -41,7 +42,7 @@ export default class GameState {
       // 2. food is removed from the game state. (it will be placed again in the next tick)
       // 3. the player's score is incremented.
       if (player.checkFoodCollision(this.foodPositions)) {
-        player.grow();
+        player.grow(5);
         this.foodPositions = this.foodPositions.filter((foodPos) => !foodPos.equals(player.segments[0] as Point));
       }
     }
