@@ -1,4 +1,4 @@
-import { Direction, GridState, OppositeDirection, Point } from '@battle-snakes/shared';
+import { CellType, Direction, GridCell, GridState, OppositeDirection, Point } from '@battle-snakes/shared';
 
 type PlayerConfigOptions = {
   color?: string;
@@ -26,6 +26,10 @@ export class Player {
     this.direction = 'up';
     this.pendingDirection = 'up';
     this.color = color || this.getRandomColor();
+  }
+
+  public getId() {
+    return this.id;
   }
 
   public getRandomColor() {
@@ -86,10 +90,17 @@ export class Player {
   }
 
   /**
-   * Check if the player has collided with a wall or another player.
+   * Check if the player has collided with a wall or another snake/player.
    */
-  checkDeathCollision(gridState: GridState, players: Map<string, Player>) {
+  checkDeathCollision(gridState: GridState, occupiedCells: Record<string, GridCell>) {
     if (this.isOutOfBounds(gridState)) return true;
+
+    const head = this.segments[0] as Point;
+    const headKey = head.toString();
+
+    if (occupiedCells[headKey]?.type === CellType.Snake) {
+      return true;
+    }
 
     return false;
   }
@@ -101,11 +112,5 @@ export class Player {
     const isYOutOfBounds = y < 0 || y >= height;
 
     return isXOutOfBounds || isYOutOfBounds;
-  }
-
-  checkFoodCollision(foodPositions: Point[]): boolean {
-    const head = this.segments[0] as Point;
-
-    return foodPositions.some((foodPos) => foodPos.equals(head));
   }
 }

@@ -13,7 +13,7 @@ export enum GameEvents {
 export interface GameAction {
   type: 'kill' | 'death' | 'spawn';
   playerId: string;
-  targetId?: string;
+  targetId?: string | undefined;
 }
 
 // A smarter way of handling state updates

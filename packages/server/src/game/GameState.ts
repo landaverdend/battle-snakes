@@ -31,10 +31,13 @@ export default class GameState {
 
     // Add snake segments
     for (const player of this.players.values()) {
+      if (player.isDead()) continue;
+
       for (const segment of player.segments) {
         this.occupiedCells.set(segment.toString(), {
           type: CellType.Snake,
           color: player.color,
+          playerId: player.getId(),
         });
       }
     }
@@ -55,15 +58,20 @@ export default class GameState {
       const headKey = head.toString();
       const cellAtHead = this.occupiedCells.get(headKey);
 
-      if (player.isOutOfBounds(this.gridState)) {
+      if (player.isOutOfBounds(this.gridState) || cellAtHead?.type === CellType.Snake) {
         player.setIsAlive(false);
-        collisions.push({ type: 'death', playerId });
+
+        if (cellAtHead?.type === CellType.Snake) {
+          collisions.push({ type: 'death', playerId, targetId: cellAtHead.playerId });
+        } else {
+          collisions.push({ type: 'death', playerId });
+        }
         continue;
       }
 
       // Food collision
       if (cellAtHead?.type === CellType.Food) {
-        player.grow(1);
+        player.grow(5);
         this.foodPositions = this.foodPositions.filter((food) => food.toString() !== headKey);
       }
     }

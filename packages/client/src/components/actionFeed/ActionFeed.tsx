@@ -28,7 +28,9 @@ export function ActionFeed() {
       <h3>Action Feed</h3>
       {actions.map((action) => (
         <span key={crypto.randomUUID()} className="action-item">
-          Player: '{action.playerId}' hit the wall...
+          {action.targetId
+            ? `Player ${action.playerId} hit player ${action.targetId}...`
+            : `Player ${action.playerId} hit the wall...`}
         </span>
       ))}
     </div>
