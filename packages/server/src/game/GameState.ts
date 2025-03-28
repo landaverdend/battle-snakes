@@ -1,7 +1,8 @@
-import { CellType, GridCell, GridState, Point, getRandomNumber, getRandomPosition } from '@battle-snakes/shared';
+import { CellType, GridCell, GridState, Point, getRandomColor, getRandomNumber, getRandomPosition } from '@battle-snakes/shared';
 import { Player } from './Player';
 import { DEFAULT_FOOD_COUNT } from '../config/gameConfig';
 import { CollisionType } from './GameManager';
+import { AiPlayer } from './AiPlayer';
 
 export default class GameState {
   private gridState: GridState;
@@ -16,12 +17,21 @@ export default class GameState {
     };
 
     this.players = new Map();
+
+    for (let i = 0; i < 1000; i++) {
+      const id = `ai #${i}`;
+      this.players.set(id, new AiPlayer(id, { startPosition: getRandomPosition(width, height), color: getRandomColor() }));
+    }
   }
 
   // Update the player positions based off of their respective directions.
   updatePositions() {
     for (const [_, player] of this.players) {
       if (player.isDead()) continue;
+      if (player instanceof AiPlayer) {
+        player.chooseNextMove();
+        player.updateGameState(this.gridState, this.foodPositions);
+      }
       player.move();
     }
   }

@@ -1,7 +1,7 @@
-import { CellType, Direction, GridCell, GridState, OppositeDirection, Point } from '@battle-snakes/shared';
+import { CellType, Direction, getRandomColor, GridCell, GridState, OppositeDirection, Point } from '@battle-snakes/shared';
 import { CollisionType } from './GameManager';
 
-type PlayerConfigOptions = {
+export type PlayerConfigOptions = {
   color?: string;
   startPosition: Point;
 };
@@ -10,10 +10,10 @@ export class Player {
   private id: string;
   private isAlive: boolean;
 
-  private pendingDirection: Direction;
-  private direction: Direction;
+  pendingDirection: Direction;
+  direction: Direction;
 
-  private growthQueue: number = 0;
+  growthQueue: number = 0;
 
   segments: Point[];
 
@@ -21,12 +21,11 @@ export class Player {
 
   constructor(id: string, { color, startPosition }: PlayerConfigOptions) {
     this.id = id;
-
     this.isAlive = true;
     this.segments = [startPosition];
     this.direction = 'up';
     this.pendingDirection = 'up';
-    this.color = color || this.getRandomColor();
+    this.color = color || getRandomColor();
   }
 
   public getHead() {
@@ -35,10 +34,6 @@ export class Player {
 
   public getId() {
     return this.id;
-  }
-
-  public getRandomColor() {
-    return '#' + (((1 << 24) * Math.random()) | 0).toString(16).padStart(6, '0');
   }
 
   // Prevent 180-degree turns (on everything except for the first segment)
@@ -52,9 +47,12 @@ export class Player {
     }
   }
 
+  public getDirection() {
+    return this.direction;
+  }
+
   public move() {
     this.direction = this.pendingDirection;
-
     const head = this.getHead();
     const newHead = new Point(head.x, head.y);
 
