@@ -20,7 +20,7 @@ export default class GameState {
 
     for (let i = 0; i < 1000; i++) {
       const id = `ai #${i}`;
-      this.players.set(id, new AiPlayer(id, { startPosition: getRandomPosition(width, height), color: getRandomColor() }));
+      this.players.set(id, new AiPlayer(id, { startPosition: this.getRandomAvailablePosition(), color: getRandomColor() }));
     }
   }
 
@@ -87,7 +87,7 @@ export default class GameState {
   public placeFood() {
     if (this.foodPositions.size >= DEFAULT_FOOD_COUNT) return;
 
-    const position = this.getAvailablePosition();
+    const position = this.getRandomAvailablePosition();
 
     if (position) {
       this.foodPositions.add(position.toString());
@@ -104,8 +104,7 @@ export default class GameState {
   }
 
   public addPlayer(socketId: string) {
-    const { width, height } = this.gridState;
-    this.players.set(socketId, new Player(socketId, { startPosition: getRandomPosition(width, height) }));
+    this.players.set(socketId, new Player(socketId, { startPosition: this.getRandomAvailablePosition() }));
   }
 
   public removePlayer(socketId: string) {
@@ -124,13 +123,13 @@ export default class GameState {
     };
   }
 
-  private getAvailablePosition(): Point | undefined {
+  private getRandomAvailablePosition(): Point {
     const { width, height } = this.gridState;
     const totalPositions = width * height;
     const occupiedCount = this.occupiedCells.size;
 
     // If there are no available positions, return undefined. ( this is rare )
-    if (occupiedCount === totalPositions) return undefined;
+    if (occupiedCount === totalPositions) throw new Error('No available positions');
 
     let target = getRandomNumber(0, totalPositions - occupiedCount);
 
@@ -144,5 +143,7 @@ export default class GameState {
         }
       }
     }
+
+    throw new Error('No available positions.');
   }
 }

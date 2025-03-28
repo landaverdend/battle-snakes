@@ -47,10 +47,6 @@ export class Player {
     }
   }
 
-  public getDirection() {
-    return this.direction;
-  }
-
   public move() {
     this.direction = this.pendingDirection;
     const head = this.getHead();
