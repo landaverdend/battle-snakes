@@ -1,6 +1,8 @@
 .main-view-container {
   display: flex;
   flex-direction: row;
-  justify-content: space-between;
+  justify-content: center;
   gap: 25px;
+
+  margin-top: 10vh;
 }
