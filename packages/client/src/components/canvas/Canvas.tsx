@@ -45,7 +45,6 @@ const Canvas = ({}: CanvasProps) => {
   return (
     <div ref={containerRef} className="canvas-container">
       <canvas ref={canvasRef} />
-      <ActionFeed />
     </div>
   );
 };

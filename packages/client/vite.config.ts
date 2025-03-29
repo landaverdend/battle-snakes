@@ -12,6 +12,7 @@ export default defineConfig({
       '@': path.resolve(__dirname, './src'),
       '@components': path.resolve(__dirname, './src/components'),
       '@game': path.resolve(__dirname, './src/game'),
+      '@views': path.resolve(__dirname, './src/views'),
     },
   },
   optimizeDeps: {
