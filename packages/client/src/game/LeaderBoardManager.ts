@@ -1,7 +1,6 @@
 import { PlayerData } from '@battle-snakes/shared';
 
-
-// Singleton class for managing the leaderboard. 
+// Singleton class for managing the leaderboard.
 export class LeaderboardManager {
   private static instance: LeaderboardManager;
   private players: PlayerData[] = [];
@@ -24,8 +23,8 @@ export class LeaderboardManager {
     this.listeners = this.listeners.filter((l) => l !== listener);
   }
 
-  public addPlayer(player: PlayerData) {
-    this.players = [player, ...this.players];
+  public updatePlayers(players: PlayerData[]) {
+    this.players = players.sort((a, b) => b.score - a.score);
     this.notifyListeners();
   }
 

@@ -2,7 +2,6 @@ import { Server, Socket } from 'socket.io';
 import { createServer } from 'http';
 import { Direction, GameEvent, GameEvents } from '@battle-snakes/shared';
 import GameState from './GameState';
-import { TICK_RATE } from '../config/gameConfig';
 
 const PORT = process.env['PORT'] || 3001;
 
@@ -33,6 +32,7 @@ export class NetworkManager {
   // catch all for different connection events...
   private handleConnection(socket: Socket) {
     this.gameState.addPlayer(socket.id);
+    this.broadcastLeaderboardUpdate(); // update the leaderboard with the new player.
 
     socket.on(GameEvents.MOVE_REQUEST, (direction: Direction) => {
       const player = this.gameState.getPlayers().get(socket.id);
@@ -44,7 +44,8 @@ export class NetworkManager {
     socket.on('disconnect', () => {
       console.log('Client disconnected: ', socket.id);
       this.gameState.removePlayer(socket.id);
-      this.io.emit(GameEvents.PLAYER_JOIN, Array.from(this.gameState.getPlayers().keys()));
+      this.io.emit(GameEvents.LEADERBOARD_UPDATE, Array.from(this.gameState.getPlayers().keys()));
+      this.broadcastLeaderboardUpdate(); // remove the player from the leaderboard.
     });
   }
 
@@ -54,5 +55,10 @@ export class NetworkManager {
 
   public broadcastGameEvent(action: GameEvent) {
     this.io.emit(GameEvents.GAME_ACTION, action);
+  }
+
+  public broadcastLeaderboardUpdate() {
+    const leaderboardData = this.gameState.getLeaderboardData();
+    this.io.emit(GameEvents.LEADERBOARD_UPDATE, leaderboardData); // We can reuse the existing event
   }
 }

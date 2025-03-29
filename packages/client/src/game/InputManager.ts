@@ -1,6 +1,7 @@
 import { Direction, GameEvents, OppositeDirection, Player } from '@battle-snakes/shared';
 import { Socket } from 'socket.io-client';
 import { ClientGameState } from './ClientGameState';
+import { LeaderboardManager } from './LeaderBoardManager';
 
 export class InputManager {
   private socket: Socket;
@@ -37,18 +38,8 @@ export class InputManager {
           break;
       }
 
-      if (this.checkValidInput(direction)) {
-        this.socket.emit(GameEvents.MOVE_REQUEST, direction);
-      }
+      this.socket.emit(GameEvents.MOVE_REQUEST, direction);
     };
-  }
-
-  public checkValidInput(proposedDirection: Direction | null) {
-    if (!proposedDirection || !this.socket.id) return false;
-
-    const player = ClientGameState.getInstance().getState().players[this.socket.id] as Player;
-
-    return proposedDirection !== OppositeDirection[player.direction];
   }
 
   public destroy() {

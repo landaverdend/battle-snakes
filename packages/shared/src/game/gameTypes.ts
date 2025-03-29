@@ -4,11 +4,10 @@ import { Player } from './playerTypes';
 export type GameStatus = 'waiting' | 'playing' | 'finished';
 
 export enum GameEvents {
-  PLAYER_JOIN = 'game:player_join',
+  LEADERBOARD_UPDATE = 'game:leaderboard_update',
   STATE_UPDATE = 'game:state_update',
   MOVE_REQUEST = 'game:move_request',
   GAME_ACTION = 'game:game_action',
-  
 }
 
 export interface GameEvent {

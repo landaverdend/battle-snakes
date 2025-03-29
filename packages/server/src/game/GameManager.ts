@@ -47,12 +47,16 @@ export class GameManager {
 
     const collisions = this.gameState.trackAndHandleCollisions();
     collisions.forEach((collision) => {
-      if (collision.type === 'death') {
-        this.networkManager.broadcastGameEvent({
-          type: 'death',
-          playerId: collision.playerId,
-          targetId: collision.targetId,
-        });
+      switch (collision.type) {
+        case 'death':
+          this.networkManager.broadcastGameEvent({
+            type: 'death',
+            playerId: collision.playerId,
+            targetId: collision.targetId,
+          });
+          break;
+        case 'food':
+          this.networkManager.broadcastLeaderboardUpdate();
       }
     });
 

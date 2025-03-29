@@ -18,8 +18,8 @@ export class NetworkManager {
       console.log('Connected to server');
     });
 
-    this.socket.on(GameEvents.PLAYER_JOIN, (player: PlayerData) => {
-      LeaderboardManager.getInstance().addPlayer(player);
+    this.socket.on(GameEvents.LEADERBOARD_UPDATE, (players: PlayerData[]) => {
+      LeaderboardManager.getInstance().updatePlayers(players);
     });
 
     this.socket.on(GameEvents.STATE_UPDATE, (state: GameState) => {

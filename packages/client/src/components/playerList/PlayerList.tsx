@@ -9,7 +9,7 @@ type PLIProps = {
 function PlayerListItem({ player }: PLIProps) {
   return (
     <span className="player-list-item">
-      {player.id}
+      {player.score} - {player.id}
       <span className="color-box" style={{ backgroundColor: player.color }}></span>
     </span>
   );

@@ -1,4 +1,4 @@
-import { CellType, GridCell, GridState, Point, getRandomColor, getRandomNumber, getRandomPosition } from '@battle-snakes/shared';
+import { CellType, GridCell, GridState, PlayerData, Point, getRandomColor, getRandomNumber } from '@battle-snakes/shared';
 import { Player } from './Player';
 import { DEFAULT_FOOD_COUNT } from '../config/gameConfig';
 import { CollisionType } from './GameManager';
@@ -109,7 +109,6 @@ export default class GameState {
 
   public addPlayer(socketId: string): Player {
     this.players.set(socketId, new Player(socketId, { startPosition: this.getRandomAvailablePosition() }));
-
     return this.players.get(socketId) as Player;
   }
 
@@ -128,7 +127,6 @@ export default class GameState {
   public serialize() {
     return {
       gridState: this.gridState,
-      players: Object.fromEntries(this.players.entries()),
       occupiedCells: Object.fromEntries(this.occupiedCells.entries()),
     };
   }
@@ -155,5 +153,13 @@ export default class GameState {
     }
 
     throw new Error('No available positions.');
+  }
+
+  public getLeaderboardData(): PlayerData[] {
+    return Array.from(this.players.values()).map((player) => ({
+      id: player.getId(),
+      color: player.color,
+      score: player.score,
+    }));
   }
 }
