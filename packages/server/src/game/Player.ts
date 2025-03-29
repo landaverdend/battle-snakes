@@ -1,4 +1,13 @@
-import { CellType, Direction, getRandomColor, GridCell, GridState, OppositeDirection, Point } from '@battle-snakes/shared';
+import {
+  CellType,
+  Direction,
+  getRandomColor,
+  GridCell,
+  GridState,
+  OppositeDirection,
+  PlayerData,
+  Point,
+} from '@battle-snakes/shared';
 import { CollisionType } from './GameManager';
 
 export type PlayerConfigOptions = {
@@ -16,7 +25,7 @@ export class Player {
   growthQueue: number = 0;
 
   segments: Point[];
-
+  score: number = 0;
   color: string;
 
   constructor(id: string, { color, startPosition }: PlayerConfigOptions) {
@@ -77,7 +86,16 @@ export class Player {
   }
 
   public grow(segments: number) {
+    this.score += segments;
     this.growthQueue += segments;
+  }
+
+  public serialize(): PlayerData {
+    return {
+      id: this.id,
+      color: this.color,
+      score: this.score,
+    };
   }
 
   public isDead() {

@@ -107,8 +107,10 @@ export default class GameState {
     return this.players;
   }
 
-  public addPlayer(socketId: string) {
+  public addPlayer(socketId: string): Player {
     this.players.set(socketId, new Player(socketId, { startPosition: this.getRandomAvailablePosition() }));
+
+    return this.players.get(socketId) as Player;
   }
 
   public addCpuPlayer(id: string) {

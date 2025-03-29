@@ -1,9 +1,9 @@
 import { useEffect, useState } from 'react';
 import { GameEvent } from '@battle-snakes/shared';
 import { ActionFeedManager } from '@game/ActionFeedManager';
-import './action-feed.css';
+import './message-feed.css';
 
-export function ActionFeed() {
+export function MessageFeed() {
   const [actions, setActions] = useState<GameEvent[]>([]);
 
   useEffect(() => {

@@ -15,3 +15,10 @@ export interface Player {
   direction: Direction;
   color: string;
 }
+
+// Data that is sent to the client.
+export interface PlayerData {
+  id: string;
+  color: string;
+  score: number;
+}

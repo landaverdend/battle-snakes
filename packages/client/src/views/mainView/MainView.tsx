@@ -1,8 +1,8 @@
 import { PlayerList } from '@components/playerList/PlayerList';
 import Canvas from '@components/canvas/Canvas';
-import { ActionFeed } from '@components/actionFeed/ActionFeed';
 
 import './main-view.css';
+import { MessageFeed } from '@/components/actionFeed/MessageFeed';
 
 export function MainView() {
   return (
@@ -10,7 +10,7 @@ export function MainView() {
       <div className="main-view-container">
         <PlayerList />
         <Canvas />
-        <ActionFeed />
+        <MessageFeed />
       </div>
     </>
   );

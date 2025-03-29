@@ -22,7 +22,6 @@ export class GameManager {
   }
 
   public start() {
-    console.log('Starting game manager...');
     this.startGameLoop();
     this.networkManager.initialize();
   }

@@ -34,10 +34,6 @@ export class NetworkManager {
   private handleConnection(socket: Socket) {
     this.gameState.addPlayer(socket.id);
 
-    setInterval(() => {
-      this.io.emit(GameEvents.STATE_UPDATE, this.gameState.serialize());
-    }, TICK_RATE);
-
     socket.on(GameEvents.MOVE_REQUEST, (direction: Direction) => {
       const player = this.gameState.getPlayers().get(socket.id);
       if (player && player.isValidMove(direction)) {

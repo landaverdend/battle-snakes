@@ -8,6 +8,7 @@ export enum GameEvents {
   STATE_UPDATE = 'game:state_update',
   MOVE_REQUEST = 'game:move_request',
   GAME_ACTION = 'game:game_action',
+  
 }
 
 export interface GameEvent {

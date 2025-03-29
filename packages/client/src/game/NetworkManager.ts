@@ -1,7 +1,8 @@
-import { GameEvent, GameEvents, GameState } from '@battle-snakes/shared';
+import { GameEvent, GameEvents, GameState, PlayerData } from '@battle-snakes/shared';
 import { io, Socket } from 'socket.io-client';
 import { ClientGameState } from './ClientGameState';
 import { ActionFeedManager } from './ActionFeedManager';
+import { LeaderboardManager } from './LeaderBoardManager';
 
 const SOCKET_URL = 'http://localhost:3001';
 export class NetworkManager {
@@ -15,6 +16,10 @@ export class NetworkManager {
   private initializeSocket() {
     this.socket.on('connect', () => {
       console.log('Connected to server');
+    });
+
+    this.socket.on(GameEvents.PLAYER_JOIN, (player: PlayerData) => {
+      LeaderboardManager.getInstance().addPlayer(player);
     });
 
     this.socket.on(GameEvents.STATE_UPDATE, (state: GameState) => {
