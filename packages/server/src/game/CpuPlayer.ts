@@ -1,17 +1,19 @@
-import { Direction, getRandomNumber, GridState, Point } from '@battle-snakes/shared';
+import { CellType, Direction, getRandomNumber, GridCell, GridState, Point } from '@battle-snakes/shared';
 import { Player, PlayerConfigOptions } from './Player';
 
-export class AiPlayer extends Player {
+export class CpuPlayer extends Player {
   private gridState?: GridState;
   private foodPositions?: Set<string>;
+  private occupiedCells?: Map<string, GridCell>;
 
   constructor(id: string, options: PlayerConfigOptions) {
     super(id, options);
   }
 
-  public updateGameState(gridState: GridState, foodPositions: Set<string>) {
+  public updateGameState(gridState: GridState, foodPositions: Set<string>, occupiedCells: Map<string, GridCell>) {
     this.gridState = gridState;
     this.foodPositions = foodPositions;
+    this.occupiedCells = occupiedCells;
   }
 
   // Choose the next move before actually moving
@@ -48,7 +50,7 @@ export class AiPlayer extends Player {
       if (!this.isValidMove(dir)) continue;
 
       const newPos = this.getNewPosition(head, dir);
-      if (!this.wouldHitWall(newPos)) {
+      if (!this.wouldHitWall(newPos) && !this.wouldHitSnake(newPos)) {
         possibleMoves.push(dir);
       }
     }
@@ -78,6 +80,12 @@ export class AiPlayer extends Player {
   private wouldHitWall(position: Point): boolean {
     if (!this.gridState) return true;
     return position.x < 0 || position.x >= this.gridState.width || position.y < 0 || position.y >= this.gridState.height;
+  }
+
+  private wouldHitSnake(position: Point): boolean {
+    const cell = this.occupiedCells?.get(position.toString());
+
+    return cell!! && cell.type === CellType.Snake;
   }
 
   private findNearestFood(): Point | null {

@@ -2,7 +2,7 @@ import { CellType, GridCell, GridState, Point, getRandomColor, getRandomNumber, 
 import { Player } from './Player';
 import { DEFAULT_FOOD_COUNT } from '../config/gameConfig';
 import { CollisionType } from './GameManager';
-import { AiPlayer } from './AiPlayer';
+import { CpuPlayer } from './CpuPlayer';
 
 export default class GameState {
   private gridState: GridState;
@@ -18,9 +18,10 @@ export default class GameState {
 
     this.players = new Map();
 
-    for (let i = 0; i < 1000; i++) {
-      const id = `ai #${i}`;
-      this.players.set(id, new AiPlayer(id, { startPosition: this.getRandomAvailablePosition(), color: getRandomColor() }));
+    // Debug AI players.
+    for (let i = 0; i < 5; i++) {
+      const id = `ai [${crypto.randomUUID()}]`;
+      this.addCpuPlayer(id);
     }
   }
 
@@ -28,10 +29,13 @@ export default class GameState {
   updatePositions() {
     for (const [_, player] of this.players) {
       if (player.isDead()) continue;
-      if (player instanceof AiPlayer) {
+
+      // For debug purposes only, really.
+      if (player instanceof CpuPlayer) {
         player.chooseNextMove();
-        player.updateGameState(this.gridState, this.foodPositions);
+        player.updateGameState(this.gridState, this.foodPositions, this.occupiedCells);
       }
+
       player.move();
     }
   }
@@ -105,6 +109,10 @@ export default class GameState {
 
   public addPlayer(socketId: string) {
     this.players.set(socketId, new Player(socketId, { startPosition: this.getRandomAvailablePosition() }));
+  }
+
+  public addCpuPlayer(id: string) {
+    this.players.set(id, new CpuPlayer(id, { startPosition: this.getRandomAvailablePosition(), color: getRandomColor() }));
   }
 
   public removePlayer(socketId: string) {
