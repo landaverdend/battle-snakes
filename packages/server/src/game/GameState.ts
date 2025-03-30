@@ -19,8 +19,8 @@ export default class GameState {
     this.players = new Map();
 
     // Debug AI players.
-    for (let i = 0; i < 5; i++) {
-      const id = `ai [${crypto.randomUUID()}]`;
+    for (let i = 0; i < 25; i++) {
+      const id = `ai [${crypto.randomUUID().split('-')[0]}]`;
       this.addCpuPlayer(id);
     }
   }

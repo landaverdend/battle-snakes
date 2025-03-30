@@ -4,11 +4,8 @@
   padding: 10px;
 
   width: 250px;
-
-  h3 {
-    margin-left: auto;
-    margin-right: auto;
-  }
+  max-height: 100%;
+  overflow-y: auto;
 }
 
 .player-list {

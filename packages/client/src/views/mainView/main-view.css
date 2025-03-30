@@ -4,5 +4,6 @@
   justify-content: center;
   gap: 25px;
 
+  height: 600px; /* Same as the height of the game board. */
   margin-top: 10vh;
 }
