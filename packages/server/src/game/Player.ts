@@ -47,7 +47,7 @@ export class Player {
 
   // Prevent 180-degree turns (on everything except for the first segment)
   public isValidMove(proposedMove: Direction) {
-    return OppositeDirection[this.pendingDirection] !== proposedMove;
+    return OppositeDirection[this.direction] !== proposedMove;
   }
 
   public setDirection(newDirection: Direction) {
