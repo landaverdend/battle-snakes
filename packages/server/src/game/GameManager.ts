@@ -11,6 +11,7 @@ export class GameManager {
   constructor() {
     this.gameState = new GameState(DEFAULT_GRID_SIZE);
     this.networkManager = new NetworkManager();
+    this.setupNetworkHandlers();
   }
 
   public start() {
@@ -18,6 +19,16 @@ export class GameManager {
     this.tickInterval = setInterval(() => {
       this.tick();
     }, TICK_RATE_MS);
+  }
+
+  setupNetworkHandlers() {
+    this.networkManager.onPlayerJoin((playerId) => {
+      this.gameState.spawnPlayer(playerId);
+    });
+
+    this.networkManager.onPlayerExit((playerId) => {
+      this.gameState.removePlayer(playerId);
+    });
   }
 
   public tick() {

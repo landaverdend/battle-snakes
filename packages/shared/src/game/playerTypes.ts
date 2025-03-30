@@ -1,5 +1,3 @@
-import { Point } from './gridTypes';
-
 export type Direction = 'up' | 'down' | 'left' | 'right';
 
 export const OppositeDirection: Record<Direction, Direction> = {

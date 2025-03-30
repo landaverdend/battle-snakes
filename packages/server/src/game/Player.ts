@@ -13,8 +13,12 @@ export class Player {
   constructor(id: string, config: PlayerConfigOptions) {
     this.id = id;
     this.color = config.color || getRandomColor();
-    this.segments = [];
+    this.segments = [config.startPosition];
     this.score = 0;
+  }
+
+  public getPlayerId() {
+    return this.id;
   }
 
   toPlayerData(): PlayerData {

@@ -1,4 +1,4 @@
-import { SharedGameState } from '@battle-snakes/shared';
+import { getRandomColor, SharedGameState } from '@battle-snakes/shared';
 import { SpatialGrid } from './SpatialGrid';
 import { Player } from './Player';
 
@@ -18,5 +18,17 @@ export class GameState {
     };
   }
 
-  public spawnPlayer(playerId: string) {}
+  public spawnPlayer(playerId: string) {
+    const player = new Player(playerId, {
+      color: getRandomColor(),
+      startPosition: this.spatialGrid.getRandomAvailablePosition(),
+    });
+
+    this.players.set(playerId, player);
+    this.spatialGrid.addPlayer(player);
+  }
+
+  public removePlayer(playerId: string) {
+    this.players.delete(playerId);
+  }
 }
