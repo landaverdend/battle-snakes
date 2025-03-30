@@ -1,16 +1,15 @@
-import { GameState } from '@battle-snakes/shared';
+import { SharedGameState } from '@battle-snakes/shared';
 export class ClientGameState {
   private static instance: ClientGameState;
-  private gameState: GameState;
+  private gameState: SharedGameState;
 
   private constructor() {
     this.gameState = {
-      players: {},
-      gridState: {
-        width: 25, // default grid size matching server
-        height: 25,
+      players: [],
+      board: {
+        grid: {},
+        size: 0,
       },
-      occupiedCells: {},
     };
   }
 
@@ -21,11 +20,11 @@ export class ClientGameState {
     return ClientGameState.instance;
   }
 
-  public updateState(newState: GameState) {
+  public updateState(newState: SharedGameState) {
     this.gameState = { ...newState };
   }
 
-  public getState(): GameState {
+  public getState(): SharedGameState {
     return this.gameState;
   }
 }

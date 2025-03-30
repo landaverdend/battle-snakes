@@ -1,4 +1,4 @@
-import { GameEvent, GameEvents, GameState, PlayerData } from '@battle-snakes/shared';
+import { GameEvent, GameEvents, SharedGameState, PlayerData } from '@battle-snakes/shared';
 import { io, Socket } from 'socket.io-client';
 import { ClientGameState } from './ClientGameState';
 import { ActionFeedManager } from './ActionFeedManager';
@@ -22,7 +22,7 @@ export class NetworkManager {
       LeaderboardManager.getInstance().updatePlayers(players);
     });
 
-    this.socket.on(GameEvents.STATE_UPDATE, (state: GameState) => {
+    this.socket.on(GameEvents.STATE_UPDATE, (state: SharedGameState) => {
       ClientGameState.getInstance().updateState(state);
     });
 

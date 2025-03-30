@@ -1,165 +1,22 @@
-import { CellType, GridCell, GridState, PlayerData, Point, getRandomColor, getRandomNumber } from '@battle-snakes/shared';
+import { SharedGameState } from '@battle-snakes/shared';
+import { SpatialGrid } from './SpatialGrid';
 import { Player } from './Player';
-import { DEFAULT_FOOD_COUNT } from '../config/gameConfig';
-import { CollisionType } from './GameManager';
-import { CpuPlayer } from './CpuPlayer';
 
-export default class GameState {
-  private gridState: GridState;
+export class GameState {
+  private spatialGrid: SpatialGrid;
   private players: Map<string, Player>;
-  private foodPositions: Set<string> = new Set();
-  private occupiedCells: Map<string, GridCell> = new Map();
 
-  constructor(width: number, height: number) {
-    this.gridState = {
-      width: width,
-      height: height,
-    };
-
+  constructor(gridSize: number) {
+    this.spatialGrid = new SpatialGrid(gridSize);
     this.players = new Map();
-
-    // Debug AI players.
-    for (let i = 0; i < 25; i++) {
-      const id = `ai [${crypto.randomUUID().split('-')[0]}]`;
-      this.addCpuPlayer(id);
-    }
   }
 
-  // Update the player positions based off of their respective directions.
-  updatePositions() {
-    for (const [_, player] of this.players) {
-      if (player.isDead()) continue;
-
-      // For debug purposes only, really.
-      if (player instanceof CpuPlayer) {
-        player.chooseNextMove();
-        player.updateGameState(this.gridState, this.foodPositions, this.occupiedCells);
-      }
-
-      player.move();
-    }
-  }
-
-  updateOccupiedCells() {
-    this.occupiedCells.clear();
-
-    // Add snake segments
-    for (const player of this.players.values()) {
-      if (player.isDead()) continue;
-
-      for (const segment of player.segments) {
-        this.occupiedCells.set(segment.toString(), {
-          type: CellType.Snake,
-          color: player.color,
-          playerId: player.getId(),
-        });
-      }
-    }
-
-    // Add all food - O(f) where f is food count
-    for (const food of this.foodPositions) {
-      this.occupiedCells.set(food.toString(), { type: CellType.Food });
-    }
-  }
-
-  // Iterate through all players and check for collisions, handle state updates and return events to broadcast.
-  public trackAndHandleCollisions(): CollisionType[] {
-    const collisions: CollisionType[] = [];
-
-    for (const player of this.players.values()) {
-      if (player.isDead()) continue;
-
-      const collision = player.checkCollision(this.gridState, this.occupiedCells);
-      if (collision) {
-        // Handle collision effects
-        switch (collision.type) {
-          case 'death':
-            player.setDead();
-            break;
-          case 'food':
-            player.grow(5);
-            this.foodPositions.delete(player.getHead().toString());
-            break;
-        }
-        collisions.push(collision);
-      }
-    }
-
-    return collisions;
-  }
-
-  public placeFood() {
-    if (this.foodPositions.size >= DEFAULT_FOOD_COUNT) return;
-
-    const position = this.getRandomAvailablePosition();
-
-    if (position) {
-      this.foodPositions.add(position.toString());
-      this.occupiedCells.set(position.toString(), { type: CellType.Food });
-    }
-  }
-
-  public isSpaceOccupied(position: Point): boolean {
-    return this.occupiedCells.has(position.toString());
-  }
-
-  public getPlayers(): Map<String, Player> {
-    return this.players;
-  }
-
-  public addPlayer(socketId: string): Player {
-    this.players.set(socketId, new Player(socketId, { startPosition: this.getRandomAvailablePosition() }));
-    return this.players.get(socketId) as Player;
-  }
-
-  public addCpuPlayer(id: string) {
-    this.players.set(id, new CpuPlayer(id, { startPosition: this.getRandomAvailablePosition(), color: getRandomColor() }));
-  }
-
-  public removePlayer(socketId: string) {
-    this.players.delete(socketId);
-  }
-
-  /**
-   * Serialize the game state into a client-friendly format.
-   * @returns
-   */
-  public serialize() {
+  public getSharedGameState(): SharedGameState {
     return {
-      gridState: this.gridState,
-      occupiedCells: Object.fromEntries(this.occupiedCells.entries()),
+      board: this.spatialGrid.toSharedGridState(),
+      players: Array.from(this.players.values()).map((p) => p.toPlayerData()),
     };
   }
 
-  private getRandomAvailablePosition(): Point {
-    const { width, height } = this.gridState;
-    const totalPositions = width * height;
-    const occupiedCount = this.occupiedCells.size;
-
-    // If there are no available positions, return undefined. ( this is rare )
-    if (occupiedCount === totalPositions) throw new Error('No available positions');
-
-    let target = getRandomNumber(0, totalPositions - occupiedCount);
-
-    for (let x = 0; x < width; x++) {
-      for (let y = 0; y < height; y++) {
-        const pos = new Point(x, y);
-
-        if (!this.occupiedCells.has(pos.toString())) {
-          if (target === 0) return pos;
-          target--;
-        }
-      }
-    }
-
-    throw new Error('No available positions.');
-  }
-
-  public getLeaderboardData(): PlayerData[] {
-    return Array.from(this.players.values()).map((player) => ({
-      id: player.getId(),
-      color: player.color,
-      score: player.score,
-    }));
-  }
+  public spawnPlayer(playerId: string) {}
 }

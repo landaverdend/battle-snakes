@@ -35,13 +35,13 @@ export enum CellType {
   Food = 2,
 }
 
-export type GridCell = {
+export type Entity = {
   type: CellType;
   playerId?: string;
   color?: string;
 };
 
-export interface GridState {
-  width: number;
-  height: number;
-}
+export type SharedGridState = {
+  grid: Record<string, Entity>;
+  size: number;
+};

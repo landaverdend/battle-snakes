@@ -37,11 +37,15 @@ export class Renderer {
   private drawCells() {
     const state = this.gameState.getState();
 
-    const { width, height } = state.gridState;
-    const cellWidth = this.canvasWidth / width;
-    const cellHeight = this.canvasHeight / height;
+    const { size } = state.board;
+    const cellWidth = this.canvasWidth / size;
+    const cellHeight = this.canvasHeight / size;
 
-    for (const [point, cellData] of Object.entries(state.occupiedCells)) {
+    if (!state.board) return;
+
+    for (const [point, cellData] of Object.entries(state.board.grid)) {
+      if (!point) continue;
+
       const { x, y } = Point.parseString(point);
 
       switch (cellData.type) {
@@ -78,14 +82,14 @@ export class Renderer {
   }
 
   drawGrid() {
-    const { width, height } = this.gameState.getState().gridState;
-    const cellWidth = this.canvasWidth / width;
-    const cellHeight = this.canvasHeight / height;
+    const { size } = this.gameState.getState().board;
+    const cellWidth = this.canvasWidth / size;
+    const cellHeight = this.canvasHeight / size;
 
     this.ctx.strokeStyle = '#ddd';
 
     // Draw vertical lines
-    for (let x = 0; x <= width; x++) {
+    for (let x = 0; x <= size; x++) {
       this.ctx.beginPath();
       this.ctx.moveTo(x * cellWidth, 0);
       this.ctx.lineTo(x * cellWidth, this.canvasHeight);
@@ -93,7 +97,7 @@ export class Renderer {
     }
 
     // Draw horizontal lines
-    for (let y = 0; y <= height; y++) {
+    for (let y = 0; y <= size; y++) {
       this.ctx.beginPath();
       this.ctx.moveTo(0, y * cellHeight);
       this.ctx.lineTo(this.canvasWidth, y * cellHeight);

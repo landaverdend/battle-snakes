@@ -1,5 +1,5 @@
-import { GridCell, GridState } from './gridTypes';
-import { Player } from './playerTypes';
+import { SharedGridState } from './gridTypes';
+import { PlayerData } from './playerTypes';
 
 export type GameStatus = 'waiting' | 'playing' | 'finished';
 
@@ -16,9 +16,7 @@ export interface GameEvent {
   targetId?: string | undefined; // only used for death events where the player is killed by another player.
 }
 
-// A smarter way of handling state updates
-export interface GameState {
-  gridState: GridState;
-  players: Record<string, Player>;
-  occupiedCells: Record<string, GridCell>;
+export interface SharedGameState {
+  board: SharedGridState;
+  players: Array<PlayerData>;
 }

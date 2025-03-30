@@ -9,13 +9,6 @@ export const OppositeDirection: Record<Direction, Direction> = {
   right: 'left',
 };
 
-export interface Player {
-  id: string;
-  segments: Point[];
-  direction: Direction;
-  color: string;
-}
-
 // Data that is sent to the client.
 export interface PlayerData {
   id: string;
