@@ -1,15 +1,15 @@
-import { DEFAULT_GRID_SIZE, TICK_RATE_MS } from '../config/gameConfig';
-import { GameState } from './GameState';
+import { TICK_RATE_MS } from '../config/gameConfig';
+import { GameLogic } from './GameLogic';
 import { NetworkManager } from './NetworkManager';
 
 export class GameManager {
   private tickInterval: NodeJS.Timer | null = null;
-
-  private gameState: GameState;
+  private gameLogic: GameLogic;
   private networkManager: NetworkManager;
 
   constructor() {
-    this.gameState = new GameState(DEFAULT_GRID_SIZE);
+    // this.gameState = new GameState(DEFAULT_GRID_SIZE);
+    this.gameLogic = new GameLogic();
     this.networkManager = new NetworkManager();
     this.setupNetworkHandlers();
   }
@@ -23,18 +23,19 @@ export class GameManager {
 
   setupNetworkHandlers() {
     this.networkManager.onPlayerJoin((playerId) => {
-      this.gameState.spawnPlayer(playerId);
+      this.gameLogic.spawnPlayer(playerId);
     });
 
     this.networkManager.onPlayerExit((playerId) => {
-      this.gameState.removePlayer(playerId);
+      this.gameLogic.removePlayer(playerId);
     });
   }
 
   public tick() {
-    this.gameState.tick();
 
-    this.networkManager.broadcastGameState(this.gameState.getSharedGameState());
+    this.gameLogic.tick();
+
+    this.networkManager.broadcastGameState(this.gameLogic.getSharedGameState());
   }
 
   public stop() {

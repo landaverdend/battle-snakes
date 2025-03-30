@@ -1,4 +1,4 @@
-import { getRandomColor, SharedGameState } from '@battle-snakes/shared';
+import { CellType, SharedGameState } from '@battle-snakes/shared';
 import { SpatialGrid } from './SpatialGrid';
 import { Player } from './Player';
 
@@ -18,39 +18,35 @@ export class GameState {
     };
   }
 
-  public spawnPlayer(playerId: string) {
-    const player = new Player(playerId, {
-      color: getRandomColor(),
-      startPosition: this.spatialGrid.getRandomAvailablePosition(),
-    });
-
-    this.players.set(playerId, player);
-    this.spatialGrid.addPlayer(player);
+  public addPlayer(player: Player) {
+    this.players.set(player.getPlayerId(), player);
   }
 
   public removePlayer(playerId: string) {
     this.players.delete(playerId);
-    console.log('player removed', playerId);
   }
 
-  public tick() {
-    // Clear the grid at each tick, then:
-    // calculate new positions
-    // redraw all entities in their new positions.
+  public getGrid() {
+    return this.spatialGrid;
+  }
+
+  public getPlayers() {
+    return this.players;
+  }
+
+  public update() {
+    // Clear the grid for the new frame
     this.spatialGrid.clear();
 
+    // Add all player segments to the grid
     for (const player of this.players.values()) {
+      player.segments.forEach((segment) => {
+        this.spatialGrid.addEntity(segment, {
+          type: CellType.Snake,
+          playerId: player.getPlayerId(),
+          color: player.color,
+        });
+      });
     }
-
-    // 3. Redraw all entities in their new positions
-    this.updateGrid();
-  }
-
-  updateGrid() {
-    for (const player of this.players.values()) {
-      this.spatialGrid.addPlayer(player);
-    }
-
-    // TODO: add other entities to the grid.
   }
 }
