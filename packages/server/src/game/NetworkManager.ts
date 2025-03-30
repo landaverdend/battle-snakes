@@ -32,10 +32,12 @@ export class NetworkManager extends EventEmitter {
   private handleConnection(socket: Socket) {
     const playerId = socket.id;
     console.log('Client connected: ', playerId);
+
     this.emit(GameEvents.PLAYER_JOIN, playerId);
 
     socket.on('disconnect', () => {
-      console.log('Client disconnected: ', socket.id);
+      console.log('Client disconnected: ', playerId);
+      this.emit(GameEvents.PLAYER_EXIT, playerId);
     });
   }
 
@@ -48,6 +50,6 @@ export class NetworkManager extends EventEmitter {
   }
 
   public onPlayerExit(callback: (playerId: string) => void) {
-   this.on(GameEvents.PLAYER_EXIT, callback) 
+    this.on(GameEvents.PLAYER_EXIT, callback);
   }
 }

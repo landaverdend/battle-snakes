@@ -30,5 +30,27 @@ export class GameState {
 
   public removePlayer(playerId: string) {
     this.players.delete(playerId);
+    console.log('player removed', playerId);
+  }
+
+  public tick() {
+    // Clear the grid at each tick, then:
+    // calculate new positions
+    // redraw all entities in their new positions.
+    this.spatialGrid.clear();
+
+    for (const player of this.players.values()) {
+    }
+
+    // 3. Redraw all entities in their new positions
+    this.updateGrid();
+  }
+
+  updateGrid() {
+    for (const player of this.players.values()) {
+      this.spatialGrid.addPlayer(player);
+    }
+
+    // TODO: add other entities to the grid.
   }
 }
