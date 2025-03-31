@@ -44,9 +44,9 @@ export class GameLogic {
   }
 
   public getRandomAvailablePosition(): Point {
-    const { size, grid } = this.gameState.getGrid();
+    const { gridSize, grid } = this.gameState;
 
-    const totalPositions = size * size;
+    const totalPositions = gridSize * gridSize;
     const occupiedCount = grid.size;
 
     // If there are no available positions, return undefined. ( this is rare )
@@ -54,8 +54,8 @@ export class GameLogic {
 
     let target = getRandomNumber(0, totalPositions - occupiedCount);
 
-    for (let x = 0; x < size; x++) {
-      for (let y = 0; y < size; y++) {
+    for (let x = 0; x < gridSize; x++) {
+      for (let y = 0; y < gridSize; y++) {
         const pos = new Point(x, y);
 
         if (!grid.has(pos.toString())) {

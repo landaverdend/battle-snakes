@@ -40,8 +40,3 @@ export type Entity = {
   playerId?: string;
   color?: string;
 };
-
-export type SharedGridState = {
-  grid: Record<string, Entity>;
-  size: number;
-};

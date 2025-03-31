@@ -1,22 +1,28 @@
-import { CellType, SharedGameState } from '@battle-snakes/shared';
-import { SpatialGrid } from './SpatialGrid';
+import { CellType, Entity, SharedGameState } from '@battle-snakes/shared';
 import { Player } from './Player';
 
 export class GameState {
-  private spatialGrid: SpatialGrid;
+  gridSize: number; // size of the grid = size x size
+  grid: Map<string, Entity>;
   private players: Map<string, Player>;
+  private cpuPlayers: Map<string, Player>; // TODO: add cpu players.
 
   constructor(gridSize: number) {
-    this.spatialGrid = new SpatialGrid(gridSize);
+    this.grid = new Map();
+    this.gridSize = gridSize;
     this.players = new Map();
+    this.cpuPlayers = new Map();
   }
 
   public getSharedGameState(): SharedGameState {
     return {
-      board: this.spatialGrid.toSharedGridState(),
+      grid: Object.fromEntries(this.grid.entries()),
+      gridSize: this.gridSize,
       players: Array.from(this.players.values()).map((p) => p.toPlayerData()),
     };
   }
+
+  public addCpuPlayer() {}
 
   public addPlayer(player: Player) {
     this.players.set(player.getPlayerId(), player);
@@ -26,22 +32,18 @@ export class GameState {
     this.players.delete(playerId);
   }
 
-  public getGrid() {
-    return this.spatialGrid;
-  }
-
   public getPlayers() {
     return this.players;
   }
 
   public update() {
     // Clear the grid for the new frame
-    this.spatialGrid.clear();
+    this.grid.clear();
 
     // Add all player segments to the grid
     for (const player of this.players.values()) {
       player.segments.forEach((segment) => {
-        this.spatialGrid.addEntity(segment, {
+        this.grid.set(segment.toString(), {
           type: CellType.Snake,
           playerId: player.getPlayerId(),
           color: player.color,

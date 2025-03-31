@@ -32,7 +32,6 @@ export class GameManager {
   }
 
   public tick() {
-
     this.gameLogic.tick();
 
     this.networkManager.broadcastGameState(this.gameLogic.getSharedGameState());

@@ -11,6 +11,7 @@ export class Player {
   growthQueue: number;
   segments: Point[];
   score: number;
+  isAlive: boolean;
 
   constructor(id: string, config: PlayerConfigOptions) {
     this.id = id;
@@ -19,6 +20,7 @@ export class Player {
     this.score = 0;
     this.direction = 'up';
     this.growthQueue = 0;
+    this.isAlive = true;
   }
 
   public getPlayerId() {
@@ -27,6 +29,10 @@ export class Player {
 
   public getHead(): Point {
     return this.segments[0] as Point;
+  }
+
+  public kill() {
+    this.isAlive = false;
   }
 
   toPlayerData(): PlayerData {
@@ -57,7 +63,7 @@ export class Player {
     }
 
     this.segments.unshift(newHead);
-    
+
     if (this.growthQueue > 0) {
       this.growthQueue--;
     } else {

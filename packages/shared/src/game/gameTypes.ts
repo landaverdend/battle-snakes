@@ -1,4 +1,4 @@
-import { SharedGridState } from './gridTypes';
+import { Entity } from './gridTypes';
 import { PlayerData } from './playerTypes';
 
 export type GameStatus = 'waiting' | 'playing' | 'finished';
@@ -19,6 +19,7 @@ export interface GameEvent {
 }
 
 export interface SharedGameState {
-  board: SharedGridState;
+  gridSize: number;
+  grid: Record<string, Entity>;
   players: Array<PlayerData>;
 }
