@@ -1,18 +1,30 @@
-import { getRandomColor, getRandomNumber, Point, SharedGameState } from '@battle-snakes/shared';
+import { Collision, getRandomColor, getRandomNumber, Point, SharedGameState } from '@battle-snakes/shared';
 import { DEFAULT_GRID_SIZE } from '../config/gameConfig';
 import { GameState } from './GameState';
 import { Player } from './Player';
+import { CollisionManager } from './CollisionManager';
 
 export class GameLogic {
   private gameState: GameState;
+  private collisionManager: CollisionManager;
+  
 
   public constructor() {
     this.gameState = new GameState(DEFAULT_GRID_SIZE);
+    this.collisionManager = new CollisionManager();
   }
 
   public tick() {
-    this.movementTick(); // Move the players first.
+    // 1) Move players.
+    this.movementTick();
 
+    // 2) Check for collisions using player positions.
+    const collisions = this.collisionManager.detectCollisions(this.gameState);
+
+    // 3) Handle collision effects
+    this.handleCollisions(collisions);
+
+    // 4) Update the grid with the final state (only alive players.)
     this.gameState.update();
   }
 
@@ -23,12 +35,10 @@ export class GameLogic {
     });
 
     this.gameState.addPlayer(player);
-    // TODO: add player to the spatial grid.
   }
 
   public removePlayer(playerId: string) {
     this.gameState.removePlayer(playerId);
-    // TODO: remove player from the spatial grid.
   }
 
   public getSharedGameState(): SharedGameState {
@@ -40,6 +50,17 @@ export class GameLogic {
 
     for (const player of players.values()) {
       player.move();
+    }
+  }
+
+  private handleCollisions(collisions: Collision[]) {
+    for (const collision of collisions) {
+      switch (collision.type) {
+        case 'snake':
+        case 'wall':
+          if (collision.playerId) this.gameState.killPlayer(collision.playerId);
+          break;
+      }
     }
   }
 

@@ -4,6 +4,7 @@ import { Player } from './Player';
 export class GameState {
   gridSize: number; // size of the grid = size x size
   grid: Map<string, Entity>;
+
   private players: Map<string, Player>;
   private cpuPlayers: Map<string, Player>; // TODO: add cpu players.
 
@@ -22,8 +23,6 @@ export class GameState {
     };
   }
 
-  public addCpuPlayer() {}
-
   public addPlayer(player: Player) {
     this.players.set(player.getPlayerId(), player);
   }
@@ -32,8 +31,16 @@ export class GameState {
     this.players.delete(playerId);
   }
 
+  public killPlayer(playerId: string) {
+    this.players.get(playerId)?.kill();
+  }
+
   public getPlayers() {
     return this.players;
+  }
+
+  public getGrid() {
+    return this.grid;
   }
 
   public update() {
@@ -42,6 +49,8 @@ export class GameState {
 
     // Add all player segments to the grid
     for (const player of this.players.values()) {
+      if (!player.isAlive) continue; // don't draw dead players.
+
       player.segments.forEach((segment) => {
         this.grid.set(segment.toString(), {
           type: CellType.Snake,

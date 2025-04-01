@@ -35,6 +35,10 @@ export class Player {
     this.isAlive = false;
   }
 
+  public isActive() {
+    return this.isAlive;
+  }
+
   toPlayerData(): PlayerData {
     return {
       id: this.id,

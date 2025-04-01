@@ -12,6 +12,12 @@ export enum GameEvents {
   PLAYER_EXIT = 'game:player_exit',
 }
 
+export type Collision = {
+  type: 'wall' | 'snake';
+  playerId?: string;
+  targetId?: string;
+};
+
 export interface GameEvent {
   type: 'death' | 'spawn';
   playerId: string;
