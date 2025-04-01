@@ -1,4 +1,5 @@
-import { Direction, getRandomColor, PlayerData, Point } from '@battle-snakes/shared';
+import { Direction, getRandomColor, OppositeDirection, PlayerData, Point } from '@battle-snakes/shared';
+import { DEFAULT_GROWTH_RATE } from '../config/gameConfig';
 
 export type PlayerConfigOptions = {
   color?: string;
@@ -9,7 +10,10 @@ export class Player {
   direction: Direction;
   color: string;
   growthQueue: number;
+
   segments: Point[];
+  segmentSet: Set<string>;
+
   score: number;
   isAlive: boolean;
 
@@ -17,6 +21,7 @@ export class Player {
     this.id = id;
     this.color = config.color || getRandomColor();
     this.segments = [config.startPosition];
+    this.segmentSet = new Set([config.startPosition.toString()]);
     this.score = 0;
     this.direction = 'up';
     this.growthQueue = 0;
@@ -47,6 +52,11 @@ export class Player {
     };
   }
 
+  public grow() {
+    this.score += DEFAULT_GROWTH_RATE;
+    this.growthQueue += DEFAULT_GROWTH_RATE;
+  }
+
   public move() {
     const head = this.getHead();
     const newHead = new Point(head.x, head.y);
@@ -73,5 +83,11 @@ export class Player {
     } else {
       this.segments.pop();
     }
+
+    this.segmentSet = new Set(this.segments.map((p) => p.toString()));
+  }
+
+  public isValidMove(proposedMove: Direction) {
+    return OppositeDirection[this.direction] !== proposedMove;
   }
 }

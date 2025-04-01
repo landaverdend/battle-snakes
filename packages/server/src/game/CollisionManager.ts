@@ -1,10 +1,9 @@
-import { CellType, Collision, Point } from '@battle-snakes/shared';
+import { Collision, Point } from '@battle-snakes/shared';
 import { GameState } from './GameState';
 
 export class CollisionManager {
   public detectCollisions(gameState: GameState): Collision[] {
     const players = gameState.getPlayers();
-    const grid = gameState.getGrid();
 
     const collisions: Collision[] = [];
 
@@ -22,17 +21,41 @@ export class CollisionManager {
         continue;
       }
 
-      // Check snake collisions
-      const cellContent = grid.get(head.toString());
-      if (cellContent && cellContent.type === CellType.Snake) {
-        // Only add collision if playerId exists to satisfy type checking
-        if (cellContent.playerId) {
+      // Check self collision.
+      if (player.segments.length > 1) {
+        // Create a temporary set without the head position
+        const bodySegments = new Set(player.segments.slice(1).map((p) => p.toString()));
+        if (bodySegments.has(head.toString())) {
           collisions.push({
             type: 'snake',
-            playerId: cellContent.playerId,
-            targetId: cellContent.playerId,
+            playerId,
           });
+          continue;
         }
+      }
+
+      // Check collisions with other players
+      for (const [otherPlayerId, otherPlayer] of players) {
+        // Skip if checking against self or if other player is not active
+        if (playerId === otherPlayerId || !otherPlayer.isActive()) continue;
+
+        // Check if current player's head intersects with any segment of the other player
+        if (otherPlayer.segmentSet.has(head.toString())) {
+          collisions.push({
+            type: 'snake',
+            playerId,
+            otherPlayerId,
+          });
+          break;
+        }
+      }
+
+      // Check food collision
+      if (gameState.foodPositions.has(head.toString())) {
+        collisions.push({
+          type: 'food',
+          playerId,
+        });
       }
     }
 

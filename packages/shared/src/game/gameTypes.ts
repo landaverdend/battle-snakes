@@ -13,9 +13,9 @@ export enum GameEvents {
 }
 
 export type Collision = {
-  type: 'wall' | 'snake';
-  playerId?: string;
-  targetId?: string;
+  type: 'wall' | 'snake' | 'food' | 'head-on';
+  playerId: string;
+  otherPlayerId?: string;
 };
 
 export interface GameEvent {

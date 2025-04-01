@@ -1,17 +1,20 @@
 import { Collision, getRandomColor, getRandomNumber, Point, SharedGameState } from '@battle-snakes/shared';
-import { DEFAULT_GRID_SIZE } from '../config/gameConfig';
+import { DEFAULT_FOOD_COUNT, DEFAULT_GRID_SIZE } from '../config/gameConfig';
 import { GameState } from './GameState';
 import { Player } from './Player';
 import { CollisionManager } from './CollisionManager';
+import { CpuPlayer } from './CpuPlayer';
 
 export class GameLogic {
   private gameState: GameState;
   private collisionManager: CollisionManager;
-  
 
   public constructor() {
     this.gameState = new GameState(DEFAULT_GRID_SIZE);
     this.collisionManager = new CollisionManager();
+
+    this.spawnFood();
+    this.debug_spawnCPU(8);
   }
 
   public tick() {
@@ -25,7 +28,7 @@ export class GameLogic {
     this.handleCollisions(collisions);
 
     // 4) Update the grid with the final state (only alive players.)
-    this.gameState.update();
+    this.gameState.updateGrid();
   }
 
   public spawnPlayer(playerId: string) {
@@ -35,6 +38,14 @@ export class GameLogic {
     });
 
     this.gameState.addPlayer(player);
+  }
+
+  public spawnFood() {
+    while (this.gameState.foodPositions.size < DEFAULT_FOOD_COUNT) {
+      const foodPoint = this.getRandomAvailablePosition();
+
+      this.gameState.addFood(foodPoint);
+    }
   }
 
   public removePlayer(playerId: string) {
@@ -49,6 +60,11 @@ export class GameLogic {
     const players = this.gameState.getPlayers();
 
     for (const player of players.values()) {
+      if (player instanceof CpuPlayer) {
+        player.chooseNextMove();
+        player.updateGameState(this.gameState);
+      }
+
       player.move();
     }
   }
@@ -58,10 +74,16 @@ export class GameLogic {
       switch (collision.type) {
         case 'snake':
         case 'wall':
-          if (collision.playerId) this.gameState.killPlayer(collision.playerId);
+          this.gameState.killPlayer(collision.playerId);
+          break;
+        case 'food':
+          this.gameState.removeFood(this.gameState.players.get(collision.playerId)?.getHead()!!);
+          this.gameState.growPlayer(collision.playerId);
           break;
       }
     }
+
+    this.spawnFood();
   }
 
   public getRandomAvailablePosition(): Point {
@@ -87,5 +109,12 @@ export class GameLogic {
     }
 
     throw new Error('No available positions.');
+  }
+
+  debug_spawnCPU(num: number) {
+    for (let i = 0; i < num; i++) {
+      const id = `ai [${crypto.randomUUID().split('-')[0]}]`;
+      this.gameState.addPlayer(new CpuPlayer(id, { startPosition: this.getRandomAvailablePosition(), color: getRandomColor() }));
+    }
   }
 }

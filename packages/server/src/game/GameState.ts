@@ -1,18 +1,17 @@
-import { CellType, Entity, SharedGameState } from '@battle-snakes/shared';
+import { CellType, Entity, Point, SharedGameState } from '@battle-snakes/shared';
 import { Player } from './Player';
 
 export class GameState {
   gridSize: number; // size of the grid = size x size
   grid: Map<string, Entity>;
-
-  private players: Map<string, Player>;
-  private cpuPlayers: Map<string, Player>; // TODO: add cpu players.
+  players: Map<string, Player>;
+  foodPositions: Set<string>;
 
   constructor(gridSize: number) {
     this.grid = new Map();
     this.gridSize = gridSize;
     this.players = new Map();
-    this.cpuPlayers = new Map();
+    this.foodPositions = new Set();
   }
 
   public getSharedGameState(): SharedGameState {
@@ -23,12 +22,24 @@ export class GameState {
     };
   }
 
+  public addFood(point: Point) {
+    this.foodPositions.add(point.toString());
+  }
+
+  public removeFood(point: Point) {
+    this.foodPositions.delete(point.toString());
+  }
+
   public addPlayer(player: Player) {
     this.players.set(player.getPlayerId(), player);
   }
 
   public removePlayer(playerId: string) {
     this.players.delete(playerId);
+  }
+
+  public growPlayer(playerId: string) {
+    this.players.get(playerId)?.grow();
   }
 
   public killPlayer(playerId: string) {
@@ -43,7 +54,7 @@ export class GameState {
     return this.grid;
   }
 
-  public update() {
+  public updateGrid() {
     // Clear the grid for the new frame
     this.grid.clear();
 
@@ -58,6 +69,10 @@ export class GameState {
           color: player.color,
         });
       });
+    }
+
+    for (const food of this.foodPositions) {
+      this.grid.set(food, { type: CellType.Food });
     }
   }
 }
