@@ -1,11 +1,13 @@
 import { Collision, Point } from '@battle-snakes/shared';
 import { GameState } from './GameState';
+import { Player } from './Player';
 
 export class CollisionManager {
   public detectCollisions(gameState: GameState): Collision[] {
     const players = gameState.getPlayers();
 
     const collisions: Collision[] = [];
+    const activePlayerCells = this.collectActivePlayerCells(players);
 
     for (const [playerId, player] of players) {
       if (!player.isActive()) continue;
@@ -35,19 +37,10 @@ export class CollisionManager {
       }
 
       // Check collisions with other players
-      for (const [otherPlayerId, otherPlayer] of players) {
-        // Skip if checking against self or if other player is not active
-        if (playerId === otherPlayerId || !otherPlayer.isActive()) continue;
+      const otherPlayerId = activePlayerCells.get(head.toString());
 
-        // Check if current player's head intersects with any segment of the other player
-        if (otherPlayer.segmentSet.has(head.toString())) {
-          collisions.push({
-            type: 'snake',
-            playerId,
-            otherPlayerId,
-          });
-          break;
-        }
+      if (typeof otherPlayerId === 'string' && otherPlayerId !== playerId) {
+        collisions.push({ type: 'snake', playerId, otherPlayerId });
       }
 
       // Check food collision
@@ -60,6 +53,23 @@ export class CollisionManager {
     }
 
     return collisions;
+  }
+
+  /**
+   * Collect the current player positions alongside the player location.
+   */
+  private collectActivePlayerCells(players: Map<string, Player>): Map<string, string> {
+    const toRet = new Map<string, string>();
+
+    for (const [playerId, player] of players) {
+      if (player.isActive()) {
+        for (const segment of player.segments) {
+          toRet.set(segment.toString(), playerId);
+        }
+      }
+    }
+
+    return toRet;
   }
 
   private isOutOfBounds(point: Point, gridSize: number): boolean {
