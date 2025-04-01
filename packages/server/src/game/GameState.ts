@@ -50,6 +50,10 @@ export class GameState {
     return this.players;
   }
 
+  public getPlayerData() {
+    return Array.from(this.players.values()).map((p) => p.toPlayerData());
+  }
+
   public getGrid() {
     return this.grid;
   }

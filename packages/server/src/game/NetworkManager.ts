@@ -1,6 +1,6 @@
 import { Server, Socket } from 'socket.io';
 import { createServer } from 'http';
-import { GameEvents, SharedGameState } from '@battle-snakes/shared';
+import { Collision, GameEvents, PlayerData, SharedGameState } from '@battle-snakes/shared';
 import EventEmitter from 'events';
 
 const PORT = process.env['PORT'] || 3001;
@@ -43,6 +43,14 @@ export class NetworkManager extends EventEmitter {
 
   public broadcastGameState(gameState: SharedGameState) {
     this.io.emit(GameEvents.STATE_UPDATE, gameState);
+  }
+
+  public broadcastCollision(collision: Collision[]) {
+    this.io.emit(GameEvents.COLLISION_EVENT, collision);
+  }
+
+  public broadcastLeaderboardUpdate(players: PlayerData[]) {
+    this.io.emit(GameEvents.LEADERBOARD_UPDATE, players);
   }
 
   public onPlayerJoin(callback: (playerId: string) => void) {

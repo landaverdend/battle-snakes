@@ -6,10 +6,8 @@ export class ClientGameState {
   private constructor() {
     this.gameState = {
       players: [],
-      board: {
-        grid: {},
-        size: 0,
-      },
+      grid: {},
+      gridSize: 0,
     };
   }
 

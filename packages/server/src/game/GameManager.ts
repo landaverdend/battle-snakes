@@ -9,8 +9,9 @@ export class GameManager {
 
   constructor() {
     // this.gameState = new GameState(DEFAULT_GRID_SIZE);
-    this.gameLogic = new GameLogic();
     this.networkManager = new NetworkManager();
+    this.gameLogic = new GameLogic(this.networkManager);
+
     this.setupNetworkHandlers();
   }
 

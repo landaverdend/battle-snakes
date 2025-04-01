@@ -4,17 +4,20 @@ import { GameState } from './GameState';
 import { Player } from './Player';
 import { CollisionManager } from './CollisionManager';
 import { CpuPlayer } from './CpuPlayer';
+import { NetworkManager } from './NetworkManager';
 
 export class GameLogic {
   private gameState: GameState;
   private collisionManager: CollisionManager;
+  private networkManager: NetworkManager;
 
-  public constructor() {
+  public constructor(networkManager: NetworkManager) {
     this.gameState = new GameState(DEFAULT_GRID_SIZE);
     this.collisionManager = new CollisionManager();
+    this.networkManager = networkManager;
 
     this.spawnFood();
-    this.debug_spawnCPU(20);
+    this.debug_spawnCPU(50);
   }
 
   public tick() {
@@ -70,6 +73,8 @@ export class GameLogic {
   }
 
   private handleCollisions(collisions: Collision[]) {
+    let wasScoreUpdated = false;
+
     for (const collision of collisions) {
       switch (collision.type) {
         case 'self':
@@ -80,11 +85,18 @@ export class GameLogic {
         case 'food':
           this.gameState.removeFood(this.gameState.players.get(collision.playerId)?.getHead()!!);
           this.gameState.growPlayer(collision.playerId);
+          wasScoreUpdated = true;
           break;
       }
     }
 
-    this.spawnFood();
+    if (collisions.length > 0) {
+      this.networkManager.broadcastCollision(collisions);
+    }
+    if (wasScoreUpdated) {
+      this.spawnFood();
+      this.networkManager.broadcastLeaderboardUpdate(this.gameState.getPlayerData());
+    }
   }
 
   public getRandomAvailablePosition(): Point {
