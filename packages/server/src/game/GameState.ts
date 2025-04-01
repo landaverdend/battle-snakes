@@ -54,7 +54,7 @@ export class GameState {
     return this.grid;
   }
 
-  public updateGrid() {
+  public updateClientGrid() {
     // Clear the grid for the new frame
     this.grid.clear();
 

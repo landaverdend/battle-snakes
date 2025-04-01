@@ -14,7 +14,7 @@ export class GameLogic {
     this.collisionManager = new CollisionManager();
 
     this.spawnFood();
-    this.debug_spawnCPU(8);
+    this.debug_spawnCPU(20);
   }
 
   public tick() {
@@ -28,7 +28,7 @@ export class GameLogic {
     this.handleCollisions(collisions);
 
     // 4) Update the grid with the final state (only alive players.)
-    this.gameState.updateGrid();
+    this.gameState.updateClientGrid();
   }
 
   public spawnPlayer(playerId: string) {
@@ -72,6 +72,7 @@ export class GameLogic {
   private handleCollisions(collisions: Collision[]) {
     for (const collision of collisions) {
       switch (collision.type) {
+        case 'self':
         case 'snake':
         case 'wall':
           this.gameState.killPlayer(collision.playerId);
@@ -87,13 +88,16 @@ export class GameLogic {
   }
 
   public getRandomAvailablePosition(): Point {
-    const { gridSize, grid } = this.gameState;
+    const { gridSize, players, foodPositions } = this.gameState;
 
     const totalPositions = gridSize * gridSize;
-    const occupiedCount = grid.size;
+    const activePlayerCells = this.collisionManager.collectActivePlayerCells(players);
+    const occupiedCount = activePlayerCells.size + foodPositions.size;
 
     // If there are no available positions, return undefined. ( this is rare )
-    if (occupiedCount === totalPositions) throw new Error('No available positions');
+    if (occupiedCount === totalPositions) {
+      console.error('Occupied Counts: ', occupiedCount, ' and total:', totalPositions);
+    }
 
     let target = getRandomNumber(0, totalPositions - occupiedCount);
 
@@ -101,7 +105,7 @@ export class GameLogic {
       for (let y = 0; y < gridSize; y++) {
         const pos = new Point(x, y);
 
-        if (!grid.has(pos.toString())) {
+        if (!activePlayerCells.has(pos.toString()) && !foodPositions.has(pos.toString())) {
           if (target === 0) return pos;
           target--;
         }

@@ -9,6 +9,7 @@ export class CollisionManager {
     const collisions: Collision[] = [];
     const activePlayerCells = this.collectActivePlayerCells(players);
 
+    // Iterate through all players, check if the head has collided with any objects (or other players.)
     for (const [playerId, player] of players) {
       if (!player.isActive()) continue;
 
@@ -29,7 +30,7 @@ export class CollisionManager {
         const bodySegments = new Set(player.segments.slice(1).map((p) => p.toString()));
         if (bodySegments.has(head.toString())) {
           collisions.push({
-            type: 'snake',
+            type: 'self',
             playerId,
           });
           continue;
@@ -38,7 +39,6 @@ export class CollisionManager {
 
       // Check collisions with other players
       const otherPlayerId = activePlayerCells.get(head.toString());
-
       if (typeof otherPlayerId === 'string' && otherPlayerId !== playerId) {
         collisions.push({ type: 'snake', playerId, otherPlayerId });
       }
@@ -58,7 +58,7 @@ export class CollisionManager {
   /**
    * Collect the current player positions alongside the player location.
    */
-  private collectActivePlayerCells(players: Map<string, Player>): Map<string, string> {
+  public collectActivePlayerCells(players: Map<string, Player>): Map<string, string> {
     const toRet = new Map<string, string>();
 
     for (const [playerId, player] of players) {
