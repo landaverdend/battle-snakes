@@ -1,5 +1,5 @@
 import { Collision, getRandomColor, getRandomNumber, Point, SharedGameState } from '@battle-snakes/shared';
-import { DEFAULT_FOOD_COUNT, DEFAULT_GRID_SIZE } from '../config/gameConfig';
+import { DEFAULT_FOOD_COUNT, DEFAULT_GRID_SIZE, MAX_ROOM_SIZE } from '../config/gameConfig';
 import { GameState } from './GameState';
 import { Player } from './Player';
 import { CollisionManager } from './CollisionManager';
@@ -7,17 +7,17 @@ import { CpuPlayer } from './CpuPlayer';
 import { NetworkManager } from './NetworkManager';
 
 export class GameLogic {
+  private roomId: string;
   private gameState: GameState;
   private collisionManager: CollisionManager;
-  private networkManager: NetworkManager;
 
-  public constructor(networkManager: NetworkManager) {
+  public constructor(roomId: string) {
+    this.roomId = roomId;
     this.gameState = new GameState(DEFAULT_GRID_SIZE);
     this.collisionManager = new CollisionManager();
-    this.networkManager = networkManager;
 
     this.spawnFood();
-    this.debug_spawnCPU(50);
+    this.debug_spawnCPU(MAX_ROOM_SIZE - 1);
   }
 
   public tick() {
@@ -72,6 +72,10 @@ export class GameLogic {
     }
   }
 
+  public hasVacancy() {
+    return this.gameState.getPlayers().size < MAX_ROOM_SIZE;
+  }
+
   private handleCollisions(collisions: Collision[]) {
     let wasScoreUpdated = false;
 
@@ -91,11 +95,11 @@ export class GameLogic {
     }
 
     if (collisions.length > 0) {
-      this.networkManager.broadcastCollision(collisions);
+      NetworkManager.getInstance().broadcastCollision(this.roomId, collisions);
     }
     if (wasScoreUpdated) {
       this.spawnFood();
-      this.networkManager.broadcastLeaderboardUpdate(this.gameState.getPlayerData());
+      NetworkManager.getInstance().broadcastLeaderboardUpdate(this.roomId, this.gameState.getPlayerData());
     }
   }
 

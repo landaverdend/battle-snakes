@@ -1,4 +1,4 @@
-import { GameManager } from './game/GameManager';
+import { NetworkManager } from './game/NetworkManager';
 
-const gameManager = new GameManager();
-gameManager.start();
+const networkManager = NetworkManager.getInstance();
+networkManager.initialize();

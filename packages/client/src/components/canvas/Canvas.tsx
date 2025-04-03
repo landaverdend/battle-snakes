@@ -1,7 +1,6 @@
 import { useEffect, useRef } from 'react';
 import './canvas.css';
 import { GameClient } from '../../game/GameClient';
-import { MessageFeed } from '../actionFeed/MessageFeed';
 
 interface CanvasProps {}
 

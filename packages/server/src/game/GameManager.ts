@@ -1,18 +1,17 @@
-import { TICK_RATE_MS } from '../config/gameConfig';
+import { MAX_ROOM_SIZE, TICK_RATE_MS } from '../config/gameConfig';
 import { GameLogic } from './GameLogic';
 import { NetworkManager } from './NetworkManager';
 
 export class GameManager {
   private tickInterval: NodeJS.Timer | null = null;
   private gameLogic: GameLogic;
-  private networkManager: NetworkManager;
+  private roomId: string;
 
-  constructor() {
-    // this.gameState = new GameState(DEFAULT_GRID_SIZE);
-    this.networkManager = new NetworkManager();
-    this.gameLogic = new GameLogic(this.networkManager);
+  constructor(roomId: string) {
+    this.gameLogic = new GameLogic(roomId);
+    this.roomId = roomId;
 
-    this.setupNetworkHandlers();
+    this.start();
   }
 
   public start() {
@@ -22,20 +21,23 @@ export class GameManager {
     }, TICK_RATE_MS);
   }
 
-  setupNetworkHandlers() {
-    this.networkManager.onPlayerJoin((playerId) => {
-      this.gameLogic.spawnPlayer(playerId);
-    });
+  tryToAddPlayerToRoom(playerId: string) {
+    if (!this.gameLogic.hasVacancy()) {
+      return false;
+    }
 
-    this.networkManager.onPlayerExit((playerId) => {
-      this.gameLogic.removePlayer(playerId);
-    });
+    this.gameLogic.spawnPlayer(playerId);
+    return true;
+  }
+
+  removePlayerFromRoom(playerId: string) {
+    this.gameLogic.removePlayer(playerId);
   }
 
   public tick() {
     this.gameLogic.tick();
 
-    this.networkManager.broadcastGameState(this.gameLogic.getSharedGameState());
+    NetworkManager.getInstance().broadcastGameState(this.roomId, this.gameLogic.getSharedGameState());
   }
 
   public stop() {
@@ -43,5 +45,13 @@ export class GameManager {
       clearInterval(this.tickInterval as NodeJS.Timeout);
       this.tickInterval = null;
     }
+  }
+
+  public hasVacancy() {
+    return this.gameLogic.hasVacancy();
+  }
+
+  public getRoomId() {
+    return this.roomId;
   }
 }

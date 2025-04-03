@@ -2,13 +2,16 @@ import { Server, Socket } from 'socket.io';
 import { createServer } from 'http';
 import { Collision, GameEvents, PlayerData, SharedGameState } from '@battle-snakes/shared';
 import EventEmitter from 'events';
+import { RoomManager } from './RoomManager';
 
 const PORT = process.env['PORT'] || 3001;
 export class NetworkManager extends EventEmitter {
+  private static instance: NetworkManager;
   private io: Server;
 
-  constructor() {
+  private constructor() {
     super();
+
     this.io = new Server();
     const httpServer = createServer();
     this.io = new Server(httpServer, {
@@ -21,8 +24,14 @@ export class NetworkManager extends EventEmitter {
     httpServer.listen(PORT, () => {
       console.log(`Server running on port ${PORT}`);
     });
+  }
 
-    this.initialize();
+  public static getInstance() {
+    if (!NetworkManager.instance) {
+      NetworkManager.instance = new NetworkManager();
+    }
+
+    return NetworkManager.instance;
   }
 
   public initialize() {
@@ -33,31 +42,24 @@ export class NetworkManager extends EventEmitter {
     const playerId = socket.id;
     console.log('Client connected: ', playerId);
 
-    this.emit(GameEvents.PLAYER_JOIN, playerId);
+    const roomId = RoomManager.getInstance().assignPlayerToRoom(playerId);
+    socket.join(roomId);
 
     socket.on('disconnect', () => {
-      console.log('Client disconnected: ', playerId);
-      this.emit(GameEvents.PLAYER_EXIT, playerId);
+      console.log('Client disconnected: ', socket.id);
+      RoomManager.getInstance().removePlayerFromRoom(roomId, playerId);
     });
   }
 
-  public broadcastGameState(gameState: SharedGameState) {
-    this.io.emit(GameEvents.STATE_UPDATE, gameState);
+  public broadcastGameState(roomId: string, gameState: SharedGameState) {
+    this.io.to(roomId).emit(GameEvents.STATE_UPDATE, gameState);
   }
 
-  public broadcastCollision(collision: Collision[]) {
-    this.io.emit(GameEvents.COLLISION_EVENT, collision);
+  public broadcastCollision(roomId: string, collision: Collision[]) {
+    this.io.to(roomId).emit(GameEvents.COLLISION_EVENT, collision);
   }
 
-  public broadcastLeaderboardUpdate(players: PlayerData[]) {
-    this.io.emit(GameEvents.LEADERBOARD_UPDATE, players);
-  }
-
-  public onPlayerJoin(callback: (playerId: string) => void) {
-    this.on(GameEvents.PLAYER_JOIN, callback);
-  }
-
-  public onPlayerExit(callback: (playerId: string) => void) {
-    this.on(GameEvents.PLAYER_EXIT, callback);
+  public broadcastLeaderboardUpdate(roomId: string, players: PlayerData[]) {
+    this.io.to(roomId).emit(GameEvents.LEADERBOARD_UPDATE, players);
   }
 }
