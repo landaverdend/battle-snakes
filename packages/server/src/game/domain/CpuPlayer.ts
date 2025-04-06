@@ -1,6 +1,6 @@
 import { CellType, Direction, Entity, getRandomNumber, Point } from '@battle-snakes/shared';
 import { Player, PlayerConfigOptions } from './Player';
-import { GameState } from './GameState';
+import { GameState } from '../core/GameState';
 
 export class CpuPlayer extends Player {
   gridDimensions: number = 40;
@@ -12,9 +12,9 @@ export class CpuPlayer extends Player {
   }
 
   public updateGameState(gameState: GameState) {
-    this.gridDimensions = gameState.gridSize;
-    this.gridState = gameState.grid;
-    this.foodPositions = gameState.foodPositions;
+    this.gridDimensions = gameState.getGridSize();
+    this.gridState = gameState.getGrid();
+    this.foodPositions = gameState.getFoodPositions();
   }
 
   // Choose the next move before actually moving

@@ -1,5 +1,5 @@
 import { Direction, getRandomColor, OppositeDirection, PlayerData, Point } from '@battle-snakes/shared';
-import { DEFAULT_GROWTH_RATE } from '../config/gameConfig';
+import { DEFAULT_GROWTH_RATE } from '../../config/gameConfig';
 
 export type PlayerConfigOptions = {
   color?: string;
@@ -32,8 +32,16 @@ export class Player {
     return this.id;
   }
 
+  public getColor() {
+    return this.color;
+  }
+
   public getHead(): Point {
     return this.segments[0] as Point;
+  }
+
+  public getSegments() {
+    return this.segments;
   }
 
   public kill() {

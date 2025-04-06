@@ -1,4 +1,4 @@
-import { Entity } from './gridTypes';
+import { Entity, Point } from './gridTypes';
 import { PlayerData } from './playerTypes';
 
 export type GameStatus = 'waiting' | 'playing' | 'finished';
@@ -16,6 +16,7 @@ export type Collision = {
   type: 'wall' | 'snake' | 'food' | 'self';
   playerId: string;
   otherPlayerId?: string;
+  point: Point;
 };
 
 export interface SharedGameState {
