@@ -18,7 +18,7 @@ export class Game {
     this.gameLoop = new GameLoop(() => this.update(), TICK_RATE_MS);
     this.gameEventBus = gameEventBus;
 
-    this.debug_spawnCPU(MAX_ROOM_SIZE - 1);
+    this.debug_spawnCPU(MAX_ROOM_SIZE / 2);
   }
 
   public start() {
@@ -52,7 +52,10 @@ export class Game {
     }
 
     this.spawnPlayer(playerId);
-    return false;
+    // send out leaderboard update on player join.
+    this.gameEventBus.emit(GameEvents.LEADERBOARD_UPDATE, this.roomId, this.gameState.getPlayerData());
+
+    return true;
   }
 
   public removePlayerFromRoom(playerId: string) {
@@ -140,8 +143,8 @@ export class Game {
 
     if (collisions.length > 0) {
       this.gameEventBus.emit(GameEvents.COLLISION_EVENT, this.roomId, collisions);
-      // NetworkManager.getInstance().broadcastCollision(this.roomId, collisions);
     }
+
     if (wasScoreUpdated) {
       this.spawnFood();
       this.gameEventBus.emit(GameEvents.LEADERBOARD_UPDATE, this.roomId, this.gameState.getPlayerData());
