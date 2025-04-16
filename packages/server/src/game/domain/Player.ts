@@ -46,6 +46,10 @@ export class Player {
     return this.segments;
   }
 
+  public getSegmentSet() {
+    return this.segmentSet;
+  }
+
   public kill() {
     this.isAlive = false;
   }

@@ -6,7 +6,6 @@ export class CollisionService {
     const players = gameState.getActivePlayers();
 
     const collisions: Collision[] = [];
-    const activePlayerCells = gameState.getActivePlayerCells();
 
     // Iterate through all players, check if the head has collided with any objects (or other players.)
     for (const player of players) {
@@ -38,9 +37,29 @@ export class CollisionService {
       }
 
       // Check collisions with other players
-      const otherPlayerId = activePlayerCells.get(head.toString());
-      if (typeof otherPlayerId === 'string' && otherPlayerId !== playerId) {
-        collisions.push({ type: 'snake', point: head, playerId, otherPlayerId });
+      let snakeCollisionDetected = false;
+      for (const otherPlayer of players) {
+        // Skip checking against self
+        if (otherPlayer.getPlayerId() === playerId) {
+          continue;
+        }
+
+        // Check if the current player's head overlaps with any segment of the other player
+        const otherPlayerSegmentSet = otherPlayer.getSegmentSet();
+        if (otherPlayerSegmentSet.has(head.toString())) {
+          collisions.push({
+            type: 'snake',
+            point: head,
+            playerId,
+            otherPlayerId: otherPlayer.getPlayerId(),
+          });
+          snakeCollisionDetected = true;
+          break; // Found a collision with another snake, no need to check more snakes for this player
+        }
+      }
+
+      if (snakeCollisionDetected) {
+        continue;
       }
 
       // Check food collision
