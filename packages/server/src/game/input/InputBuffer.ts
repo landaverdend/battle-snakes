@@ -10,7 +10,7 @@ export interface PlayerInput {
 export class InputBuffer {
   // The buffer is a map of roomId's to playerId's to player inputs...
   private buffer: Map<string, PlayerInput[]>;
-  private readonly maxInputsPerPlayerPerTick = 3;
+  private readonly maxQueuedInputsPerPlayer = 3;
 
   constructor() {
     this.buffer = new Map();
@@ -23,26 +23,34 @@ export class InputBuffer {
 
     const playerInputs = this.buffer.get(playerId)!;
 
-    if (playerInputs.length <= this.maxInputsPerPlayerPerTick) {
+    if (playerInputs.length < this.maxQueuedInputsPerPlayer) {
       playerInputs.push({ playerId, direction, timestamp: Date.now() });
+    } else {
+      console.log(`Input buffer overflow for player: ${playerId}, dropping input.`);
     }
   }
 
-  processBuffer(): PlayerInput[] {
+  /**
+   * Processes one input per player per tick.
+   * Retrieve the oldest input for each player, and remove it from the buffer.
+   * @returns An array of inputs, containing at most one input per player.
+   */
+  processInputsForTick(): PlayerInput[] {
     // Collect all inputs for the room.
-    const allInputs: PlayerInput[] = [];
+    const inputsToProcess: PlayerInput[] = [];
+
     for (const playerInputs of this.buffer.values()) {
-      allInputs.push(...playerInputs);
+      if (playerInputs.length > 0) {
+        const oldestInput = playerInputs.shift();
+        if (oldestInput) {
+          inputsToProcess.push(oldestInput);
+        }
+      }
     }
-
-    // Clear out the room's buffer.
-    this.buffer.clear();
-
-    // Return the inputs sorted by timestamp.
-    return allInputs.sort((a, b) => a.timestamp - b.timestamp);
+    return inputsToProcess;
   }
 
-  clear() {
-    this.buffer.clear();
+  clearPlayer(playerId: string) {
+    this.buffer.delete(playerId);
   }
 }

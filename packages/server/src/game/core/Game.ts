@@ -50,9 +50,6 @@ export class Game {
     // Step Five: update the visual grid for display, send out the updated map. (This can probably be removed in the future...)
     this.gameState.updateGrid();
     this.gameEventBus.emit(GameEvents.STATE_UPDATE, this.roomId, this.gameState.toSharedGameState());
-
-    // Step Six: clear the input buffer.
-    this.inputBuffer.clear();
   }
 
   public tryToAddPlayerToRoom(playerId: string): boolean {
@@ -69,6 +66,8 @@ export class Game {
 
   public removePlayerFromRoom(playerId: string) {
     this.gameState.removePlayer(playerId);
+    this.inputBuffer.clearPlayer(playerId);
+    // TODO: send out leaderboard update on player leave. 
   }
 
   private spawnPlayer(playerId: string) {
@@ -129,7 +128,7 @@ export class Game {
   }
 
   private processInputs() {
-    const inputs = this.inputBuffer.processBuffer();
+    const inputs = this.inputBuffer.processInputsForTick();
 
     for (const input of inputs) {
       const player = this.gameState.getPlayer(input.playerId);
