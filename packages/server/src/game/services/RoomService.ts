@@ -40,6 +40,10 @@ export class RoomService {
     theRoom.removePlayerFromRoom(playerId);
   }
 
+  public getGameByRoomId(roomId: string): Game | undefined {
+    return this.rooms.get(roomId);
+  }
+
   // Remove empty rooms, manage room lifecycle.
   cleanup() {}
 }

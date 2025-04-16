@@ -6,17 +6,20 @@ import { Player } from '../domain/Player';
 import { GameEventBus } from '../events/GameEventBus';
 import { CollisionService } from '../services/CollisionService';
 import { CpuPlayer } from '../domain/CpuPlayer';
+import { InputBuffer } from '../input/InputBuffer';
 
 export class Game {
   private roomId: string;
   private gameState: GameState;
   private gameLoop: GameLoop;
+  private inputBuffer: InputBuffer;
 
   constructor(roomId: string, gridSize: number, private readonly gameEventBus: GameEventBus) {
     this.roomId = roomId;
     this.gameState = new GameState(gridSize);
     this.gameLoop = new GameLoop(() => this.update(), TICK_RATE_MS);
     this.gameEventBus = gameEventBus;
+    this.inputBuffer = new InputBuffer();
 
     this.debug_spawnCPU(MAX_ROOM_SIZE / 2);
   }
@@ -113,6 +116,10 @@ export class Game {
 
       player.move();
     }
+  }
+
+  public getInputBuffer(): InputBuffer {
+    return this.inputBuffer;
   }
 
   public spawnFood() {

@@ -1,6 +1,6 @@
 import { Server, Socket } from 'socket.io';
 import { createServer } from 'http';
-import { GameEvents } from '@battle-snakes/shared';
+import { Direction, GameEvents } from '@battle-snakes/shared';
 import EventEmitter from 'events';
 import { RoomService } from '../services/RoomService';
 import { GameEventBus } from '../events/GameEventBus';
@@ -38,6 +38,13 @@ export class NetworkService extends EventEmitter {
 
     const roomId = this.roomService.assignPlayerToRoom(playerId);
     socket.join(roomId);
+
+    socket.on(GameEvents.MOVE_REQUEST, (direction: Direction) => {
+      const game = this.roomService.getGameByRoomId(roomId);
+      if (game) {
+        game.getInputBuffer().addInput(playerId, direction);
+      }
+    })
 
     socket.on('disconnect', () => {
       console.log('Client disconnected: ', socket.id);

@@ -35,7 +35,6 @@ export class InputManager {
           direction = 'right';
           break;
       }
-
       this.socket.emit(GameEvents.MOVE_REQUEST, direction);
     };
   }
