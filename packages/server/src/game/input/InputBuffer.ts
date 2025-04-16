@@ -17,18 +17,14 @@ export class InputBuffer {
   }
 
   addInput(playerId: string, direction: Direction) {
-
     if (!this.buffer.has(playerId)) {
       this.buffer.set(playerId, []);
     }
 
     const playerInputs = this.buffer.get(playerId)!;
 
-    if (playerInputs.length >= this.maxInputsPerPlayerPerTick) {
-      console.log('input accepted');
+    if (playerInputs.length <= this.maxInputsPerPlayerPerTick) {
       playerInputs.push({ playerId, direction, timestamp: Date.now() });
-    } else {
-      console.log('input rejected.');
     }
   }
 
@@ -46,11 +42,7 @@ export class InputBuffer {
     return allInputs.sort((a, b) => a.timestamp - b.timestamp);
   }
 
-  clearRoom(roomId: string) {
-    this.buffer.delete(roomId);
-  }
-
-  clearPlayer(playerId: string) {
-    this.buffer.delete(playerId);
+  clear() {
+    this.buffer.clear();
   }
 }

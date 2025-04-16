@@ -30,14 +30,14 @@ export class CpuPlayer extends Player {
       // Calculate which direction gets us closer to food
       const bestMove = this.getBestMoveTowardsTarget(head, nearestFood, possibleMoves);
       if (bestMove) {
-        this.direction = bestMove;
+        this.setDirection(bestMove);
         return;
       }
     }
 
     // If we can't move towards food, just pick a random valid move
     const randomMove = possibleMoves[getRandomNumber(0, possibleMoves.length)] as Direction;
-    this.direction = randomMove;
+    this.setDirection(randomMove);
   }
 
   private getPossibleMoves(): Direction[] {

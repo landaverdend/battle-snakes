@@ -35,18 +35,24 @@ export class Game {
 
   // Main update loop.
   private update(): void {
-    // Step One: update all player positions.
+    // Step One: process all inputs.
+    this.processInputs();
+
+    // Step Two: update all player positions.
     this.movementTick();
 
-    // Step two: track all collisions that occurred after position update.
+    // Step Three: track all collisions that occurred after position update.
     const collisions = CollisionService.detectCollisions(this.gameState);
 
-    // Step three: handle collision effects on the game state...
+    // Step Four: handle collision effects on the game state...
     this.updateGameState(collisions);
 
-    // Step four: update the visual grid for display, send out the updated map. (This can probably be removed in the future...)
+    // Step Five: update the visual grid for display, send out the updated map. (This can probably be removed in the future...)
     this.gameState.updateGrid();
     this.gameEventBus.emit(GameEvents.STATE_UPDATE, this.roomId, this.gameState.toSharedGameState());
+
+    // Step Six: clear the input buffer.
+    this.inputBuffer.clear();
   }
 
   public tryToAddPlayerToRoom(playerId: string): boolean {
@@ -120,6 +126,18 @@ export class Game {
 
   public getInputBuffer(): InputBuffer {
     return this.inputBuffer;
+  }
+
+  private processInputs() {
+    const inputs = this.inputBuffer.processBuffer();
+
+    for (const input of inputs) {
+      const player = this.gameState.getPlayer(input.playerId);
+      if (!player || !player.isActive()) continue;
+
+      // Input validation is done in the player class.
+      player.setDirection(input.direction);
+    }
   }
 
   public spawnFood() {

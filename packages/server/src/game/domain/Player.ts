@@ -8,6 +8,7 @@ export type PlayerConfigOptions = {
 export class Player {
   private id: string;
   direction: Direction;
+  pendingDirection: Direction;
   color: string;
   growthQueue: number;
 
@@ -24,6 +25,7 @@ export class Player {
     this.segmentSet = new Set([config.startPosition.toString()]);
     this.score = 0;
     this.direction = 'up';
+    this.pendingDirection = 'up';
     this.growthQueue = 0;
     this.isAlive = true;
   }
@@ -66,8 +68,11 @@ export class Player {
   }
 
   public move() {
+    this.direction = this.pendingDirection;
     const head = this.getHead();
     const newHead = new Point(head.x, head.y);
+
+
 
     switch (this.direction) {
       case 'up':
@@ -93,6 +98,12 @@ export class Player {
     }
 
     this.segmentSet = new Set(this.segments.map((p) => p.toString()));
+  }
+
+  public setDirection(direction: Direction) {
+    if (this.isValidMove(direction)) {
+      this.pendingDirection = direction;
+    } 
   }
 
   public isValidMove(proposedMove: Direction) {
