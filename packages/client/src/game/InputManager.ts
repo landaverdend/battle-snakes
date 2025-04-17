@@ -1,4 +1,4 @@
-import { Direction, GameEvents, OppositeDirection } from '@battle-snakes/shared';
+import { Direction, GameEvents } from '@battle-snakes/shared';
 import { Socket } from 'socket.io-client';
 
 export class InputManager {

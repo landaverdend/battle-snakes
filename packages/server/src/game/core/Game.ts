@@ -58,16 +58,13 @@ export class Game {
     }
 
     this.spawnPlayer(playerId);
-    // send out leaderboard update on player join.
-    this.gameEventBus.emit(GameEvents.LEADERBOARD_UPDATE, this.roomId, this.gameState.getPlayerData());
-
     return true;
   }
 
   public removePlayerFromRoom(playerId: string) {
     this.gameState.removePlayer(playerId);
     this.inputBuffer.clearPlayer(playerId);
-    // TODO: send out leaderboard update on player leave. 
+    this.gameEventBus.emit(GameEvents.LEADERBOARD_UPDATE, this.roomId, this.gameState.getPlayerData());
   }
 
   private spawnPlayer(playerId: string) {
@@ -77,6 +74,10 @@ export class Game {
     });
 
     this.gameState.addPlayer(player);
+  }
+
+  public getPlayerData() {
+    return this.gameState.getPlayerData();
   }
 
   // Maybe extract this to random.ts and pass in the game state variable.
@@ -127,6 +128,7 @@ export class Game {
     return this.inputBuffer;
   }
 
+  // Grab the inputs for the current tick, update the player's direction based off the buffer.
   private processInputs() {
     const inputs = this.inputBuffer.processInputsForTick();
 
