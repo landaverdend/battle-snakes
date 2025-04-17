@@ -1,6 +1,6 @@
 import { Server, Socket } from 'socket.io';
 import { createServer } from 'http';
-import { Direction, GameEvents } from '@battle-snakes/shared';
+import { GameEvents } from '@battle-snakes/shared';
 import EventEmitter from 'events';
 import { RoomService } from '../services/RoomService';
 import { GameEventBus } from '../events/GameEventBus';
@@ -43,6 +43,9 @@ export class NetworkService extends EventEmitter {
       const game = this.roomService.getGameByRoomId(roomId);
       if (game) {
         this.eventBus.emit(GameEvents.LEADERBOARD_UPDATE, roomId, game.getPlayerData());
+        this.eventBus.emit(GameEvents.MESSAGE_EVENT, roomId, [
+          { type: 'player_join', message: `${playerId} has joined the game.` },
+        ]);
       } else {
         console.error(`Game instance not found for room ${roomId} after player assignment.`);
       }
@@ -57,6 +60,7 @@ export class NetworkService extends EventEmitter {
       socket.on('disconnect', () => {
         console.log('User disconnected:', playerId);
         this.roomService.removePlayerFromRoom(roomId, playerId);
+        this.eventBus.emitPlayerExit(roomId, playerId);
       });
     } catch (error) {
       console.error('Failed to handle connection:', error);
@@ -69,8 +73,8 @@ export class NetworkService extends EventEmitter {
       this.io.to(roomId).emit(GameEvents.STATE_UPDATE, state);
     });
 
-    this.eventBus.on(GameEvents.COLLISION_EVENT, (roomId, collisions) => {
-      this.io.to(roomId).emit(GameEvents.COLLISION_EVENT, collisions);
+    this.eventBus.on(GameEvents.MESSAGE_EVENT, (roomId, messages) => {
+      this.io.to(roomId).emit(GameEvents.MESSAGE_EVENT, messages);
     });
 
     this.eventBus.on(GameEvents.LEADERBOARD_UPDATE, (roomId, playerData) => {

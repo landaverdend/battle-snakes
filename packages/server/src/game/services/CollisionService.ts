@@ -1,4 +1,4 @@
-import { Collision, Point } from '@battle-snakes/shared';
+import { Collision, Message, Point } from '@battle-snakes/shared';
 import { GameState } from '../core/GameState';
 
 export class CollisionService {
@@ -82,5 +82,30 @@ export class CollisionService {
     const isYOutOfBounds = y < 0 || y >= gridSize;
 
     return isXOutOfBounds || isYOutOfBounds;
+  }
+
+  public static convertCollisionsToMessages(collisions: Collision[]): Message[] {
+    const messages: Message[] = [];
+
+    for (const collision of collisions) {
+      let str = '';
+      switch (collision.type) {
+        case 'wall':
+          str = `${collision.playerId} hit the wall.`;
+          break;
+        case 'snake':
+          str = `${collision.playerId} hit ${collision.otherPlayerId}.`;
+          break;
+        case 'self':
+          str = `${collision.playerId} hit themselves.`;
+          break;
+        case 'food':
+          continue;
+      }
+
+      messages.push({ type: 'collision', message: str });
+    }
+
+    return messages;
   }
 }

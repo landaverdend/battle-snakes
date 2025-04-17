@@ -1,10 +1,10 @@
-import { Collision, GameEvents, PlayerData, SharedGameState } from '@battle-snakes/shared';
+import { GameEvents, Message, PlayerData, SharedGameState } from '@battle-snakes/shared';
 import EventEmitter from 'events';
 
 export interface GameEventPayloads {
   [GameEvents.STATE_UPDATE]: [roomId: string, state: SharedGameState];
-  [GameEvents.COLLISION_EVENT]: [roomId: string, collisions: Collision[]];
   [GameEvents.LEADERBOARD_UPDATE]: [roomId: string, playerData: PlayerData[]];
+  [GameEvents.MESSAGE_EVENT]: [roomId: string, message: Message[]];
 }
 
 export class GameEventBus extends EventEmitter {
@@ -14,5 +14,13 @@ export class GameEventBus extends EventEmitter {
 
   override on<E extends keyof GameEventPayloads>(event: E, listener: (...args: GameEventPayloads[E]) => void): this {
     return super.on(event, listener);
+  }
+
+  emitPlayerJoin(roomId: string, playerId: string) {
+    this.emit(GameEvents.MESSAGE_EVENT, roomId, [{ type: 'player_join', message: `${playerId} has joined the game` }]);
+  }
+
+  emitPlayerExit(roomId: string, playerId: string) {
+    this.emit(GameEvents.MESSAGE_EVENT, roomId, [{ type: 'player_exit', message: `${playerId} has left the game` }]);
   }
 }

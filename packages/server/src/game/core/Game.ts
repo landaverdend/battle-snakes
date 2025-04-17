@@ -167,8 +167,9 @@ export class Game {
       }
     }
 
-    if (collisions.length > 0) {
-      this.gameEventBus.emit(GameEvents.COLLISION_EVENT, this.roomId, collisions);
+    const messages = CollisionService.convertCollisionsToMessages(collisions);
+    if (collisions.length > 0 && messages.length > 0) {
+      this.gameEventBus.emit(GameEvents.MESSAGE_EVENT, this.roomId, messages);
     }
 
     if (wasScoreUpdated) {

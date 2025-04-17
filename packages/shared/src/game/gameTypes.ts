@@ -6,11 +6,16 @@ export type GameStatus = 'waiting' | 'playing' | 'finished';
 export enum GameEvents {
   STATE_UPDATE = 'game:state_update',
   MOVE_REQUEST = 'game:move_request',
-  COLLISION_EVENT = 'game:collision_event',
+  MESSAGE_EVENT = 'game:message_event',
   LEADERBOARD_UPDATE = 'game:leaderboard_update',
   PLAYER_JOIN = 'game:player_join',
   PLAYER_EXIT = 'game:player_exit',
 }
+
+export type Message = {
+  type: 'collision' | 'player_join' | 'player_exit';
+  message: string;
+};
 
 export type Collision = {
   type: 'wall' | 'snake' | 'food' | 'self';

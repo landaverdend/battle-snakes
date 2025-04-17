@@ -2,7 +2,7 @@ import { PlayerList } from '@components/playerList/PlayerList';
 import Canvas from '@components/canvas/Canvas';
 
 import './main-view.css';
-import { MessageFeed } from '@/components/actionFeed/MessageFeed';
+import { MessageFeed } from '@components/messageFeed/MessageFeed';
 
 export function MainView() {
   return (

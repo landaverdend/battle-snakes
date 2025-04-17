@@ -1,8 +1,8 @@
-import { GameEvents, SharedGameState, PlayerData, Collision } from '@battle-snakes/shared';
+import { GameEvents, SharedGameState, PlayerData, Message } from '@battle-snakes/shared';
 import { io, Socket } from 'socket.io-client';
 import { ClientGameState } from './ClientGameState';
-import { ActionFeedManager } from './ActionFeedManager';
 import { LeaderboardManager } from './LeaderBoardManager';
+import { MessageFeedService } from './MessageFeedService';
 
 const SOCKET_URL = 'http://localhost:3001';
 export class NetworkManager {
@@ -26,8 +26,8 @@ export class NetworkManager {
       ClientGameState.getInstance().updateState(state);
     });
 
-    this.socket.on(GameEvents.COLLISION_EVENT, (action: Collision[]) => {
-      ActionFeedManager.getInstance().addAction(action);
+    this.socket.on(GameEvents.MESSAGE_EVENT, (messages: Message[]) => {
+      MessageFeedService.getInstance().addAction(messages);
     });
 
     this.socket.on('disconnect', () => {
