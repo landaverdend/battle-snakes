@@ -17,6 +17,12 @@ export type Message = {
   message: string;
 };
 
+export enum RoundState {
+  WAITING = 'waiting',
+  ACTIVE = 'active',
+  INTERMISSION = 'intermission',
+}
+
 export type Collision = {
   type: 'wall' | 'snake' | 'food' | 'self';
   playerId: string;
@@ -28,4 +34,6 @@ export interface SharedGameState {
   gridSize: number;
   grid: Record<string, Entity>;
   players: Array<PlayerData>;
+  roundState: RoundState;
+  roundIntermissionEndTime: number | null;
 }

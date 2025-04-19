@@ -4,6 +4,7 @@ import { DEFAULT_GROWTH_RATE } from '../../config/gameConfig';
 export type PlayerConfigOptions = {
   color?: string;
   startPosition: Point;
+  isAlive?: boolean;
 };
 export class Player {
   private id: string;
@@ -18,12 +19,22 @@ export class Player {
   score: number;
   isAlive: boolean;
 
-  constructor(id: string, config: PlayerConfigOptions) {
+  constructor(id: string, { color, startPosition, isAlive }: PlayerConfigOptions) {
     this.id = id;
-    this.color = config.color || getRandomColor();
-    this.segments = [config.startPosition];
-    this.segmentSet = new Set([config.startPosition.toString()]);
+    this.color = color || getRandomColor();
+    this.segments = [startPosition];
+    this.segmentSet = new Set([startPosition.toString()]);
     this.score = 0;
+    this.direction = 'up';
+    this.pendingDirection = 'up';
+    this.growthQueue = 0;
+    this.isAlive = isAlive ?? false;
+  }
+
+  // Initialize the player for a new round.
+  public resetForRound(position: Point) {
+    this.segments = [position]; 
+    this.segmentSet = new Set([position.toString()]);
     this.direction = 'up';
     this.pendingDirection = 'up';
     this.growthQueue = 0;
@@ -54,6 +65,10 @@ export class Player {
     this.isAlive = false;
   }
 
+  public setAlive() {
+    this.isAlive = true;
+  }
+
   public isActive() {
     return this.isAlive;
   }
@@ -75,8 +90,6 @@ export class Player {
     this.direction = this.pendingDirection;
     const head = this.getHead();
     const newHead = new Point(head.x, head.y);
-
-
 
     switch (this.direction) {
       case 'up':
@@ -107,7 +120,7 @@ export class Player {
   public setDirection(direction: Direction) {
     if (this.isValidMove(direction)) {
       this.pendingDirection = direction;
-    } 
+    }
   }
 
   public isValidMove(proposedMove: Direction) {

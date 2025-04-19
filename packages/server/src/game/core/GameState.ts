@@ -1,7 +1,8 @@
 // packages/server/src/game/core/GameState.ts
-import { CellType, Entity, Point, SharedGameState } from '@battle-snakes/shared';
+import { CellType, Entity, getRandomColor, getRandomNumber, Point, RoundState, SharedGameState } from '@battle-snakes/shared';
 import { Player } from '../domain/Player';
-import { MAX_ROOM_SIZE } from '../../config/gameConfig';
+import { DEFAULT_FOOD_COUNT, MAX_ROOM_SIZE } from '../../config/gameConfig';
+import { CpuPlayer } from '../domain/CpuPlayer';
 
 export class GameState {
   private readonly gridSize: number;
@@ -9,11 +10,31 @@ export class GameState {
   private readonly players: Map<string, Player>;
   private readonly foodPositions: Set<string>;
 
+  private roundState: RoundState;
+  private roundIntermissionEndTime: number | null = null;
+
   constructor(gridSize: number) {
     this.gridSize = gridSize;
     this.grid = new Map();
     this.players = new Map();
     this.foodPositions = new Set();
+    this.roundState = RoundState.WAITING;
+  }
+
+  public getRoundState(): RoundState {
+    return this.roundState;
+  }
+
+  public setRoundState(roundState: RoundState) {
+    this.roundState = roundState;
+  }
+
+  public setRoundIntermissionEndTime(roundIntermissionEndTime: number | null) {
+    this.roundIntermissionEndTime = roundIntermissionEndTime;
+  }
+
+  public getRoundIntermissionEndTime() {
+    return this.roundIntermissionEndTime;
   }
 
   public getGrid() {
@@ -53,9 +74,24 @@ export class GameState {
     return this.players.size < MAX_ROOM_SIZE;
   }
 
+  public isWaitTimeOver(): boolean {
+    return this.roundIntermissionEndTime !== null && this.roundIntermissionEndTime < Date.now();
+  }
+
+  public areAllPlayersDead(): boolean {
+    return this.getActivePlayers().length === 0;
+  }
+
   // State Mutation Methods
-  public addPlayer(player: Player): void {
-    this.players.set(player.getPlayerId(), player);
+  public addPlayer(playerId: string, isCpu = false): void {
+    // Set the player to alive if the round is waiting or in intermission.
+    const isAlive = this.roundState === RoundState.INTERMISSION || this.roundState === RoundState.WAITING;
+    this.players.set(
+      playerId,
+      isCpu
+        ? new CpuPlayer(playerId, { color: getRandomColor(), startPosition: this.getRandomAvailablePosition(), isAlive })
+        : new Player(playerId, { color: getRandomColor(), startPosition: this.getRandomAvailablePosition(), isAlive })
+    );
   }
 
   public removePlayer(playerId: string): void {
@@ -114,12 +150,67 @@ export class GameState {
     return toRet;
   }
 
+  // Initialize the round:
+  // - Set the round state to active.
+  // - reset intermission end time.
+  // - reset players to active and then set their spawn positions.
+  public initRound() {
+    this.roundState = RoundState.ACTIVE;
+    this.roundIntermissionEndTime = null;
+
+    // Initialize players for the round
+    for (const player of this.players.values()) {
+      player.resetForRound(this.getRandomAvailablePosition());
+    }
+  }
+
+  public placeFood() {
+    while (this.getFoodPositions().size < DEFAULT_FOOD_COUNT) {
+      const foodPoint = this.getRandomAvailablePosition();
+
+      this.addFood(foodPoint);
+    }
+  }
+
+  // Maybe extract this to random.ts and pass in the game state variable.
+  public getRandomAvailablePosition(): Point {
+    // const { gridSize, players, foodPositions } = this.gameState;
+    const gridSize = this.getGridSize();
+    const foodPositions = this.getFoodPositions();
+
+    const totalPositions = gridSize * gridSize;
+    const activePlayerCells = this.getActivePlayerCells();
+    const occupiedCount = activePlayerCells.size + foodPositions.size;
+
+    // If there are no available positions, return undefined. ( this is rare )
+    if (occupiedCount === totalPositions) {
+      console.error('Occupied Counts: ', occupiedCount, ' and total:', totalPositions);
+    }
+
+    let target = getRandomNumber(0, totalPositions - occupiedCount);
+
+    for (let x = 0; x < gridSize; x++) {
+      for (let y = 0; y < gridSize; y++) {
+        const pos = new Point(x, y);
+
+        if (!activePlayerCells.has(pos.toString()) && !foodPositions.has(pos.toString())) {
+          if (target === 0) return pos;
+          target--;
+        }
+      }
+    }
+
+    throw new Error('No available positions.');
+  }
+
   // Serialization for network
   public toSharedGameState(): SharedGameState {
     return {
       grid: Object.fromEntries(this.grid.entries()),
       gridSize: this.gridSize,
       players: this.getAllPlayers().map((p) => p.toPlayerData()),
+      roundState: this.roundState,
+      roundIntermissionEndTime: this.roundIntermissionEndTime,
     };
   }
 }

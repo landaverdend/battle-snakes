@@ -25,7 +25,7 @@ export class RoomService {
     const roomId = crypto.randomUUID();
     const theRoom = new Game(roomId, DEFAULT_GRID_SIZE, this.gameEventBus);
 
-    theRoom.start(); // start up the room...
+    theRoom.startRoom(); // start up the room...
     theRoom.tryToAddPlayerToRoom(playerId); // add player before setting adding room to the map..
 
     this.rooms.set(roomId, theRoom);

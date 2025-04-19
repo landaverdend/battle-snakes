@@ -1,8 +1,7 @@
-import { Collision, GameEvents, getRandomColor, getRandomNumber, Point } from '@battle-snakes/shared';
-import { DEFAULT_FOOD_COUNT, MAX_ROOM_SIZE, TICK_RATE_MS } from '../../config/gameConfig';
+import { Collision, GameEvents, getRandomColor, RoundState } from '@battle-snakes/shared';
+import { DEFAULT_FOOD_COUNT, INTERMISSION_DURATION_MS, MAX_ROOM_SIZE, TICK_RATE_MS } from '../../config/gameConfig';
 import { GameLoop } from './GameLoop';
 import { GameState } from './GameState';
-import { Player } from '../domain/Player';
 import { GameEventBus } from '../events/GameEventBus';
 import { CollisionService } from '../services/CollisionService';
 import { CpuPlayer } from '../domain/CpuPlayer';
@@ -17,16 +16,15 @@ export class Game {
   constructor(roomId: string, gridSize: number, private readonly gameEventBus: GameEventBus) {
     this.roomId = roomId;
     this.gameState = new GameState(gridSize);
-    this.gameLoop = new GameLoop(() => this.update(), TICK_RATE_MS);
+    this.gameLoop = new GameLoop(() => this.tick(), TICK_RATE_MS);
     this.gameEventBus = gameEventBus;
     this.inputBuffer = new InputBuffer();
-
-    this.debug_spawnCPU(MAX_ROOM_SIZE / 2);
   }
 
-  public start() {
+  public startRoom() {
+    this.gameState.setRoundState(RoundState.WAITING);
     this.gameLoop.start();
-    this.spawnFood();
+    this.debug_spawnCPU(MAX_ROOM_SIZE / 2); // TODO: remove this later.
   }
 
   public stop() {
@@ -34,7 +32,18 @@ export class Game {
   }
 
   // Main update loop.
-  private update(): void {
+  private tick(): void {
+    switch (this.gameState.getRoundState()) {
+      case RoundState.ACTIVE:
+        this.gameLoopTick();
+        break;
+      case RoundState.WAITING:
+        this.intermissionTick();
+        break;
+    }
+  }
+
+  private gameLoopTick(): void {
     // Step One: process all inputs.
     this.processInputs();
 
@@ -45,19 +54,43 @@ export class Game {
     const collisions = CollisionService.detectCollisions(this.gameState);
 
     // Step Four: handle collision effects on the game state...
-    this.updateGameState(collisions);
+    this.processCollisions(collisions);
 
-    // Step Five: update the visual grid for display, send out the updated map. (This can probably be removed in the future...)
+    // Step Five: update the visual grid for display, send out the updated map.
     this.gameState.updateGrid();
+    this.gameEventBus.emit(GameEvents.STATE_UPDATE, this.roomId, this.gameState.toSharedGameState());
+
+    if (this.gameState.getFoodPositions().size < DEFAULT_FOOD_COUNT) {
+      this.gameState.placeFood();
+    }
+
+    if (this.gameState.areAllPlayersDead()) {
+      this.gameState.setRoundState(RoundState.WAITING);
+      console.log(`Round over for ${this.roomId}, switching to intermission`);
+    }
+  }
+
+  private intermissionTick(): void {
+    if (this.gameState.getRoundIntermissionEndTime() === null) {
+      this.gameState.setRoundIntermissionEndTime(Date.now() + INTERMISSION_DURATION_MS);
+    }
+
+    // If intermission time is over, set round to active and reset the intermission end time.
+    if (this.gameState.getRoundIntermissionEndTime()!! < Date.now()) {
+      this.gameState.initRound();
+    }
+
     this.gameEventBus.emit(GameEvents.STATE_UPDATE, this.roomId, this.gameState.toSharedGameState());
   }
 
   public tryToAddPlayerToRoom(playerId: string): boolean {
+    // Race condition: check if there is vacancy before trying to add a player.
     if (!this.gameState.hasVacancy()) {
       return false;
     }
 
-    this.spawnPlayer(playerId);
+    this.gameState.addPlayer(playerId);
+
     return true;
   }
 
@@ -67,48 +100,8 @@ export class Game {
     this.gameEventBus.emit(GameEvents.LEADERBOARD_UPDATE, this.roomId, this.gameState.getPlayerData());
   }
 
-  private spawnPlayer(playerId: string) {
-    const player = new Player(playerId, {
-      color: getRandomColor(),
-      startPosition: this.getRandomAvailablePosition(),
-    });
-
-    this.gameState.addPlayer(player);
-  }
-
   public getPlayerData() {
     return this.gameState.getPlayerData();
-  }
-
-  // Maybe extract this to random.ts and pass in the game state variable.
-  public getRandomAvailablePosition(): Point {
-    // const { gridSize, players, foodPositions } = this.gameState;
-    const gridSize = this.gameState.getGridSize();
-    const foodPositions = this.gameState.getFoodPositions();
-
-    const totalPositions = gridSize * gridSize;
-    const activePlayerCells = this.gameState.getActivePlayerCells();
-    const occupiedCount = activePlayerCells.size + foodPositions.size;
-
-    // If there are no available positions, return undefined. ( this is rare )
-    if (occupiedCount === totalPositions) {
-      console.error('Occupied Counts: ', occupiedCount, ' and total:', totalPositions);
-    }
-
-    let target = getRandomNumber(0, totalPositions - occupiedCount);
-
-    for (let x = 0; x < gridSize; x++) {
-      for (let y = 0; y < gridSize; y++) {
-        const pos = new Point(x, y);
-
-        if (!activePlayerCells.has(pos.toString()) && !foodPositions.has(pos.toString())) {
-          if (target === 0) return pos;
-          target--;
-        }
-      }
-    }
-
-    throw new Error('No available positions.');
   }
 
   private movementTick() {
@@ -143,13 +136,17 @@ export class Game {
 
   public spawnFood() {
     while (this.gameState.getFoodPositions().size < DEFAULT_FOOD_COUNT) {
-      const foodPoint = this.getRandomAvailablePosition();
+      const foodPoint = this.gameState.getRandomAvailablePosition();
 
       this.gameState.addFood(foodPoint);
     }
   }
 
-  private updateGameState(collisions: Collision[]) {
+  /**
+   * Take the collisions that happened in the last tick, and update the game state accordingly.
+   * @param collisions
+   */
+  private processCollisions(collisions: Collision[]) {
     let wasScoreUpdated = false;
 
     for (const collision of collisions) {
@@ -173,16 +170,14 @@ export class Game {
     }
 
     if (wasScoreUpdated) {
-      this.spawnFood();
+      this.gameState.placeFood();
       this.gameEventBus.emit(GameEvents.LEADERBOARD_UPDATE, this.roomId, this.gameState.getPlayerData());
     }
   }
 
-  // I want to move this eventually...
   debug_spawnCPU(num: number) {
     for (let i = 0; i < num; i++) {
-      const id = `ai [${crypto.randomUUID().split('-')[0]}]`;
-      this.gameState.addPlayer(new CpuPlayer(id, { startPosition: this.getRandomAvailablePosition(), color: getRandomColor() }));
+      this.gameState.addPlayer(`CPU ${i + 1}`, true);
     }
   }
 }

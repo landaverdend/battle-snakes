@@ -61,6 +61,7 @@ export class NetworkService extends EventEmitter {
         console.log('User disconnected:', playerId);
         this.roomService.removePlayerFromRoom(roomId, playerId);
         this.eventBus.emitPlayerExit(roomId, playerId);
+              
       });
     } catch (error) {
       console.error('Failed to handle connection:', error);
