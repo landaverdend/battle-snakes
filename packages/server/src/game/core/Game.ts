@@ -22,7 +22,7 @@ export class Game {
   }
 
   public startRoom() {
-    this.gameState.setRoundState(RoundState.WAITING);
+    this.gameState.beginIntermission();
     this.gameLoop.start();
     this.debug_spawnCPU(MAX_ROOM_SIZE / 2); // TODO: remove this later.
   }
@@ -38,6 +38,7 @@ export class Game {
         this.gameLoopTick();
         break;
       case RoundState.WAITING:
+      case RoundState.INTERMISSION:
         this.intermissionTick();
         break;
     }
@@ -65,19 +66,14 @@ export class Game {
     }
 
     if (this.gameState.areAllPlayersDead()) {
-      this.gameState.setRoundState(RoundState.WAITING);
-      console.log(`Round over for ${this.roomId}, switching to intermission`);
+      this.gameState.beginIntermission();
     }
   }
 
   private intermissionTick(): void {
-    if (this.gameState.getRoundIntermissionEndTime() === null) {
-      this.gameState.setRoundIntermissionEndTime(Date.now() + INTERMISSION_DURATION_MS);
-    }
-
     // If intermission time is over, set round to active and reset the intermission end time.
-    if (this.gameState.getRoundIntermissionEndTime()!! < Date.now()) {
-      this.gameState.initRound();
+    if (this.gameState.isIntermissionOver()) {
+      this.gameState.beginRound();
     }
 
     this.gameEventBus.emit(GameEvents.STATE_UPDATE, this.roomId, this.gameState.toSharedGameState());

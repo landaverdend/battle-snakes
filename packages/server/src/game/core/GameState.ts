@@ -1,7 +1,7 @@
 // packages/server/src/game/core/GameState.ts
 import { CellType, Entity, getRandomColor, getRandomNumber, Point, RoundState, SharedGameState } from '@battle-snakes/shared';
 import { Player } from '../domain/Player';
-import { DEFAULT_FOOD_COUNT, MAX_ROOM_SIZE } from '../../config/gameConfig';
+import { DEFAULT_FOOD_COUNT, INTERMISSION_DURATION_MS, MAX_ROOM_SIZE } from '../../config/gameConfig';
 import { CpuPlayer } from '../domain/CpuPlayer';
 
 export class GameState {
@@ -11,6 +11,7 @@ export class GameState {
   private readonly foodPositions: Set<string>;
 
   private roundState: RoundState;
+  private roundNumber: number = 1;
   private roundIntermissionEndTime: number | null = null;
 
   constructor(gridSize: number) {
@@ -27,14 +28,6 @@ export class GameState {
 
   public setRoundState(roundState: RoundState) {
     this.roundState = roundState;
-  }
-
-  public setRoundIntermissionEndTime(roundIntermissionEndTime: number | null) {
-    this.roundIntermissionEndTime = roundIntermissionEndTime;
-  }
-
-  public getRoundIntermissionEndTime() {
-    return this.roundIntermissionEndTime;
   }
 
   public getGrid() {
@@ -154,7 +147,8 @@ export class GameState {
   // - Set the round state to active.
   // - reset intermission end time.
   // - reset players to active and then set their spawn positions.
-  public initRound() {
+  public beginRound() {
+    console.log(`Round ${this.roundNumber} beginning for room`);
     this.roundState = RoundState.ACTIVE;
     this.roundIntermissionEndTime = null;
 
@@ -162,6 +156,18 @@ export class GameState {
     for (const player of this.players.values()) {
       player.resetForRound(this.getRandomAvailablePosition());
     }
+  }
+
+  public beginIntermission() {
+    console.log(`Round ${this.roundNumber} over for room, beginning intermission.`);
+
+    this.roundState = RoundState.INTERMISSION;
+    this.roundIntermissionEndTime = Date.now() + INTERMISSION_DURATION_MS;
+    this.roundNumber++;
+  }
+
+  public isIntermissionOver(): boolean {
+    return this.roundIntermissionEndTime !== null && this.roundIntermissionEndTime < Date.now();
   }
 
   public placeFood() {
@@ -209,8 +215,11 @@ export class GameState {
       grid: Object.fromEntries(this.grid.entries()),
       gridSize: this.gridSize,
       players: this.getAllPlayers().map((p) => p.toPlayerData()),
-      roundState: this.roundState,
-      roundIntermissionEndTime: this.roundIntermissionEndTime,
+      roundInfo: {
+        roundState: this.roundState,
+        roundIntermissionEndTime: this.roundIntermissionEndTime,
+        roundNumber: this.roundNumber,
+      },
     };
   }
 }

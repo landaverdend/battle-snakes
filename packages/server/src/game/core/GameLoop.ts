@@ -21,8 +21,4 @@ export class GameLoop {
   private tick(): void {
     this.onTick();
   }
-
-  public isRunning(): boolean {
-    return this.interval !== null;
-  }
 }

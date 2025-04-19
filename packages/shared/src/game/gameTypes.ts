@@ -30,10 +30,15 @@ export type Collision = {
   point: Point;
 };
 
+export interface RoundInfo {
+  roundNumber: number;
+  roundState: RoundState;
+  roundIntermissionEndTime: number | null;
+}
+
 export interface SharedGameState {
   gridSize: number;
   grid: Record<string, Entity>;
   players: Array<PlayerData>;
-  roundState: RoundState;
-  roundIntermissionEndTime: number | null;
+  roundInfo: RoundInfo;
 }

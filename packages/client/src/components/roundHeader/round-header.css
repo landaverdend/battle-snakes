@@ -1,0 +1,12 @@
+.round-header-container {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+
+
+  padding: 10px;
+  border-radius: 10px;
+  border: 1px solid black;
+}
