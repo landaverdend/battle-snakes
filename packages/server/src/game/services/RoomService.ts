@@ -39,6 +39,12 @@ export class RoomService {
       throw new Error(`Room ${roomId} doesn't exist!`);
     }
     theRoom.removePlayerFromRoom(playerId);
+
+    if (theRoom.getPlayerData().length === 0) {
+      console.warn(`Room ${roomId} is empty, deleting...`);
+      theRoom.stop();
+      this.rooms.delete(roomId);
+    }
   }
 
   public getGameByRoomId(roomId: string): Game | undefined {
@@ -46,5 +52,13 @@ export class RoomService {
   }
 
   // Remove empty rooms, manage room lifecycle.
-  cleanup() {}
+  cleanup() {
+    for (const [roomId, game] of this.rooms) {
+      if (game.getPlayerData().length === 0) {
+        game.stop();
+        this.rooms.delete(roomId);
+        console.log(`Room ${roomId} is empty, deleting...`);
+      }
+    }
+  }
 }

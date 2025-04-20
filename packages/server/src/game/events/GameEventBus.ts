@@ -16,8 +16,8 @@ export class GameEventBus extends EventEmitter {
     return super.on(event, listener);
   }
 
-  emitPlayerJoin(roomId: string, playerId: string) {
-    this.emit(GameEvents.MESSAGE_EVENT, roomId, [{ type: 'player_join', message: `${playerId} has joined the game` }]);
+  emitPlayerJoin(roomId: string, playerName: string) {
+    this.emit(GameEvents.MESSAGE_EVENT, roomId, [{ type: 'player_join', message: `${playerName} has joined the game` }]);
   }
 
   emitPlayerExit(roomId: string, playerName: string) {

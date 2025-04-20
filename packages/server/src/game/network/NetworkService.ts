@@ -4,6 +4,7 @@ import { GameEvents } from '@battle-snakes/shared';
 import EventEmitter from 'events';
 import { RoomService } from '../services/RoomService';
 import { GameEventBus } from '../events/GameEventBus';
+import { ROOM_CLEANUP_INTERVAL_MS } from '../../config/gameConfig';
 
 const PORT = process.env['PORT'] || 3001;
 export class NetworkService extends EventEmitter {
@@ -30,6 +31,7 @@ export class NetworkService extends EventEmitter {
   public initialize() {
     this.io.on('connection', (socket) => this.handleConnection(socket));
     this.setupEventListeners();
+    this.setupCleanupInterval();
   }
 
   private handleConnection(socket: Socket) {
@@ -49,9 +51,7 @@ export class NetworkService extends EventEmitter {
       const game = this.roomService.getGameByRoomId(roomId);
       if (game) {
         this.eventBus.emit(GameEvents.LEADERBOARD_UPDATE, roomId, game.getPlayerData());
-        this.eventBus.emit(GameEvents.MESSAGE_EVENT, roomId, [
-          { type: 'player_join', message: `${playerName} has joined the game.` },
-        ]);
+        this.eventBus.emitPlayerJoin(roomId, playerName);
       } else {
         console.error(`Game instance not found for room ${roomId} after player assignment.`);
       }
@@ -86,5 +86,12 @@ export class NetworkService extends EventEmitter {
     this.eventBus.on(GameEvents.LEADERBOARD_UPDATE, (roomId, playerData) => {
       this.io.to(roomId).emit(GameEvents.LEADERBOARD_UPDATE, playerData);
     });
+  }
+
+  private setupCleanupInterval() {
+    setInterval(() => {
+      console.log('Room cleanup interval triggered');
+      this.roomService.cleanup();
+    }, ROOM_CLEANUP_INTERVAL_MS);
   }
 }

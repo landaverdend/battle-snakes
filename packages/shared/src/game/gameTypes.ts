@@ -1,8 +1,6 @@
 import { Entity, Point } from './gridTypes';
 import { PlayerData } from './playerTypes';
 
-export type GameStatus = 'waiting' | 'playing' | 'finished';
-
 export enum GameEvents {
   STATE_UPDATE = 'game:state_update',
   MOVE_REQUEST = 'game:move_request',
@@ -26,7 +24,7 @@ export enum RoundState {
 export type Collision = {
   type: 'wall' | 'snake' | 'food' | 'self';
   playerId: string;
-  playerName: string; 
+  playerName: string;
   otherPlayerId?: string;
   otherPlayerName?: string;
   point: Point;

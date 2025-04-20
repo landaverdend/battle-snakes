@@ -10,7 +10,7 @@ export class GameState {
   private readonly foodPositions: Set<string>;
 
   private roundState: RoundState;
-  private roundNumber: number = 1;
+  private roundNumber: number = 0;
   private roundIntermissionEndTime: number | null = null;
 
   constructor(gridSize: number) {
