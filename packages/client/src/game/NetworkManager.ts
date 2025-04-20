@@ -8,8 +8,8 @@ const SOCKET_URL = 'http://localhost:3001';
 export class NetworkManager {
   private socket: Socket;
 
-  constructor() {
-    this.socket = io(SOCKET_URL);
+  constructor(playerName: string, playerColor: string) {
+    this.socket = io(SOCKET_URL, { auth: { playerName, playerColor } });
     this.initializeSocket();
   }
 

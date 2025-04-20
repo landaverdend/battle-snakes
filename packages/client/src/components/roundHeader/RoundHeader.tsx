@@ -83,9 +83,9 @@ export default function RoundHeader() {
   // Render the countdown string
   return (
     <div className="round-header-container">
-      <div>Round Number: {roundInfo.roundNumber}</div>
-      <div>Round Status: {roundInfo.roundState}</div>
-      {roundInfo.roundState !== RoundState.ACTIVE && <div>New Round in {countdown} </div>}
+      <div className="item">Round Number: {roundInfo.roundNumber}</div>
+      <div className="item">Round Status: {roundInfo.roundState}</div>
+      {roundInfo.roundState !== RoundState.ACTIVE && <div className="item">New Round in: {countdown} </div>}
     </div>
   );
 }

@@ -9,7 +9,7 @@ type PLIProps = {
 function PlayerListItem({ player }: PLIProps) {
   return (
     <span className="player-list-item">
-      {player.score} - {player.id}
+      {player.score} - {player.name}
       <span className="color-box" style={{ backgroundColor: player.color }}></span>
     </span>
   );
@@ -40,7 +40,7 @@ export function PlayerList() {
       <h3>Leaderboard</h3>
       <div className="player-list">
         {players.map((player) => (
-          <PlayerListItem key={player.id} player={player} />
+          <PlayerListItem key={player.name} player={player} />
         ))}
       </div>
     </div>

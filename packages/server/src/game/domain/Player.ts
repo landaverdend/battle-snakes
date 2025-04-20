@@ -5,9 +5,11 @@ export type PlayerConfigOptions = {
   color?: string;
   startPosition: Point;
   isAlive?: boolean;
+  name: string;
 };
 export class Player {
   private id: string;
+  name: string;
   direction: Direction;
   pendingDirection: Direction;
   color: string;
@@ -19,8 +21,9 @@ export class Player {
   score: number;
   isAlive: boolean;
 
-  constructor(id: string, { color, startPosition, isAlive }: PlayerConfigOptions) {
+  constructor(id: string, { color, startPosition, isAlive, name }: PlayerConfigOptions) {
     this.id = id;
+    this.name = name;
     this.color = color || getRandomColor();
     this.segments = [startPosition];
     this.segmentSet = new Set([startPosition.toString()]);
@@ -33,7 +36,7 @@ export class Player {
 
   // Initialize the player for a new round.
   public resetForRound(position: Point) {
-    this.segments = [position]; 
+    this.segments = [position];
     this.segmentSet = new Set([position.toString()]);
     this.direction = 'up';
     this.pendingDirection = 'up';
@@ -51,6 +54,10 @@ export class Player {
 
   public getHead(): Point {
     return this.segments[0] as Point;
+  }
+
+  public getPlayerName() {
+    return this.name;
   }
 
   public getSegments() {
@@ -75,7 +82,7 @@ export class Player {
 
   toPlayerData(): PlayerData {
     return {
-      id: this.id,
+      name: this.name,
       color: this.color,
       score: this.score,
     };

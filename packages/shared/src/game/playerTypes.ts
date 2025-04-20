@@ -9,7 +9,7 @@ export const OppositeDirection: Record<Direction, Direction> = {
 
 // Data that is sent to the client.
 export interface PlayerData {
-  id: string;
   color: string;
+  name: string;
   score: number;
 }

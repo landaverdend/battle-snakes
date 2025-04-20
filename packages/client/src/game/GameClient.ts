@@ -10,9 +10,9 @@ export class GameClient {
   private isRunning: boolean = false;
   private animationFrameId: number | null = null;
 
-  constructor(ctx: CanvasRenderingContext2D) {
+  constructor(ctx: CanvasRenderingContext2D, playerName: string, playerColor: string) {
     this.renderer = new Renderer(ctx);
-    this.network = new NetworkManager();
+    this.network = new NetworkManager(playerName, playerColor);
     this.inputManager = new InputManager(this.network.getSocket());
   }
 

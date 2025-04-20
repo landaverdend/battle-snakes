@@ -26,7 +26,9 @@ export enum RoundState {
 export type Collision = {
   type: 'wall' | 'snake' | 'food' | 'self';
   playerId: string;
+  playerName: string; 
   otherPlayerId?: string;
+  otherPlayerName?: string;
   point: Point;
 };
 

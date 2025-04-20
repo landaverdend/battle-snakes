@@ -11,11 +11,11 @@ export class RoomService {
   }
 
   // Go through the available rooms and find the first one with a vacant spot and fill it.
-  public assignPlayerToRoom(playerId: string): string {
+  public assignPlayerToRoom(playerId: string, playerName: string, playerColor: string): string {
     console.log('Trying to add clientId to a room.', playerId);
 
     for (const [roomId, game] of this.rooms) {
-      if (game.tryToAddPlayerToRoom(playerId)) {
+      if (game.tryToAddPlayerToRoom(playerId, playerName, playerColor)) {
         console.log('Room with vacancy was found for clientId', playerId, ` in room: ${roomId}`);
         return roomId;
       }
@@ -26,7 +26,7 @@ export class RoomService {
     const theRoom = new Game(roomId, DEFAULT_GRID_SIZE, this.gameEventBus);
 
     theRoom.startRoom(); // start up the room...
-    theRoom.tryToAddPlayerToRoom(playerId); // add player before setting adding room to the map..
+    theRoom.tryToAddPlayerToRoom(playerId, playerName, playerColor); // add player before setting adding room to the map..
 
     this.rooms.set(roomId, theRoom);
 

@@ -79,13 +79,13 @@ export class Game {
     this.gameEventBus.emit(GameEvents.STATE_UPDATE, this.roomId, this.gameState.toSharedGameState());
   }
 
-  public tryToAddPlayerToRoom(playerId: string): boolean {
+  public tryToAddPlayerToRoom(playerId: string, playerName: string, playerColor: string): boolean {
     // Race condition: check if there is vacancy before trying to add a player.
     if (!this.gameState.hasVacancy()) {
       return false;
     }
 
-    this.gameState.addPlayer(playerId);
+    this.gameState.addPlayer(playerId, playerName, playerColor);
 
     return true;
   }
@@ -173,7 +173,7 @@ export class Game {
 
   debug_spawnCPU(num: number) {
     for (let i = 0; i < num; i++) {
-      this.gameState.addPlayer(`CPU ${i + 1}`, true);
+      this.gameState.addPlayer(`CPU ${i + 1}`, `CPU ${i + 1}`, getRandomColor(), true);
     }
   }
 }

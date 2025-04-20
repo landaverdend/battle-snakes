@@ -17,6 +17,7 @@ export class CollisionService {
         collisions.push({
           type: 'wall',
           playerId,
+          playerName: player.name,
           point: head,
         });
         continue;
@@ -30,6 +31,7 @@ export class CollisionService {
           collisions.push({
             type: 'self',
             playerId,
+            playerName: player.name,
             point: head,
           });
           continue;
@@ -51,7 +53,9 @@ export class CollisionService {
             type: 'snake',
             point: head,
             playerId,
+            playerName: player.name,
             otherPlayerId: otherPlayer.getPlayerId(),
+            otherPlayerName: otherPlayer.getPlayerName(),
           });
           snakeCollisionDetected = true;
           break; // Found a collision with another snake, no need to check more snakes for this player
@@ -67,6 +71,7 @@ export class CollisionService {
         collisions.push({
           point: head,
           type: 'food',
+          playerName: player.name,
           playerId,
         });
       }
@@ -91,13 +96,13 @@ export class CollisionService {
       let str = '';
       switch (collision.type) {
         case 'wall':
-          str = `${collision.playerId} hit the wall.`;
+          str = `${collision.playerName} hit the wall.`;
           break;
         case 'snake':
-          str = `${collision.playerId} hit ${collision.otherPlayerId}.`;
+          str = `${collision.playerName} hit ${collision.otherPlayerName}.`;
           break;
         case 'self':
-          str = `${collision.playerId} hit themselves.`;
+          str = `${collision.playerName} hit themselves.`;
           break;
         case 'food':
           continue;

@@ -35,16 +35,22 @@ export class NetworkService extends EventEmitter {
   private handleConnection(socket: Socket) {
     const playerId = socket.id;
     console.log('A user connected:', playerId);
+    const { playerName, playerColor } = socket.handshake.auth;
 
     try {
-      const roomId = this.roomService.assignPlayerToRoom(playerId);
+      console.log(`Player name: ${playerName}, Player color: ${playerColor} has joined.`);
+      if (!playerName) {
+        throw new Error('Player name is required');
+      }
+
+      const roomId = this.roomService.assignPlayerToRoom(playerId, playerName, playerColor);
       socket.join(roomId);
 
       const game = this.roomService.getGameByRoomId(roomId);
       if (game) {
         this.eventBus.emit(GameEvents.LEADERBOARD_UPDATE, roomId, game.getPlayerData());
         this.eventBus.emit(GameEvents.MESSAGE_EVENT, roomId, [
-          { type: 'player_join', message: `${playerId} has joined the game.` },
+          { type: 'player_join', message: `${playerName} has joined the game.` },
         ]);
       } else {
         console.error(`Game instance not found for room ${roomId} after player assignment.`);
@@ -60,8 +66,7 @@ export class NetworkService extends EventEmitter {
       socket.on('disconnect', () => {
         console.log('User disconnected:', playerId);
         this.roomService.removePlayerFromRoom(roomId, playerId);
-        this.eventBus.emitPlayerExit(roomId, playerId);
-              
+        this.eventBus.emitPlayerExit(roomId, playerName);
       });
     } catch (error) {
       console.error('Failed to handle connection:', error);
