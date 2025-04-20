@@ -3,7 +3,6 @@ import { DEFAULT_GROWTH_RATE } from '../../config/gameConfig';
 
 export type PlayerConfigOptions = {
   color?: string;
-  startPosition: Point;
   isAlive?: boolean;
   name: string;
 };
@@ -21,12 +20,12 @@ export class Player {
   score: number;
   isAlive: boolean;
 
-  constructor(id: string, { color, startPosition, isAlive, name }: PlayerConfigOptions) {
+  constructor(id: string, { color, isAlive, name }: PlayerConfigOptions) {
     this.id = id;
     this.name = name;
     this.color = color || getRandomColor();
-    this.segments = [startPosition];
-    this.segmentSet = new Set([startPosition.toString()]);
+    this.segments = [];
+    this.segmentSet = new Set();
     this.score = 0;
     this.direction = 'up';
     this.pendingDirection = 'up';
@@ -35,7 +34,7 @@ export class Player {
   }
 
   // Initialize the player for a new round.
-  public resetForRound(position: Point) {
+  public prepareForNewRound(position: Point) {
     this.segments = [position];
     this.segmentSet = new Set([position.toString()]);
     this.direction = 'up';

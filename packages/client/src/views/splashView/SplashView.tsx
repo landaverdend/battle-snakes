@@ -7,7 +7,7 @@ type SVProps = {
 
 export default function SplashView({ onComplete }: SVProps) {
   const [playerName, setPlayerName] = useState<string>('');
-  const [playerColor, setPlayerColor] = useState<string>('');
+  const [playerColor, setPlayerColor] = useState<string>('#000000');
 
   return (
     <div className="splash-view-container">
@@ -24,7 +24,7 @@ export default function SplashView({ onComplete }: SVProps) {
         />
       </span>
 
-      <button onClick={() => onComplete(playerName, playerColor)}>Start</button>
+      <button onClick={() => onComplete(playerName, playerColor)}>Play Online</button>
     </div>
   );
 }

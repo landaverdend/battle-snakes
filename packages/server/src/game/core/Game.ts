@@ -1,17 +1,19 @@
-import { Collision, GameEvents, getRandomColor, RoundState } from '@battle-snakes/shared';
-import { DEFAULT_FOOD_COUNT, INTERMISSION_DURATION_MS, MAX_ROOM_SIZE, TICK_RATE_MS } from '../../config/gameConfig';
+import { Collision, GameEvents, RoundState } from '@battle-snakes/shared';
+import { DEFAULT_FOOD_COUNT, TICK_RATE_MS } from '../../config/gameConfig';
 import { GameLoop } from './GameLoop';
 import { GameState } from './GameState';
 import { GameEventBus } from '../events/GameEventBus';
 import { CollisionService } from '../services/CollisionService';
 import { CpuPlayer } from '../domain/CpuPlayer';
 import { InputBuffer } from '../input/InputBuffer';
+import { SpawnService } from '../services/SpawnService';
 
 export class Game {
   private roomId: string;
   private gameState: GameState;
   private gameLoop: GameLoop;
   private inputBuffer: InputBuffer;
+  private spawnService: SpawnService;
 
   constructor(roomId: string, gridSize: number, private readonly gameEventBus: GameEventBus) {
     this.roomId = roomId;
@@ -19,12 +21,12 @@ export class Game {
     this.gameLoop = new GameLoop(() => this.tick(), TICK_RATE_MS);
     this.gameEventBus = gameEventBus;
     this.inputBuffer = new InputBuffer();
+    this.spawnService = new SpawnService(this.gameState);
   }
 
   public startRoom() {
     this.gameState.beginIntermission();
     this.gameLoop.start();
-    this.debug_spawnCPU(MAX_ROOM_SIZE / 2); // TODO: remove this later.
   }
 
   public stop() {
@@ -62,7 +64,7 @@ export class Game {
     this.gameEventBus.emit(GameEvents.STATE_UPDATE, this.roomId, this.gameState.toSharedGameState());
 
     if (this.gameState.getFoodPositions().size < DEFAULT_FOOD_COUNT) {
-      this.gameState.placeFood();
+      this.spawnService.spawnFood();
     }
 
     if (this.gameState.areAllPlayersDead()) {
@@ -74,6 +76,8 @@ export class Game {
     // If intermission time is over, set round to active and reset the intermission end time.
     if (this.gameState.isIntermissionOver()) {
       this.gameState.beginRound();
+      this.spawnService.spawnFood();
+      this.spawnService.spawnPlayers();
     }
 
     this.gameEventBus.emit(GameEvents.STATE_UPDATE, this.roomId, this.gameState.toSharedGameState());
@@ -130,14 +134,6 @@ export class Game {
     }
   }
 
-  public spawnFood() {
-    while (this.gameState.getFoodPositions().size < DEFAULT_FOOD_COUNT) {
-      const foodPoint = this.gameState.getRandomAvailablePosition();
-
-      this.gameState.addFood(foodPoint);
-    }
-  }
-
   /**
    * Take the collisions that happened in the last tick, and update the game state accordingly.
    * @param collisions
@@ -166,14 +162,8 @@ export class Game {
     }
 
     if (wasScoreUpdated) {
-      this.gameState.placeFood();
+      this.spawnService.spawnFood();
       this.gameEventBus.emit(GameEvents.LEADERBOARD_UPDATE, this.roomId, this.gameState.getPlayerData());
-    }
-  }
-
-  debug_spawnCPU(num: number) {
-    for (let i = 0; i < num; i++) {
-      this.gameState.addPlayer(`CPU ${i + 1}`, `CPU ${i + 1}`, getRandomColor(), true);
     }
   }
 }

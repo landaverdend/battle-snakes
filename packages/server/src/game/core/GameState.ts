@@ -1,7 +1,6 @@
-// packages/server/src/game/core/GameState.ts
-import { CellType, Entity, getRandomColor, getRandomNumber, Point, RoundState, SharedGameState } from '@battle-snakes/shared';
+import { CellType, Entity, getRandomColor, Point, RoundState, SharedGameState } from '@battle-snakes/shared';
 import { Player } from '../domain/Player';
-import { DEFAULT_FOOD_COUNT, INTERMISSION_DURATION_MS, MAX_ROOM_SIZE } from '../../config/gameConfig';
+import { INTERMISSION_DURATION_MS, MAX_ROOM_SIZE } from '../../config/gameConfig';
 import { CpuPlayer } from '../domain/CpuPlayer';
 
 export class GameState {
@@ -84,13 +83,11 @@ export class GameState {
       isCpu
         ? new CpuPlayer(playerId, {
             color: getRandomColor(),
-            startPosition: this.getRandomAvailablePosition(),
             isAlive,
             name: playerId,
           })
         : new Player(playerId, {
             color: playerColor || getRandomColor(),
-            startPosition: this.getRandomAvailablePosition(),
             isAlive,
             name: playerName,
           })
@@ -161,11 +158,6 @@ export class GameState {
     console.log(`Round ${this.roundNumber} beginning for room`);
     this.roundState = RoundState.ACTIVE;
     this.roundIntermissionEndTime = null;
-
-    // Initialize players for the round
-    for (const player of this.players.values()) {
-      player.resetForRound(this.getRandomAvailablePosition());
-    }
   }
 
   public beginIntermission() {
@@ -178,45 +170,6 @@ export class GameState {
 
   public isIntermissionOver(): boolean {
     return this.roundIntermissionEndTime !== null && this.roundIntermissionEndTime < Date.now();
-  }
-
-  public placeFood() {
-    while (this.getFoodPositions().size < DEFAULT_FOOD_COUNT) {
-      const foodPoint = this.getRandomAvailablePosition();
-
-      this.addFood(foodPoint);
-    }
-  }
-
-  // Maybe extract this to random.ts and pass in the game state variable.
-  public getRandomAvailablePosition(): Point {
-    // const { gridSize, players, foodPositions } = this.gameState;
-    const gridSize = this.getGridSize();
-    const foodPositions = this.getFoodPositions();
-
-    const totalPositions = gridSize * gridSize;
-    const activePlayerCells = this.getActivePlayerCells();
-    const occupiedCount = activePlayerCells.size + foodPositions.size;
-
-    // If there are no available positions, return undefined. ( this is rare )
-    if (occupiedCount === totalPositions) {
-      console.error('Occupied Counts: ', occupiedCount, ' and total:', totalPositions);
-    }
-
-    let target = getRandomNumber(0, totalPositions - occupiedCount);
-
-    for (let x = 0; x < gridSize; x++) {
-      for (let y = 0; y < gridSize; y++) {
-        const pos = new Point(x, y);
-
-        if (!activePlayerCells.has(pos.toString()) && !foodPositions.has(pos.toString())) {
-          if (target === 0) return pos;
-          target--;
-        }
-      }
-    }
-
-    throw new Error('No available positions.');
   }
 
   // Serialization for network
