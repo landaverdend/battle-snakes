@@ -166,6 +166,7 @@ export class GameState {
     this.roundState = RoundState.INTERMISSION;
     this.roundIntermissionEndTime = Date.now() + INTERMISSION_DURATION_MS;
     this.roundNumber++;
+    this.foodPositions.clear();
   }
 
   public isIntermissionOver(): boolean {

@@ -15,6 +15,7 @@ export class Game {
   private inputBuffer: InputBuffer;
   private spawnService: SpawnService;
   isCpuGame: boolean;
+  private haveEntitiesBeenSpawned = false;
 
   constructor(roomId: string, gridSize: number, private readonly gameEventBus: GameEventBus, isCpuGame = false) {
     this.roomId = roomId;
@@ -79,13 +80,18 @@ export class Game {
   }
 
   private intermissionTick(): void {
+    if (!this.haveEntitiesBeenSpawned) {
+      this.spawnService.spawnInitialFood();
+      this.spawnService.spawnPlayers();
+      this.haveEntitiesBeenSpawned = true;
+    }
     // If intermission time is over, set round to active and reset the intermission end time.
     if (this.gameState.isIntermissionOver()) {
       this.gameState.beginRound();
-      this.spawnService.spawnFood();
-      this.spawnService.spawnPlayers();
+      this.haveEntitiesBeenSpawned = false;
     }
 
+    this.gameState.updateGrid(); // We want to show the players spawn positions before the game starts.
     this.gameEventBus.emit(GameEvents.STATE_UPDATE, this.roomId, this.gameState.toSharedGameState());
   }
 

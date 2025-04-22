@@ -1,6 +1,7 @@
 import { getRandomColor, getRandomNumber, Point } from '@battle-snakes/shared';
-import { DEFAULT_FOOD_COUNT } from '../../config/gameConfig';
+import { DEFAULT_FOOD_COUNT, DEFAULT_GRID_SIZE, MAX_ROOM_SIZE } from '../../config/gameConfig';
 import { GameState } from '../core/GameState';
+import { Player } from '../domain/Player';
 
 // Class that handles the spawning of entities.
 export class SpawnService {
@@ -15,8 +16,31 @@ export class SpawnService {
   }
 
   public spawnPlayers() {
-    for (const player of this.gameState.getAllPlayers()) {
-      player.prepareForNewRound(this.getRandomAvailablePosition());
+    let spawnPositionYDelta = Math.floor(DEFAULT_GRID_SIZE / (MAX_ROOM_SIZE / 2));
+    let xDelta = 5;
+    const players = this.gameState.getAllPlayers();
+
+    for (let i = 0; i < players.length; i++) {
+      const shouldSpawnLeft = i < MAX_ROOM_SIZE / 2;
+      let x = shouldSpawnLeft ? xDelta : DEFAULT_GRID_SIZE - xDelta;
+      let y = (i % 5) * spawnPositionYDelta + Math.floor(spawnPositionYDelta * 0.75);
+
+      const player = players[i] as Player;
+      player?.prepareForNewRound(new Point(x, y));
+      if (shouldSpawnLeft) {
+        player.setDirection('right');
+      } else {
+        player.setDirection('left');
+      }
+    }
+  }
+
+  public spawnInitialFood() {
+    let spawnPositionYDelta = Math.floor((DEFAULT_GRID_SIZE / DEFAULT_FOOD_COUNT) * 0.9);
+    let x = Math.floor(DEFAULT_GRID_SIZE / 2);
+    for (let i = 0; i < DEFAULT_FOOD_COUNT; i++) {
+      const y = Math.floor(i * spawnPositionYDelta) + spawnPositionYDelta;
+      this.gameState.addFood(new Point(x, y));
     }
   }
 
