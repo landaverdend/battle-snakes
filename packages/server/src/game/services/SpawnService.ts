@@ -58,7 +58,7 @@ export class SpawnService {
     throw new Error('No available positions.');
   }
 
-  spawnCpuPlayers(num: number) {
+  addCpuPlayers(num: number) {
     for (let i = 0; i < num; i++) {
       this.gameState.addPlayer(`CPU ${i + 1}`, `CPU ${i + 1}`, getRandomColor(), true);
     }

@@ -1,5 +1,5 @@
 import { Collision, GameEvents, RoundState } from '@battle-snakes/shared';
-import { DEFAULT_FOOD_COUNT, TICK_RATE_MS } from '../../config/gameConfig';
+import { DEFAULT_FOOD_COUNT, MAX_ROOM_SIZE, TICK_RATE_MS } from '../../config/gameConfig';
 import { GameLoop } from './GameLoop';
 import { GameState } from './GameState';
 import { GameEventBus } from '../events/GameEventBus';
@@ -14,14 +14,20 @@ export class Game {
   private gameLoop: GameLoop;
   private inputBuffer: InputBuffer;
   private spawnService: SpawnService;
+  isCpuGame: boolean;
 
-  constructor(roomId: string, gridSize: number, private readonly gameEventBus: GameEventBus) {
+  constructor(roomId: string, gridSize: number, private readonly gameEventBus: GameEventBus, isCpuGame = false) {
     this.roomId = roomId;
     this.gameState = new GameState(gridSize);
     this.gameLoop = new GameLoop(() => this.tick(), TICK_RATE_MS);
     this.gameEventBus = gameEventBus;
     this.inputBuffer = new InputBuffer();
     this.spawnService = new SpawnService(this.gameState);
+
+    this.isCpuGame = isCpuGame;
+    if (isCpuGame) {
+      this.spawnService.addCpuPlayers(MAX_ROOM_SIZE - 1);
+    }
   }
 
   public startRoom() {

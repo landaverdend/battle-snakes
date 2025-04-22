@@ -3,13 +3,14 @@ import { io, Socket } from 'socket.io-client';
 import { ClientGameState } from './ClientGameState';
 import { LeaderboardManager } from './LeaderBoardManager';
 import { MessageFeedService } from './MessageFeedService';
+import { GameConfigOptions } from './GameClient';
 
 const SOCKET_URL = 'http://localhost:3001';
 export class NetworkManager {
   private socket: Socket;
 
-  constructor(playerName: string, playerColor: string) {
-    this.socket = io(SOCKET_URL, { auth: { playerName, playerColor } });
+  constructor({ playerName, playerColor, isCpuGame }: GameConfigOptions) {
+    this.socket = io(SOCKET_URL, { auth: { playerName, playerColor, isCpuGame } });
     this.initializeSocket();
   }
 

@@ -1,4 +1,4 @@
-export const TICKS_PER_SECOND = 10.5;
+export const TICKS_PER_SECOND = 9;
 export const TICK_RATE_MS = 1000 / TICKS_PER_SECOND;
 
 export const INTERMISSION_DURATION_MS = 5000;

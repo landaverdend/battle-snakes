@@ -1,6 +1,7 @@
 import { MainView } from '@views/mainView/MainView';
 import { useState } from 'react';
 import SplashView from './splashView/SplashView';
+import { GameConfigOptions } from '@/game/GameClient';
 
 export enum View {
   SPLASH = 'splash',
@@ -8,13 +9,17 @@ export enum View {
 }
 export default function App() {
   const [view, setView] = useState<View>(View.SPLASH);
-  const [playerName, setPlayerName] = useState<string>('');
-  const [playerColor, setPlayerColor] = useState<string>('');
 
-  const handleComplete = (playerName: string, playerColor: string) => {
+  const [gameConfig, setGameConfig] = useState<GameConfigOptions>({
+    playerName: '',
+    playerColor: '',
+    isCpuGame: false,
+  });
+
+  const handleComplete = (playerName: string, playerColor: string, isCpuGame: boolean) => {
     setView(View.MAIN);
-    setPlayerName(playerName);
-    setPlayerColor(playerColor);
+
+    setGameConfig({ playerName, playerColor, isCpuGame });
   };
 
   let viewToRender = null;
@@ -24,7 +29,7 @@ export default function App() {
       viewToRender = <SplashView onComplete={handleComplete} />;
       break;
     case View.MAIN:
-      viewToRender = <MainView playerColor={playerColor} playerName={playerName} />;
+      viewToRender = <MainView gameConfig={gameConfig} />;
       break;
   }
 

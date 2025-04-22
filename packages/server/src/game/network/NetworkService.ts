@@ -37,15 +37,19 @@ export class NetworkService extends EventEmitter {
   private handleConnection(socket: Socket) {
     const playerId = socket.id;
     console.log('A user connected:', playerId);
-    const { playerName, playerColor } = socket.handshake.auth;
-
+    const { playerName, playerColor, isCpuGame } = socket.handshake.auth;
     try {
       console.log(`Player name: ${playerName}, Player color: ${playerColor} has joined.`);
       if (!playerName) {
         throw new Error('Player name is required');
       }
 
-      const roomId = this.roomService.assignPlayerToRoom(playerId, playerName, playerColor);
+      let roomId = '';
+      if (isCpuGame) {
+        roomId = this.roomService.assignPlayerToCpuGame(playerId, playerName, playerColor);
+      } else {
+        roomId = this.roomService.assignPlayerToRoom(playerId, playerName, playerColor);
+      }
       socket.join(roomId);
 
       const game = this.roomService.getGameByRoomId(roomId);

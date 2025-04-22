@@ -5,18 +5,18 @@ import Canvas from '@components/canvas/Canvas';
 
 import { MessageFeed } from '@components/messageFeed/MessageFeed';
 import RoundHeader from '@/components/roundHeader/RoundHeader';
+import { GameConfigOptions } from '@/game/GameClient';
 
 interface MVProps {
-  playerName: string;
-  playerColor: string;
+  gameConfig: GameConfigOptions;
 }
-export function MainView({ playerName, playerColor }: MVProps) {
+export function MainView({ gameConfig }: MVProps) {
   return (
     <div className="main-view-container">
       <RoundHeader />
       <div className="dock-container">
         <PlayerList />
-        <Canvas playerName={playerName} playerColor={playerColor} />
+        <Canvas gameConfig={gameConfig} />
         <MessageFeed />
       </div>
     </div>

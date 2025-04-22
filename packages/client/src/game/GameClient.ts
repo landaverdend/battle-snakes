@@ -2,6 +2,11 @@ import { Renderer } from './Renderer';
 import { NetworkManager } from './NetworkManager';
 import { InputManager } from './InputManager';
 
+export interface GameConfigOptions {
+  playerName: string;
+  playerColor: string;
+  isCpuGame?: boolean;
+}
 export class GameClient {
   private renderer: Renderer;
   private network: NetworkManager;
@@ -10,9 +15,9 @@ export class GameClient {
   private isRunning: boolean = false;
   private animationFrameId: number | null = null;
 
-  constructor(ctx: CanvasRenderingContext2D, playerName: string, playerColor: string) {
+  constructor(ctx: CanvasRenderingContext2D, gameConfig: GameConfigOptions) {
     this.renderer = new Renderer(ctx);
-    this.network = new NetworkManager(playerName, playerColor);
+    this.network = new NetworkManager(gameConfig);
     this.inputManager = new InputManager(this.network.getSocket());
   }
 

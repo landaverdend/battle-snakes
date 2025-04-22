@@ -2,7 +2,7 @@ import { useState } from 'react';
 import './splash-view.css';
 
 type SVProps = {
-  onComplete: (playerName: string, playerColor: string) => void;
+  onComplete: (playerName: string, playerColor: string, isCpuGame: boolean) => void;
 };
 
 export default function SplashView({ onComplete }: SVProps) {
@@ -24,7 +24,8 @@ export default function SplashView({ onComplete }: SVProps) {
         />
       </span>
 
-      <button onClick={() => onComplete(playerName, playerColor)}>Play Online</button>
+      <button onClick={() => onComplete(playerName, playerColor, false)}>Play Online</button>
+      <button onClick={() => onComplete(playerName, playerColor, true)}>Play Against CPU</button>
     </div>
   );
 }

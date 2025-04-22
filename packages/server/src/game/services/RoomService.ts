@@ -33,6 +33,18 @@ export class RoomService {
     return roomId;
   }
 
+  public assignPlayerToCpuGame(playerId: string, playerName: string, playerColor: string): string {
+    const roomId = crypto.randomUUID();
+
+    const theRoom = new Game(roomId, DEFAULT_GRID_SIZE, this.gameEventBus, true);
+    theRoom.startRoom();
+    theRoom.tryToAddPlayerToRoom(playerId, playerName, playerColor);
+
+    this.rooms.set(roomId, theRoom);
+
+    return roomId;
+  }
+
   public removePlayerFromRoom(roomId: string, playerId: string) {
     const theRoom = this.rooms.get(roomId);
     if (!theRoom) {
@@ -40,7 +52,7 @@ export class RoomService {
     }
     theRoom.removePlayerFromRoom(playerId);
 
-    if (theRoom.getPlayerData().length === 0) {
+    if (theRoom.getPlayerData().length === 0 || theRoom.isCpuGame) {
       console.warn(`Room ${roomId} is empty, deleting...`);
       theRoom.stop();
       this.rooms.delete(roomId);

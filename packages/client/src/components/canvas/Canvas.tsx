@@ -1,13 +1,12 @@
 import { useEffect, useRef } from 'react';
 import './canvas.css';
-import { GameClient } from '../../game/GameClient';
+import { GameClient, GameConfigOptions } from '../../game/GameClient';
 
 interface CanvasProps {
-  playerName: string;
-  playerColor: string;
+  gameConfig: GameConfigOptions;
 }
 
-const Canvas = ({ playerName, playerColor }: CanvasProps) => {
+const Canvas = ({ gameConfig }: CanvasProps) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const gameRef = useRef<GameClient | null>(null);
@@ -20,7 +19,7 @@ const Canvas = ({ playerName, playerColor }: CanvasProps) => {
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
 
-    gameRef.current = new GameClient(ctx, playerName, playerColor);
+    gameRef.current = new GameClient(ctx, gameConfig);
     gameRef.current.start();
 
     const resizeCanvas = () => {
