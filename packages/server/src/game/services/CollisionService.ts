@@ -12,6 +12,16 @@ export class CollisionService {
       const head = player.getHead();
       const playerId = player.getPlayerId();
 
+      // Check food collision
+      if (gameState.getFoodPositions().has(head.toString())) {
+        collisions.push({
+          point: head,
+          type: 'food',
+          playerName: player.name,
+          playerId,
+        });
+      }
+
       // Check wall collisions
       if (this.isOutOfBounds(head, gameState.getGridSize())) {
         collisions.push({
@@ -64,16 +74,6 @@ export class CollisionService {
 
       if (snakeCollisionDetected) {
         continue;
-      }
-
-      // Check food collision
-      if (gameState.getFoodPositions().has(head.toString())) {
-        collisions.push({
-          point: head,
-          type: 'food',
-          playerName: player.name,
-          playerId,
-        });
       }
     }
 
