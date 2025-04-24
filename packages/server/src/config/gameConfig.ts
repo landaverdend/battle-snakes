@@ -1,5 +1,5 @@
-export const TICK_RATE_MS = 50;
-export const GAME_UPDATE_INTERVAL_MS = 100;
+export const TICK_RATE_MS = 30;
+export const GAME_UPDATE_INTERVAL_MS = 130;
 
 export const INTERMISSION_DURATION_MS = 5000;
 export const ROOM_CLEANUP_INTERVAL_MS = 1000 * 60 * 5; // 2 minute.
