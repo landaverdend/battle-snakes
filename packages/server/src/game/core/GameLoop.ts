@@ -1,8 +1,9 @@
 export class GameLoop {
   private interval: NodeJS.Timeout | null = null;
   private readonly tickRate: number;
+  private lastTickTime: number = 0;
 
-  constructor(private readonly onTick: () => void, tickRate: number = 100) {
+  constructor(private readonly callback: (deltaTime: number) => void, tickRate: number = 100) {
     this.tickRate = tickRate;
   }
 
@@ -19,6 +20,10 @@ export class GameLoop {
   }
 
   private tick(): void {
-    this.onTick();
+    const now = Date.now();
+    const deltaTime = now - this.lastTickTime;
+    this.lastTickTime = now;
+
+    this.callback(deltaTime);
   }
 }

@@ -1,5 +1,5 @@
 import { Collision, GameEvents, RoundState } from '@battle-snakes/shared';
-import { DEFAULT_FOOD_COUNT, MAX_ROOM_SIZE, TICK_RATE_MS } from '../../config/gameConfig';
+import { DEFAULT_FOOD_COUNT, GAME_UPDATE_INTERVAL_MS, MAX_ROOM_SIZE, TICK_RATE_MS } from '../../config/gameConfig';
 import { GameLoop } from './GameLoop';
 import { GameState } from './GameState';
 import { GameEventBus } from '../events/GameEventBus';
@@ -15,12 +15,14 @@ export class Game {
   private inputBuffer: InputBuffer;
   private spawnService: SpawnService;
   isCpuGame: boolean;
+
   private haveEntitiesBeenSpawned = false;
+  private movementAccumulator = 0;
 
   constructor(roomId: string, gridSize: number, private readonly gameEventBus: GameEventBus, isCpuGame = false) {
     this.roomId = roomId;
     this.gameState = new GameState(gridSize);
-    this.gameLoop = new GameLoop(() => this.tick(), TICK_RATE_MS);
+    this.gameLoop = new GameLoop((deltaTime: number) => this.tick(deltaTime), TICK_RATE_MS);
     this.gameEventBus = gameEventBus;
     this.inputBuffer = new InputBuffer();
     this.spawnService = new SpawnService(this.gameState);
@@ -41,10 +43,10 @@ export class Game {
   }
 
   // Main update loop.
-  private tick(): void {
+  private tick(deltaTime: number): void {
     switch (this.gameState.getRoundState()) {
       case RoundState.ACTIVE:
-        this.gameLoopTick();
+        this.gameLoopTick(deltaTime);
         break;
       case RoundState.WAITING:
       case RoundState.INTERMISSION:
@@ -53,9 +55,17 @@ export class Game {
     }
   }
 
-  private gameLoopTick(): void {
+  private gameLoopTick(deltaTime: number): void {
+    // We want to track inputs faster than the main update loop...
+    this.movementAccumulator += deltaTime;
+
     // Step One: process all inputs.
     this.processInputs();
+
+    if (this.movementAccumulator < GAME_UPDATE_INTERVAL_MS) {
+      return;
+    }
+    this.movementAccumulator -= GAME_UPDATE_INTERVAL_MS;
 
     // Step Two: update all player positions.
     this.movementTick();
