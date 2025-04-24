@@ -6,7 +6,7 @@
   "scripts": {
     "build": "tsc",
     "clean": "rimraf dist",
-    "start": "tsx ./src/index.ts"
+    "start": "PORT=3001 tsx ./src/index.ts"
   },
   "dependencies": {
     "@battle-snakes/shared": "^1.0.0",

@@ -1,0 +1,27 @@
+version: '3.8'
+
+services:
+  backend:
+    container_name: battle-snakes-backend
+    build:
+      context: .
+      dockerfile: Dockerfile.backend
+    ports:
+      - '3001:3001'
+    restart: unless-stopped
+    networks:
+      - battle-snakes-network
+  frontend:
+    container_name: battle-snakes-frontend
+    build:
+      context: .
+      dockerfile: Dockerfile.frontend
+    ports:
+      - '3000:3000'
+    restart: unless-stopped
+    networks:
+      - battle-snakes-network
+
+networks:
+  battle-snakes-network:
+    driver: bridge

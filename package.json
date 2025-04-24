@@ -1,15 +1,17 @@
 {
   "name": "battle-snakes",
   "private": true,
+  "type": "module",
   "workspaces": [
     "packages/*"
   ],
   "scripts": {
     "dev": "npm run nuke && npm run start",
     "nuke": "rm -rf node_modules packages/*/node_modules packages/*/dist packages/*/*.tsbuildinfo && npm i",
-    "start": "cd packages/shared && npm run build && cd ../.. && concurrently \"npm run dev:client\" \"npm run dev:server\"",
-    "dev:client": "npm run dev -w @battle-snakes/client",
-    "dev:server": "npm run start -w @battle-snakes/server"
+    "start": "cd packages/shared && npm run build && cd ../.. && concurrently \"npm run client\" \"npm run server\"",
+    "client": "npm run dev -w @battle-snakes/client",
+    "server": "npm run start -w @battle-snakes/server",
+    "build:client": "npm run build -w @battle-snakes/client"
   },
   "devDependencies": {
     "concurrently": "^9.1.2"

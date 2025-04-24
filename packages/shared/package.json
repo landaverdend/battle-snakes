@@ -4,6 +4,7 @@
   "private": true,
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
+  "type": "module",
   "scripts": {
     "build": "tsc",
     "clean": "rimraf dist",
@@ -13,4 +14,4 @@
     "rimraf": "^5.0.5",
     "typescript": "^5.3.3"
   }
-} 
+}
