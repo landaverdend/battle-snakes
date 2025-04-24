@@ -7,7 +7,7 @@ services:
       context: .
       dockerfile: Dockerfile.backend
     ports:
-      - '3005:3001'
+      - '3005:3030'
     restart: unless-stopped
     networks:
       - web
@@ -17,7 +17,7 @@ services:
       context: .
       dockerfile: Dockerfile.frontend
     ports:
-      - '3004:3000'
+      - '3004:3031'
     restart: unless-stopped
     networks:
       - web 
