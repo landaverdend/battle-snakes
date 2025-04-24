@@ -1,5 +1,5 @@
 import { Collision, GameEvents, RoundState } from '@battle-snakes/shared';
-import { DEFAULT_FOOD_COUNT, GAME_UPDATE_INTERVAL_MS, MAX_ROOM_SIZE, TICK_RATE_MS } from '../../config/gameConfig';
+import { DEFAULT_FOOD_COUNT, GAME_STATE_UPDATE_INTERVAL_MS, MAX_ROOM_SIZE, TICK_RATE_MS } from '../../config/gameConfig';
 import { GameLoop } from './GameLoop';
 import { GameState } from './GameState';
 import { GameEventBus } from '../events/GameEventBus';
@@ -62,10 +62,10 @@ export class Game {
     // Step One: process all inputs.
     this.processInputs();
 
-    if (this.movementAccumulator < GAME_UPDATE_INTERVAL_MS) {
+    if (this.movementAccumulator < GAME_STATE_UPDATE_INTERVAL_MS) {
       return;
     }
-    this.movementAccumulator -= GAME_UPDATE_INTERVAL_MS;
+    this.movementAccumulator -= GAME_STATE_UPDATE_INTERVAL_MS;
 
     // Step Two: update all player positions.
     this.movementTick();

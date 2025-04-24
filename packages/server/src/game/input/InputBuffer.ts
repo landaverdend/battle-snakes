@@ -41,10 +41,11 @@ export class InputBuffer {
 
     for (const playerInputs of this.buffer.values()) {
       if (playerInputs.length > 0) {
-        const latestInput = playerInputs.pop();
-        playerInputs.length = 0;
-        if (latestInput) {
-          inputsToProcess.push(latestInput);
+        playerInputs.sort((a, b) => a.timestamp - b.timestamp);
+
+        const oldestInput = playerInputs.shift();
+        if (oldestInput) {
+          inputsToProcess.push(oldestInput);
         }
       }
     }
