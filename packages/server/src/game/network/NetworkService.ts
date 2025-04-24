@@ -17,7 +17,7 @@ export class NetworkService extends EventEmitter {
     const httpServer = createServer();
     this.io = new Server(httpServer, {
       cors: {
-        origin: 'http://localhost:3000',
+        origin: ['http://localhost:3000', 'https://battlesnakes.io'],
         methods: ['GET', 'POST'],
       },
     });

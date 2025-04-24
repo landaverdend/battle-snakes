@@ -5,7 +5,8 @@ import { LeaderboardManager } from './LeaderBoardManager';
 import { MessageFeedService } from './MessageFeedService';
 import { GameConfigOptions } from './GameClient';
 
-const SOCKET_URL = 'http://localhost:3001';
+// To something like this:
+const SOCKET_URL = window.location.hostname === 'localhost' ? 'http://localhost:3001' : window.location.origin;
 export class NetworkManager {
   private socket: Socket;
 
