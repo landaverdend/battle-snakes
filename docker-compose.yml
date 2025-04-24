@@ -7,7 +7,7 @@ services:
       context: .
       dockerfile: Dockerfile.backend
     ports:
-      - '3001:3001'
+      - '3005:3001'
     restart: unless-stopped
     networks:
       - battle-snakes-network
@@ -17,11 +17,11 @@ services:
       context: .
       dockerfile: Dockerfile.frontend
     ports:
-      - '3000:3000'
+      - '3004:3000'
     restart: unless-stopped
     networks:
-      - battle-snakes-network
+      - web 
 
 networks:
-  battle-snakes-network:
-    driver: bridge
+  web:
+    external: true 
