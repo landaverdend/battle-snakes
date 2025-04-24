@@ -10,7 +10,7 @@ services:
       - '3005:3001'
     restart: unless-stopped
     networks:
-      - battle-snakes-network
+      - web
   frontend:
     container_name: battle-snakes-frontend
     build:
