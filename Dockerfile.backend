@@ -11,5 +11,5 @@ RUN npm install
 RUN npm run build -w @battle-snakes/shared
 RUN npm run build -w @battle-snakes/server
 
-EXPOSE 3001
+EXPOSE 3030
 CMD ["npm", "run", "server"]

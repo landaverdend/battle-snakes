@@ -6,7 +6,7 @@ import { RoomService } from '../services/RoomService';
 import { GameEventBus } from '../events/GameEventBus';
 import { ROOM_CLEANUP_INTERVAL_MS } from '../../config/gameConfig';
 
-const PORT = process.env['PORT'] || 3001;
+const PORT = process.env['PORT'] || 3030;
 export class NetworkService extends EventEmitter {
   private io: Server;
 

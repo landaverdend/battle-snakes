@@ -19,5 +19,5 @@ RUN npm run build -w @battle-snakes/shared
 RUN npm run build -w @battle-snakes/client
 
 RUN npm install -g serve
-EXPOSE 3000
-CMD ["serve", "-s", "./packages/client/dist", "-l", "3000"]
+EXPOSE 3031
+CMD ["serve", "-s", "./packages/client/dist", "-l", "3031"]
