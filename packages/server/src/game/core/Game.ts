@@ -60,11 +60,12 @@ export class Game {
     this.movementAccumulator += deltaTime;
 
     // Step One: process all inputs.
-    this.processInputs();
 
     if (this.movementAccumulator < GAME_STATE_UPDATE_INTERVAL_MS) {
       return;
     }
+    
+    this.processInputs();
     this.movementAccumulator -= GAME_STATE_UPDATE_INTERVAL_MS;
 
     // Step Two: update all player positions.
