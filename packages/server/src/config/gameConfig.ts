@@ -1,4 +1,4 @@
-export const TICK_RATE_MS = 30;
+export const TICK_RATE_MS = 15; // 60 frames a second...
 export const GAME_STATE_UPDATE_INTERVAL_MS = 130;
 
 export const INTERMISSION_DURATION_MS = 5000;

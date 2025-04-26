@@ -1,4 +1,4 @@
-import { Direction, GameEvents } from '@battle-snakes/shared';
+import { Direction, GameEvents, getCurrentTimeISOString } from '@battle-snakes/shared';
 import { Socket } from 'socket.io-client';
 
 export class InputManager {
@@ -35,6 +35,8 @@ export class InputManager {
           direction = 'right';
           break;
       }
+      console.log('here ');
+      console.log(`${getCurrentTimeISOString()} sending out input request: ${direction?.toString()}`);
       this.socket.emit(GameEvents.MOVE_REQUEST, direction);
     };
   }

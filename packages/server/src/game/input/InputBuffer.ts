@@ -17,6 +17,9 @@ export class InputBuffer {
   }
 
   addInput(playerId: string, direction: Direction) {
+    const now = new Date(Date.now()).toISOString();
+    console.log(`${now.toString()} Adding input for player: ${playerId} in direction: ${direction.toString()}`);
+
     if (!this.buffer.has(playerId)) {
       this.buffer.set(playerId, []);
     }
