@@ -1,4 +1,4 @@
-import { Direction } from '@battle-snakes/shared';
+import { Direction, getCurrentTimeISOString } from '@battle-snakes/shared';
 
 // TODO: move me to shared package
 export interface PlayerInput {
@@ -17,8 +17,7 @@ export class InputBuffer {
   }
 
   addInput(playerId: string, direction: Direction) {
-    const now = new Date(Date.now()).toISOString();
-    console.log(`${now.toString()} Adding input for player: ${playerId} in direction: ${direction.toString()}`);
+    console.log(`${getCurrentTimeISOString()} Adding input for player: ${playerId} in direction: ${direction.toString()}`);
 
     if (!this.buffer.has(playerId)) {
       this.buffer.set(playerId, []);
