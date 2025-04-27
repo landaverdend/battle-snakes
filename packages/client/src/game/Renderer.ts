@@ -60,7 +60,7 @@ export class Renderer {
 
   private drawSnakeCell(x: number, y: number, cellWidth: number, cellHeight: number, color: string) {
     this.ctx.fillStyle = color;
-    const padding = 2;
+    const padding = 0;
     this.ctx.fillRect(x * cellWidth + padding, y * cellHeight + padding, cellWidth - padding * 2, cellHeight - padding * 2);
   }
 
