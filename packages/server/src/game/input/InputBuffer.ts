@@ -57,4 +57,8 @@ export class InputBuffer {
   clearPlayer(playerId: string) {
     this.buffer.delete(playerId);
   }
+
+  clearAll() {
+    this.buffer.clear();
+  }
 }

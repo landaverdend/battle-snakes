@@ -29,6 +29,10 @@ export class GameState {
     this.roundState = roundState;
   }
 
+  public isActive(): boolean {
+    return this.roundState === RoundState.ACTIVE;
+  }
+
   public isWaiting(): boolean {
     return this.roundState === RoundState.WAITING || this.roundState === RoundState.INTERMISSION;
   }

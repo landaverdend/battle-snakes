@@ -63,7 +63,7 @@ export class NetworkService extends EventEmitter {
       socket.on(GameEvents.MOVE_REQUEST, (direction) => {
         const game = this.roomService.getGameByRoomId(roomId);
         if (game) {
-          game.getInputBuffer().addInput(playerId, direction);
+          game.handlePlayerInput(playerId, direction);
         }
       });
 

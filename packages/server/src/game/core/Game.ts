@@ -1,4 +1,4 @@
-import { Collision, GameEvents, RoundState } from '@battle-snakes/shared';
+import { Collision, Direction, GameEvents, RoundState } from '@battle-snakes/shared';
 import { DEFAULT_FOOD_COUNT, GAME_STATE_UPDATE_INTERVAL_MS, MAX_ROOM_SIZE, TICK_RATE_MS } from '../../config/gameConfig';
 import { GameLoop } from './GameLoop';
 import { GameState } from './GameState';
@@ -86,13 +86,22 @@ export class Game {
     }
 
     if (this.gameState.shouldRoundEnd()) {
-      this.gameState.beginWaiting();
-      const winner = this.gameState.getActivePlayers()[0];
-      this.gameEventBus.emitMessage(
-        this.roomId,
-        `Round ${this.gameState.getRoundNumber()} over! ${winner?.getPlayerName()} wins!`
-      );
+      this.handleRoundEnd();
     }
+  }
+
+  private handleRoundEnd() {
+    this.gameState.beginWaiting();
+    const winner = this.gameState.getActivePlayers()[0];
+
+    // Sometimes players can die on the same tick.
+    let message = `Round ${this.gameState.getRoundNumber()} over!`;
+    if (winner) {
+      message += ` ${winner.getPlayerName()} wins!`;
+    }
+
+    this.gameEventBus.emitMessage(this.roomId, message);
+    this.inputBuffer.clearAll();
   }
 
   private intermissionTick(): void {
@@ -164,8 +173,8 @@ export class Game {
     }
   }
 
-  public getInputBuffer(): InputBuffer {
-    return this.inputBuffer;
+  public handlePlayerInput(playerId: string, direction: Direction) {
+    if (this.gameState.isActive()) this.inputBuffer.addInput(playerId, direction);
   }
 
   // Grab the inputs for the current tick, update the player's direction based off the buffer.
