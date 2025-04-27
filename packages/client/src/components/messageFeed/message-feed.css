@@ -25,4 +25,8 @@
   &.player-join {
     color: green;
   }
+
+  &.default {
+    color: black;
+  }
 }

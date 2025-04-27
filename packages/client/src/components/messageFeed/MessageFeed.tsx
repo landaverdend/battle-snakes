@@ -19,6 +19,9 @@ export function MessageFeed() {
       case 'player_join':
         toRet = 'player-join';
         break;
+      default:
+        toRet = 'default';
+        break;
     }
 
     return toRet;

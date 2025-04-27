@@ -34,7 +34,7 @@ export class Game {
   }
 
   public startRoom() {
-    this.gameState.beginIntermission();
+    this.gameState.beginWaiting();
     this.gameLoop.start();
   }
 
@@ -48,23 +48,23 @@ export class Game {
       case RoundState.ACTIVE:
         this.gameLoopTick(deltaTime);
         break;
-      case RoundState.WAITING:
       case RoundState.INTERMISSION:
         this.intermissionTick();
+        break;
+      case RoundState.WAITING:
+        this.waitingtick();
         break;
     }
   }
 
   private gameLoopTick(deltaTime: number): void {
-    // We want to track inputs faster than the main update loop...
+    // Only update the game state at the designated interval.
     this.movementAccumulator += deltaTime;
-
-    // Step One: process all inputs.
-
     if (this.movementAccumulator < GAME_STATE_UPDATE_INTERVAL_MS) {
       return;
     }
 
+    // Step One: process all inputs.
     this.processInputs();
     this.movementAccumulator -= GAME_STATE_UPDATE_INTERVAL_MS;
 
@@ -85,21 +85,42 @@ export class Game {
       this.spawnService.spawnFood();
     }
 
-    if (this.gameState.areAllPlayersDead()) {
-      this.gameState.beginIntermission();
+    if (this.gameState.shouldRoundEnd()) {
+      this.gameState.beginWaiting();
+      const winner = this.gameState.getActivePlayers()[0];
+      this.gameEventBus.emitMessage(
+        this.roomId,
+        `Round ${this.gameState.getRoundNumber()} over! ${winner?.getPlayerName()} wins!`
+      );
     }
   }
 
   private intermissionTick(): void {
+    // If intermission time is over, set round to active and reset the intermission end time.
+    if (this.gameState.isIntermissionOver()) {
+      this.gameState.beginRound();
+      this.haveEntitiesBeenSpawned = false;
+    }
+
+    // If there is only one player, back to waiting state.
+    if (this.gameState.getAllPlayers().length === 1) {
+      this.gameState.setRoundState(RoundState.WAITING);
+    }
+
+    this.gameState.updateGrid(); // We want to show the players spawn positions before the game starts.
+    this.gameEventBus.emit(GameEvents.STATE_UPDATE, this.roomId, this.gameState.toSharedGameState());
+  }
+
+  private waitingtick(): void {
     if (!this.haveEntitiesBeenSpawned) {
       this.spawnService.spawnInitialFood();
       this.spawnService.spawnAllPlayers();
       this.haveEntitiesBeenSpawned = true;
     }
-    // If intermission time is over, set round to active and reset the intermission end time.
-    if (this.gameState.isIntermissionOver()) {
-      this.gameState.beginRound();
-      this.haveEntitiesBeenSpawned = false;
+
+    // Switch to intermission countdown if there is more than one player.
+    if (this.gameState.getAllPlayers().length > 1) {
+      this.gameState.beginIntermissionCountdown();
     }
 
     this.gameState.updateGrid(); // We want to show the players spawn positions before the game starts.

@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import './splash-view.css';
+import { getRandomColor } from '@battle-snakes/shared';
 
 type SVProps = {
   onComplete: (playerName: string, playerColor: string, isCpuGame: boolean) => void;
@@ -7,7 +8,7 @@ type SVProps = {
 
 export default function SplashView({ onComplete }: SVProps) {
   const [playerName, setPlayerName] = useState<string>('');
-  const [playerColor, setPlayerColor] = useState<string>('#000000');
+  const [playerColor, setPlayerColor] = useState<string>(getRandomColor());
 
   return (
     <div className="splash-view-container">

@@ -85,7 +85,8 @@ export default function RoundHeader() {
     <div className="round-header-container">
       <div className="item">Round Number: {roundInfo.roundNumber}</div>
       <div className="item">Round Status: {roundInfo.roundState}</div>
-      {roundInfo.roundState !== RoundState.ACTIVE && <div className="item">New Round in: {countdown} </div>}
+      {roundInfo.roundState === RoundState.INTERMISSION && <div className="item">New Round in: {countdown} </div>}
+      {roundInfo.roundState === RoundState.WAITING && <div className="item">Waiting for players...</div>}
     </div>
   );
 }

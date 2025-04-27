@@ -37,6 +37,10 @@ export class GameState {
     return this.grid;
   }
 
+  public getRoundNumber() {
+    return this.roundNumber;
+  }
+
   public getGridSize(): number {
     return this.gridSize;
   }
@@ -70,12 +74,12 @@ export class GameState {
     return this.players.size < MAX_ROOM_SIZE;
   }
 
-  public isWaitTimeOver(): boolean {
-    return this.roundIntermissionEndTime !== null && this.roundIntermissionEndTime < Date.now();
-  }
-
   public areAllPlayersDead(): boolean {
     return this.getActivePlayers().length === 0;
+  }
+
+  public shouldRoundEnd(): boolean {
+    return this.getActivePlayers().length <= 1;
   }
 
   // State Mutation Methods
@@ -165,17 +169,21 @@ export class GameState {
     this.roundIntermissionEndTime = null;
   }
 
-  public beginIntermission() {
-    console.log(`Round ${this.roundNumber} over for room, beginning intermission.`);
-
+  public beginIntermissionCountdown() {
     this.roundState = RoundState.INTERMISSION;
     this.roundIntermissionEndTime = Date.now() + INTERMISSION_DURATION_MS;
+  }
+
+  public beginWaiting() {
+    console.log(`Round ${this.roundNumber} over for room, beginning intermission.`);
+
+    this.roundState = RoundState.WAITING;
     this.roundNumber++;
     this.foodPositions.clear();
   }
 
   public isIntermissionOver(): boolean {
-    return this.roundIntermissionEndTime !== null && this.roundIntermissionEndTime < Date.now();
+    return this.players.size > 1 && this.roundIntermissionEndTime !== null && this.roundIntermissionEndTime < Date.now();
   }
 
   // Serialization for network

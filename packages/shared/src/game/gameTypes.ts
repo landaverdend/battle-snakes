@@ -11,7 +11,7 @@ export enum GameEvents {
 }
 
 export type Message = {
-  type: 'collision' | 'player_join' | 'player_exit';
+  type: 'collision' | 'player_join' | 'player_exit' | 'default';
   message: string;
 };
 
