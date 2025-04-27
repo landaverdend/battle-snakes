@@ -5,7 +5,12 @@ import { Player } from '../domain/Player';
 
 // Class that handles the spawning of entities.
 export class SpawnService {
-  constructor(private readonly gameState: GameState) {}
+  private spawnPoints: Point[] = [];
+  private spawnPointIndex = 0;
+
+  constructor(private readonly gameState: GameState) {
+    this.generateSpawnPoints();
+  }
 
   public spawnFood() {
     while (this.gameState.getFoodPositions().size < DEFAULT_FOOD_COUNT) {
@@ -15,23 +20,40 @@ export class SpawnService {
     }
   }
 
-  public spawnPlayers() {
+  // Given the dimension of the grid, generate a list of spawn points.
+  private generateSpawnPoints() {
     let spawnPositionYDelta = Math.floor(DEFAULT_GRID_SIZE / (MAX_ROOM_SIZE / 2));
     let xDelta = 5;
-    const players = this.gameState.getAllPlayers();
 
-    for (let i = 0; i < players.length; i++) {
+    for (let i = 0; i < MAX_ROOM_SIZE; i++) {
       const shouldSpawnLeft = i < MAX_ROOM_SIZE / 2;
       let x = shouldSpawnLeft ? xDelta : DEFAULT_GRID_SIZE - xDelta;
       let y = (i % 5) * spawnPositionYDelta + Math.floor(spawnPositionYDelta * 0.75);
 
-      const player = players[i] as Player;
-      player?.prepareForNewRound(new Point(x, y));
-      if (shouldSpawnLeft) {
+      this.spawnPoints.push(new Point(x, y));
+    }
+  }
+
+  public spawnPlayer(player: Player) {
+    const spawnPoint = this.spawnPoints[this.spawnPointIndex];
+
+    if (spawnPoint) {
+      this.spawnPointIndex++;
+      player.prepareForNewRound(spawnPoint);
+      if (this.spawnPointIndex < MAX_ROOM_SIZE / 2) {
         player.setDirection('right');
       } else {
         player.setDirection('left');
       }
+    }
+  }
+
+  public spawnAllPlayers() {
+    this.spawnPointIndex = 0;
+    const players = this.gameState.getAllPlayers();
+
+    for (const player of players) {
+      this.spawnPlayer(player);
     }
   }
 

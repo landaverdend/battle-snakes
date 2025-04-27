@@ -64,7 +64,7 @@ export class Game {
     if (this.movementAccumulator < GAME_STATE_UPDATE_INTERVAL_MS) {
       return;
     }
-    
+
     this.processInputs();
     this.movementAccumulator -= GAME_STATE_UPDATE_INTERVAL_MS;
 
@@ -93,7 +93,7 @@ export class Game {
   private intermissionTick(): void {
     if (!this.haveEntitiesBeenSpawned) {
       this.spawnService.spawnInitialFood();
-      this.spawnService.spawnPlayers();
+      this.spawnService.spawnAllPlayers();
       this.haveEntitiesBeenSpawned = true;
     }
     // If intermission time is over, set round to active and reset the intermission end time.
@@ -112,7 +112,10 @@ export class Game {
       return false;
     }
 
-    this.gameState.addPlayer(playerId, playerName, playerColor);
+    const thePlayer = this.gameState.addPlayer(playerId, playerName, playerColor);
+    if (this.gameState.isWaiting()) {
+      this.spawnService.spawnPlayer(thePlayer);
+    }
 
     return true;
   }

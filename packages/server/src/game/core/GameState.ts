@@ -29,6 +29,10 @@ export class GameState {
     this.roundState = roundState;
   }
 
+  public isWaiting(): boolean {
+    return this.roundState === RoundState.WAITING || this.roundState === RoundState.INTERMISSION;
+  }
+
   public getGrid() {
     return this.grid;
   }
@@ -75,23 +79,24 @@ export class GameState {
   }
 
   // State Mutation Methods
-  public addPlayer(playerId: string, playerName: string, playerColor: string, isCpu = false): void {
+  public addPlayer(playerId: string, playerName: string, playerColor: string, isCpu = false): Player {
     // Set the player to alive if the round is waiting or in intermission.
     const isAlive = this.roundState === RoundState.INTERMISSION || this.roundState === RoundState.WAITING;
-    this.players.set(
-      playerId,
-      isCpu
-        ? new CpuPlayer(playerId, {
-            color: getRandomColor(),
-            isAlive,
-            name: playerId,
-          })
-        : new Player(playerId, {
-            color: playerColor || getRandomColor(),
-            isAlive,
-            name: playerName,
-          })
-    );
+    const thePlayer = isCpu
+      ? new CpuPlayer(playerId, {
+          color: getRandomColor(),
+          isAlive,
+          name: playerId,
+        })
+      : new Player(playerId, {
+          color: playerColor || getRandomColor(),
+          isAlive,
+          name: playerName,
+        });
+
+    this.players.set(playerId, thePlayer);
+
+    return thePlayer;
   }
 
   public removePlayer(playerId: string): void {

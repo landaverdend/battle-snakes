@@ -29,7 +29,6 @@ export class RoomService {
     theRoom.tryToAddPlayerToRoom(playerId, playerName, playerColor); // add player before setting adding room to the map..
 
     this.rooms.set(roomId, theRoom);
-
     return roomId;
   }
 
