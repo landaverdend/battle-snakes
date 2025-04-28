@@ -1,10 +1,11 @@
-import { GameEvents, Message, PlayerData, SharedGameState } from '@battle-snakes/shared';
+import { ClientStatusUpdate, GameEvents, Message, PlayerData, SharedGameState } from '@battle-snakes/shared';
 import EventEmitter from 'events';
 
 export interface GameEventPayloads {
   [GameEvents.STATE_UPDATE]: [roomId: string, state: SharedGameState];
   [GameEvents.LEADERBOARD_UPDATE]: [roomId: string, playerData: PlayerData[]];
   [GameEvents.MESSAGE_EVENT]: [roomId: string, message: Message[]];
+  [GameEvents.CLIENT_STATUS_UPDATE]: [socketId: string, playerUpdate: ClientStatusUpdate];
 }
 
 export class GameEventBus extends EventEmitter {

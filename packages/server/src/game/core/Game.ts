@@ -104,19 +104,28 @@ export class Game {
     this.inputBuffer.clearAll();
   }
 
+  private handleRoundStart() {
+    this.gameState.beginRound();
+    this.haveEntitiesBeenSpawned = false;
+
+    for (const player of this.gameState.getAllPlayers()) {
+      this.gameEventBus.emit(GameEvents.CLIENT_STATUS_UPDATE, player.getPlayerId(), { isAlive: true });
+    }
+  }
+
   private intermissionTick(): void {
     // If intermission time is over, set round to active and reset the intermission end time.
     if (this.gameState.isIntermissionOver()) {
-      this.gameState.beginRound();
-      this.haveEntitiesBeenSpawned = false;
+      this.handleRoundStart();
     }
 
-    // If there is only one player, back to waiting state.
+    // If there is only one player, go back to waiting state.
     if (this.gameState.getAllPlayers().length === 1) {
       this.gameState.setRoundState(RoundState.WAITING);
     }
 
-    this.gameState.updateGrid(); // We want to show the players spawn positions before the game starts.
+    // Send out grid updates still even though the game isn't active so that players can see their spawn position
+    this.gameState.updateGrid();
     this.gameEventBus.emit(GameEvents.STATE_UPDATE, this.roomId, this.gameState.toSharedGameState());
   }
 
@@ -203,6 +212,7 @@ export class Game {
         case 'snake':
         case 'wall':
           this.gameState.killPlayer(collision.playerId);
+          this.gameEventBus.emit(GameEvents.CLIENT_STATUS_UPDATE, collision.playerId, { isAlive: false });
           break;
         case 'food':
           this.gameState.removeFood(collision.point);

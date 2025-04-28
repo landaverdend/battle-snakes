@@ -1,18 +1,18 @@
 import { PlayerData } from '@battle-snakes/shared';
 
 // Singleton class for managing the leaderboard.
-export class LeaderboardManager {
-  private static instance: LeaderboardManager;
+export class LeaderBoardService {
+  private static instance: LeaderBoardService;
   private players: PlayerData[] = [];
   private listeners: ((actions: PlayerData[]) => void)[] = [];
 
   private constructor() {}
 
-  public static getInstance(): LeaderboardManager {
-    if (!LeaderboardManager.instance) {
-      LeaderboardManager.instance = new LeaderboardManager();
+  public static getInstance(): LeaderBoardService {
+    if (!LeaderBoardService.instance) {
+      LeaderBoardService.instance = new LeaderBoardService();
     }
-    return LeaderboardManager.instance;
+    return LeaderBoardService.instance;
   }
 
   public addListener(listener: (actions: PlayerData[]) => void) {

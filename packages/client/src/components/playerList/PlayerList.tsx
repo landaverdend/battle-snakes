@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { PlayerData } from '@battle-snakes/shared';
-import { LeaderboardManager } from '@/game/LeaderBoardManager';
+import { LeaderBoardService } from '@/game/LeaderBoardService';
 import './player-list.css';
 
 type PLIProps = {
@@ -24,14 +24,14 @@ export function PlayerList() {
     };
 
     // Subscribe to updates
-    LeaderboardManager.getInstance().addListener(handleLeaderboardUpdate);
+    LeaderBoardService.getInstance().addListener(handleLeaderboardUpdate);
 
     // Initial state
-    setPlayers(LeaderboardManager.getInstance().getPlayers());
+    setPlayers(LeaderBoardService.getInstance().getPlayers());
 
     // Cleanup
     return () => {
-      LeaderboardManager.getInstance().removeListener(handleLeaderboardUpdate);
+      LeaderBoardService.getInstance().removeListener(handleLeaderboardUpdate);
     };
   }, []);
 

@@ -13,3 +13,9 @@ export interface PlayerData {
   name: string;
   score: number;
 }
+
+// Server to client messages
+export interface ClientStatusUpdate {
+  isAlive?: boolean;
+  message?: string;
+}

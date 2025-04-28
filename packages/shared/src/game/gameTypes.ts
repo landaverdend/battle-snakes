@@ -8,6 +8,7 @@ export enum GameEvents {
   LEADERBOARD_UPDATE = 'game:leaderboard_update',
   PLAYER_JOIN = 'game:player_join',
   PLAYER_EXIT = 'game:player_exit',
+  CLIENT_STATUS_UPDATE = 'game:client_status_update',
 }
 
 export type Message = {

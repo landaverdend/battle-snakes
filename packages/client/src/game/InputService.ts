@@ -1,12 +1,18 @@
-import { Direction, GameEvents, getCurrentTimeISOString } from '@battle-snakes/shared';
+import { Direction, GameEvents, getCurrentTimeISOString, RoundState } from '@battle-snakes/shared';
 import { Socket } from 'socket.io-client';
+import { ClientGameState } from './ClientGameState';
+import { ClientPlayerState } from './ClientPlayerState';
 
-export class InputManager {
+export class InputService {
   private socket: Socket;
   private handleKeydown: (event: KeyboardEvent) => void;
+  private gameState: ClientGameState;
+  private playerState: ClientPlayerState;
 
   constructor(socket: Socket) {
     this.socket = socket;
+    this.gameState = ClientGameState.getInstance();
+    this.playerState = ClientPlayerState.getInstance();
 
     this.handleKeydown = this.createKeydownHandler();
     document.addEventListener('keydown', this.handleKeydown);
@@ -15,6 +21,12 @@ export class InputManager {
   private createKeydownHandler() {
     return (event: KeyboardEvent) => {
       event.preventDefault();
+
+      // If the game isn't active, don't send data..
+      if (!this.gameState.isRoundActive() || !this.playerState.getState().isAlive) {
+        return;
+      }
+
       let direction: Direction | null = null;
 
       switch (event.key) {
@@ -35,7 +47,7 @@ export class InputManager {
           direction = 'right';
           break;
       }
-      console.log('here ');
+
       console.log(`${getCurrentTimeISOString()} sending out input request: ${direction?.toString()}`);
       this.socket.emit(GameEvents.MOVE_REQUEST, direction);
     };

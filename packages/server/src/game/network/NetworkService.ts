@@ -90,6 +90,10 @@ export class NetworkService extends EventEmitter {
     this.eventBus.on(GameEvents.LEADERBOARD_UPDATE, (roomId, playerData) => {
       this.io.to(roomId).emit(GameEvents.LEADERBOARD_UPDATE, playerData);
     });
+
+    this.eventBus.on(GameEvents.CLIENT_STATUS_UPDATE, (socketId, clientStatusUpdate) => {
+      this.io.to(socketId).emit(GameEvents.CLIENT_STATUS_UPDATE, clientStatusUpdate);
+    });
   }
 
   private setupCleanupInterval() {

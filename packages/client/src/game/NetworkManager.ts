@@ -1,9 +1,10 @@
 import { GameEvents, SharedGameState, PlayerData, Message } from '@battle-snakes/shared';
 import { io, Socket } from 'socket.io-client';
 import { ClientGameState } from './ClientGameState';
-import { LeaderboardManager } from './LeaderBoardManager';
+import { LeaderBoardService } from './LeaderBoardService';
 import { MessageFeedService } from './MessageFeedService';
 import { GameConfigOptions } from './GameClient';
+import { ClientPlayerState } from './ClientPlayerState';
 
 // To something like this:
 const SOCKET_URL = window.location.hostname === 'localhost' ? 'http://localhost:3030' : window.location.origin;
@@ -21,7 +22,7 @@ export class NetworkManager {
     });
 
     this.socket.on(GameEvents.LEADERBOARD_UPDATE, (players: PlayerData[]) => {
-      LeaderboardManager.getInstance().updatePlayers(players);
+      LeaderBoardService.getInstance().updatePlayers(players);
     });
 
     this.socket.on(GameEvents.STATE_UPDATE, (state: SharedGameState) => {
@@ -30,6 +31,10 @@ export class NetworkManager {
 
     this.socket.on(GameEvents.MESSAGE_EVENT, (messages: Message[]) => {
       MessageFeedService.getInstance().addAction(messages);
+    });
+
+    this.socket.on(GameEvents.CLIENT_STATUS_UPDATE, (playerUpdate) => {
+      ClientPlayerState.getInstance().updateState(playerUpdate);
     });
 
     this.socket.on('disconnect', () => {

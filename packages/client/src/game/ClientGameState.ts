@@ -41,6 +41,10 @@ export class ClientGameState {
     return this.gameState;
   }
 
+  public isRoundActive(): boolean {
+    return this.gameState.roundInfo.roundState === RoundState.ACTIVE;
+  }
+
   private notifyListeners() {
     [...this.listeners].forEach((listener) => {
       try {
