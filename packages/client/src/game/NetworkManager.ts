@@ -11,6 +11,10 @@ const SOCKET_URL = window.location.hostname === 'localhost' ? 'http://localhost:
 export class NetworkManager {
   private socket: Socket;
 
+  private stateUpdateLatencySum = 0;
+  private stateUpdateLatencyAverage = 0;
+  private stateUpdateLatencySamples = 0;
+
   constructor({ playerName, playerColor, isCpuGame }: GameConfigOptions) {
     this.socket = io(SOCKET_URL, { auth: { playerName, playerColor, isCpuGame } });
     this.initializeSocket();
@@ -26,8 +30,18 @@ export class NetworkManager {
     });
 
     this.socket.on(GameEvents.STATE_UPDATE, (state: SharedGameState) => {
+      const latency = Date.now() - state.timestamp;
+
+      this.stateUpdateLatencySum += latency;
+      this.stateUpdateLatencySamples++;
+      this.stateUpdateLatencyAverage = this.stateUpdateLatencySum / this.stateUpdateLatencySamples;
+
       ClientGameState.getInstance().updateState(state);
     });
+
+    setInterval(() => {
+      console.log(`State update latency average ${this.stateUpdateLatencyAverage}ms`);
+    }, 5000);
 
     this.socket.on(GameEvents.MESSAGE_EVENT, (messages: Message[]) => {
       MessageFeedService.getInstance().addAction(messages);

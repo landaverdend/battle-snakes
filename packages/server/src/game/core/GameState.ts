@@ -201,6 +201,7 @@ export class GameState {
         roundIntermissionEndTime: this.roundIntermissionEndTime,
         roundNumber: this.roundNumber,
       },
+      timestamp: Date.now()
     };
   }
 }

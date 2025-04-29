@@ -1,6 +1,6 @@
 import { Server, Socket } from 'socket.io';
 import { createServer } from 'http';
-import { GameEvents } from '@battle-snakes/shared';
+import { GameEvents, MoveRequest } from '@battle-snakes/shared';
 import EventEmitter from 'events';
 import { RoomService } from '../services/RoomService';
 import { GameEventBus } from '../events/GameEventBus';
@@ -60,10 +60,12 @@ export class NetworkService extends EventEmitter {
         console.error(`Game instance not found for room ${roomId} after player assignment.`);
       }
 
-      socket.on(GameEvents.MOVE_REQUEST, (direction) => {
+      socket.on(GameEvents.MOVE_REQUEST, (moveRequest: MoveRequest) => {
+        console.log(`Latency for move request: ${Date.now() - moveRequest.timestamp}ms`);
+
         const game = this.roomService.getGameByRoomId(roomId);
         if (game) {
-          game.handlePlayerInput(playerId, direction);
+          game.handlePlayerInput(playerId, moveRequest.direction);
         }
       });
 

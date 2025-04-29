@@ -49,7 +49,7 @@ export class InputService {
       }
 
       console.log(`${getCurrentTimeISOString()} sending out input request: ${direction?.toString()}`);
-      this.socket.emit(GameEvents.MOVE_REQUEST, direction);
+      this.socket.emit(GameEvents.MOVE_REQUEST, { direction: direction, timestamp: Date.now() });
     };
   }
 

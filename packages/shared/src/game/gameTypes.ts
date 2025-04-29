@@ -42,4 +42,5 @@ export interface SharedGameState {
   grid: Record<string, Entity>;
   players: Array<PlayerData>;
   roundInfo: RoundInfo;
+  timestamp: number;
 }

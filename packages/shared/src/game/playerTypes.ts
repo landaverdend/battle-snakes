@@ -19,3 +19,8 @@ export interface ClientStatusUpdate {
   isAlive?: boolean;
   message?: string;
 }
+
+export interface MoveRequest {
+  direction: Direction;
+  timestamp: number;
+}

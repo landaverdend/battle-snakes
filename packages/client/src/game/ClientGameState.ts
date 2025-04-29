@@ -4,6 +4,7 @@ export class ClientGameState {
   private gameState: SharedGameState;
   private listeners: ((state: SharedGameState) => void)[] = [];
 
+
   private constructor() {
     this.gameState = {
       players: [],
@@ -14,6 +15,7 @@ export class ClientGameState {
         roundIntermissionEndTime: null,
         roundNumber: 0,
       },
+      timestamp: 0
     };
   }
 
