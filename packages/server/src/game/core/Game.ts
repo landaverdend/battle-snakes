@@ -18,6 +18,7 @@ export class Game {
 
   private haveEntitiesBeenSpawned = false;
   private movementAccumulator = 0;
+  private isRoundEnding = false;
 
   constructor(roomId: string, gridSize: number, private readonly gameEventBus: GameEventBus, isCpuGame = false) {
     this.roomId = roomId;
@@ -90,23 +91,31 @@ export class Game {
     }
   }
 
+  // Stagger the round end by like 4 seconds so it's not so abrupt.
   private handleRoundEnd() {
-    this.gameState.beginWaiting();
+    if (this.isRoundEnding) return;
+    this.isRoundEnding = true;
+    
     const winner = this.gameState.getActivePlayers()[0];
 
-    // Sometimes players can die on the same tick.
-    let message = `Round ${this.gameState.getRoundNumber()} over!`;
-    if (winner) {
-      message += ` ${winner.getPlayerName()} wins!`;
-    }
+    setTimeout(() => {
+      this.gameState.beginWaiting();
 
-    this.gameEventBus.emitMessage(this.roomId, message);
+      // Sometimes players can die on the same tick.
+      let message = `Round ${this.gameState.getRoundNumber()} over!`;
+      if (winner) {
+        message += ` ${winner.getPlayerName()} wins!`;
+      }
+      this.gameEventBus.emitMessage(this.roomId, message);
+    }, 4000);
+
     this.inputBuffer.clearAll();
   }
 
   private handleRoundStart() {
     this.gameState.beginRound();
     this.haveEntitiesBeenSpawned = false;
+    this.isRoundEnding = false;
 
     for (const player of this.gameState.getAllPlayers()) {
       this.gameEventBus.emit(GameEvents.CLIENT_STATUS_UPDATE, player.getPlayerId(), { isAlive: true });
