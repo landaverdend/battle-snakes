@@ -1,0 +1,15 @@
+@font-face {
+  font-family: 'windows-95';
+  src: url('../public/fonts/W95FA.otf');
+  font-weight: normal;
+  font-style: normal;
+}
+
+body {
+  font-family: 'windows-95';
+  margin: 0px;
+}
+
+:root {
+  --primary-color: rgb(198, 198, 198);
+}
