@@ -31,7 +31,7 @@ export class NetworkManager {
 
     this.socket.on(GameEvents.STATE_UPDATE, (state: SharedGameState) => {
       const latency = Date.now() - state.timestamp;
-
+      console.log(`state update latency ${latency}ms`);
       this.stateUpdateLatencySum += latency;
       this.stateUpdateLatencySamples++;
       this.stateUpdateLatencyAverage = this.stateUpdateLatencySum / this.stateUpdateLatencySamples;
