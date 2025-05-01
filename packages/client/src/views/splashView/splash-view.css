@@ -10,8 +10,19 @@
   font-family: 'windows-95';
   background-color: var(--primary-color);
 
+  .splash-view-items {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 25px;
+  }
   h1 {
     font-size: 3rem;
   }
 
+  .color-input {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
 }

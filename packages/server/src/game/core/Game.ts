@@ -107,7 +107,7 @@ export class Game {
         message += ` ${winner.getPlayerName()} wins!`;
       }
       this.gameEventBus.emitMessage(this.roomId, message);
-    }, 4000);
+    }, 1500);
 
     this.inputBuffer.clearAll();
   }

@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import './splash-view.css';
 import { getRandomColor } from '@battle-snakes/shared';
+import { Button, ColorInput, GroupBox, TextInput } from 'react95';
 
 type SVProps = {
   onComplete: (playerName: string, playerColor: string, isCpuGame: boolean) => void;
@@ -12,21 +13,19 @@ export default function SplashView({ onComplete }: SVProps) {
 
   return (
     <div className="splash-view-container">
-      <h1>Battle Snakes!</h1>
-      <input type="text" placeholder="Enter your name" onChange={(e) => setPlayerName(e.target.value)} />
-      <span>
-        Color: {'  '}
-        <input
-          type="color"
-          value={playerColor}
-          onChange={(e) => {
-            setPlayerColor(e.target.value);
-          }}
-        />
-      </span>
-
-      <button onClick={() => onComplete(playerName, playerColor, false)}>Play Online</button>
-      <button onClick={() => onComplete(playerName, playerColor, true)}>Play Against CPU</button>
+      <GroupBox>
+        <div className="splash-view-items">
+          {' '}
+          <h1>Battle Snakes</h1>
+          <TextInput placeholder="Enter your name" onChange={(e) => setPlayerName(e.target.value)} />
+          <span className={'color-input'}>
+            Select snake color: {'  '}
+            <ColorInput defaultValue={playerColor} onChange={(e) => setPlayerColor(e.target.value)} />
+          </span>
+          <Button onClick={() => onComplete(playerName, playerColor, false)}>Play Online</Button>
+          <Button onClick={() => onComplete(playerName, playerColor, true)}>Play Against CPU</Button>
+        </div>
+      </GroupBox>
     </div>
   );
 }

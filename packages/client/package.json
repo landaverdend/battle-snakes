@@ -13,7 +13,9 @@
     "@battle-snakes/shared": "^1.0.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
-    "socket.io-client": "^4.7.4"
+    "react95": "^4.0.0",
+    "socket.io-client": "^4.7.4",
+    "styled-components": "^6.1.17"
   },
   "devDependencies": {
     "@types/react": "^18.2.56",
