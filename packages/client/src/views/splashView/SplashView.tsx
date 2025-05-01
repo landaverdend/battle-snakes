@@ -17,7 +17,9 @@ export default function SplashView({ onComplete }: SVProps) {
         <div className="splash-view-items">
           {' '}
           <h1>Battle Snakes</h1>
-          <TextInput placeholder="Enter your name" onChange={(e) => setPlayerName(e.target.value)} />
+          <GroupBox label="Name">
+            <TextInput placeholder="Enter your name" onChange={(e) => setPlayerName(e.target.value)} />
+          </GroupBox>
           <span className={'color-input'}>
             Select snake color: {'  '}
             <ColorInput defaultValue={playerColor} onChange={(e) => setPlayerColor(e.target.value)} />
