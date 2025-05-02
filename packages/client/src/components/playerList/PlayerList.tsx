@@ -2,22 +2,18 @@ import { useEffect, useState } from 'react';
 import { PlayerData } from '@battle-snakes/shared';
 import { LeaderBoardService } from '@/game/LeaderBoardService';
 import './player-list.css';
-import { Avatar, Window, WindowContent, WindowHeader } from 'react95';
-
-type PLIProps = {
-  player: PlayerData;
-};
-function PlayerListItem({ player }: PLIProps) {
-  return (
-    <span className="player-list-item">
-      {player.score} - {player.name}
-      {/* <span className="color-box" style={{ backgroundColor: player.color }}></span> */}
-      <Avatar square size={20} style={{ background: player.color }}>
-        {' '}
-      </Avatar>
-    </span>
-  );
-}
+import {
+  Avatar,
+  Table,
+  TableBody,
+  TableDataCell,
+  TableHead,
+  TableHeadCell,
+  TableRow,
+  Window,
+  WindowContent,
+  WindowHeader,
+} from 'react95';
 
 export function PlayerList() {
   const [players, setPlayers] = useState<PlayerData[]>([]);
@@ -43,13 +39,28 @@ export function PlayerList() {
     <Window>
       <WindowHeader>Leaderboard</WindowHeader>
       <WindowContent>
-        <div className="player-list-container">
-          <div className="player-list">
+        <Table style={{ width: '300px' }}>
+          <TableHead>
+            <TableRow>
+              <TableHeadCell>Name</TableHeadCell>
+              <TableHeadCell>Color</TableHeadCell>
+              <TableHeadCell>Score</TableHeadCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
             {players.map((player) => (
-              <PlayerListItem key={player.name} player={player} />
+              <TableRow className="player-list-row">
+                <TableDataCell>{player.name}</TableDataCell>
+                <TableDataCell className="avatar-cell">
+                  <Avatar square size={20} style={{ background: player.color, color: player.color }}>
+                    0
+                  </Avatar>
+                </TableDataCell>
+                <TableDataCell>{player.score}</TableDataCell>
+              </TableRow>
             ))}
-          </div>
-        </div>
+          </TableBody>
+        </Table>
       </WindowContent>
     </Window>
   );

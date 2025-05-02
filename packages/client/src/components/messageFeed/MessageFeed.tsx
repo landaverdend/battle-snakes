@@ -1,11 +1,12 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { MessageFeedService } from '@/game/MessageFeedService';
 import './message-feed.css';
 import { Message } from '@battle-snakes/shared';
 import { ScrollView, Window, WindowContent, WindowHeader } from 'react95';
 
 export function MessageFeed() {
-  const [message, setMessages] = useState<Message[]>([]);
+  const [messages, setMessages] = useState<Message[]>([]);
+  const scrollRef = useRef<HTMLDivElement>(null);
 
   const getMessageStyle = (message: Message) => {
     let toRet = '';
@@ -45,13 +46,22 @@ export function MessageFeed() {
     };
   }, []);
 
+  // Effect to scroll to bottom when messages change
+  useEffect(() => {
+    if (scrollRef.current) {
+      // Scroll to the bottom
+      scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
+      console.log(scrollRef.current.scrollHeight);
+    }
+  }, [messages]);
+
   return (
     <Window>
       <WindowHeader> Message Feed</WindowHeader>
       <WindowContent>
-        <ScrollView className="message-feed-scroll-view">
+        <ScrollView ref={scrollRef} className="message-feed-scroll-view">
           <div className="message-feed-container">
-            {message.map((message) => (
+            {messages.map((message) => (
               <span key={crypto.randomUUID()} className={`message-item ${getMessageStyle(message)}`}>
                 {message.message}
               </span>

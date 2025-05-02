@@ -17,11 +17,10 @@ export class InputBuffer {
   }
 
   addInput(playerId: string, direction: Direction) {
-    console.log(`${getCurrentTimeISOString()} Adding input for player: ${playerId} in direction: ${direction.toString()}`);
-
     if (!this.buffer.has(playerId)) {
       this.buffer.set(playerId, []);
     }
+    console.log(`${getCurrentTimeISOString()} Adding input for player: ${playerId} in direction: ${direction?.toString()}`);
 
     const playerInputs = this.buffer.get(playerId)!;
 

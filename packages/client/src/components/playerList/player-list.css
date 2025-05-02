@@ -1,22 +1,13 @@
-.player-list-container {
-  width: 250px;
-  max-height: 100%;
-  overflow-y: auto;
-}
+.player-list-row {
+  td {
+    text-align: center;
+    height: 1rem;
+  }
 
-.player-list {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-
-  .player-list-item {
+  .avatar-cell {
     display: flex;
-    justify-content: space-between;
-    .color-box {
-      width: 15px;
-      height: 15px;
-      border: 1px solid black;
-      border-radius: 5px;
-    }
+    justify-content: center;
+    align-items: center;
+    color: white;
   }
 }
