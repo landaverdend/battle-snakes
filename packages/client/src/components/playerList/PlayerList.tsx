@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { PlayerData } from '@battle-snakes/shared';
 import { LeaderBoardService } from '@/game/LeaderBoardService';
 import './player-list.css';
-import { Window, WindowHeader } from 'react95';
+import { Avatar, Window, WindowContent, WindowHeader } from 'react95';
 
 type PLIProps = {
   player: PlayerData;
@@ -11,7 +11,10 @@ function PlayerListItem({ player }: PLIProps) {
   return (
     <span className="player-list-item">
       {player.score} - {player.name}
-      <span className="color-box" style={{ backgroundColor: player.color }}></span>
+      {/* <span className="color-box" style={{ backgroundColor: player.color }}></span> */}
+      <Avatar square size={20} style={{ background: player.color }}>
+        {' '}
+      </Avatar>
     </span>
   );
 }
@@ -39,13 +42,15 @@ export function PlayerList() {
   return (
     <Window>
       <WindowHeader>Leaderboard</WindowHeader>
-      <div className="player-list-container">
-        <div className="player-list">
-          {players.map((player) => (
-            <PlayerListItem key={player.name} player={player} />
-          ))}
+      <WindowContent>
+        <div className="player-list-container">
+          <div className="player-list">
+            {players.map((player) => (
+              <PlayerListItem key={player.name} player={player} />
+            ))}
+          </div>
         </div>
-      </div>
+      </WindowContent>
     </Window>
   );
 }

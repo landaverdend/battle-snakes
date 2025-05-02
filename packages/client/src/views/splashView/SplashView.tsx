@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import './splash-view.css';
 import { getRandomColor } from '@battle-snakes/shared';
-import { Button, ColorInput, GroupBox, TextInput } from 'react95';
+import { Button, ColorInput, GroupBox, TextInput, Window } from 'react95';
 
 type SVProps = {
   onComplete: (playerName: string, playerColor: string, isCpuGame: boolean) => void;
@@ -22,7 +22,7 @@ export default function SplashView({ onComplete }: SVProps) {
 
   return (
     <div className="splash-view-container">
-      <GroupBox>
+      <Window>
         <div className="splash-view-items">
           <h1>Battle Snakes</h1>
           <GroupBox label="Name">
@@ -36,7 +36,7 @@ export default function SplashView({ onComplete }: SVProps) {
           <Button onClick={() => handleGameStart(false)}>Play Online</Button>
           <Button onClick={() => handleGameStart(true)}>Play Against CPU</Button>
         </div>
-      </GroupBox>
+      </Window>
     </div>
   );
 }

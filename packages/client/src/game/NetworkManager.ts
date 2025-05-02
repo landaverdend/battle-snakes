@@ -31,7 +31,7 @@ export class NetworkManager {
 
     this.socket.on(GameEvents.STATE_UPDATE, (state: SharedGameState) => {
       const latency = Date.now() - state.timestamp;
-      console.log(`state update latency ${latency}ms`);
+      // console.log(`state update latency ${latency}ms`);
       this.stateUpdateLatencySum += latency;
       this.stateUpdateLatencySamples++;
       this.stateUpdateLatencyAverage = this.stateUpdateLatencySum / this.stateUpdateLatencySamples;
@@ -39,9 +39,9 @@ export class NetworkManager {
       ClientGameState.getInstance().updateState(state);
     });
 
-    setInterval(() => {
-      console.log(`State update latency average ${this.stateUpdateLatencyAverage}ms`);
-    }, 5000);
+    // setInterval(() => {
+    //   console.log(`State update latency average ${this.stateUpdateLatencyAverage}ms`);
+    // }, 5000);
 
     this.socket.on(GameEvents.MESSAGE_EVENT, (messages: Message[]) => {
       MessageFeedService.getInstance().addAction(messages);

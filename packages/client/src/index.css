@@ -12,4 +12,5 @@ body {
 
 :root {
   --primary-color: rgb(198, 198, 198);
+  --desktop-background-color: rgb(0, 128, 128);
 }

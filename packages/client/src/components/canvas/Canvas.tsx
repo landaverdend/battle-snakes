@@ -1,6 +1,7 @@
 import { useEffect, useRef } from 'react';
 import './canvas.css';
 import { GameClient, GameConfigOptions } from '../../game/GameClient';
+import { Window, WindowContent } from 'react95';
 
 interface CanvasProps {
   gameConfig: GameConfigOptions;
@@ -44,9 +45,13 @@ const Canvas = ({ gameConfig }: CanvasProps) => {
   }, []);
 
   return (
-    <div ref={containerRef} className="canvas-container">
-      <canvas ref={canvasRef} />
-    </div>
+    <Window className="canvas-window">
+      <WindowContent>
+        <div ref={containerRef} className="canvas-container">
+          <canvas ref={canvasRef} />
+        </div>
+      </WindowContent>
+    </Window>
   );
 };
 
