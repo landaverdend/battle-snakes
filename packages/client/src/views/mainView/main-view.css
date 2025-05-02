@@ -1,11 +1,14 @@
-
 .main-view-container {
   display: flex;
   flex-direction: column;
   gap: 5vh;
 
-  margin-top: 5vh;
+  height: 100vh;
+  width: 100vw;
+
   font-family: 'windows-95';
+
+  background-color: var(--primary-color);
 }
 
 .dock-container {

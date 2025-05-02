@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { MessageFeedService } from '@/game/MessageFeedService';
 import './message-feed.css';
 import { Message } from '@battle-snakes/shared';
+import { Window, WindowHeader } from 'react95';
 
 export function MessageFeed() {
   const [message, setMessages] = useState<Message[]>([]);
@@ -45,13 +46,16 @@ export function MessageFeed() {
   }, []);
 
   return (
-    <div className="message-feed-container">
-      <h3>Action Feed</h3>
-      {message.map((message) => (
-        <span key={crypto.randomUUID()} className={`message-item ${getMessageStyle(message)}`}>
-          {message.message}
-        </span>
-      ))}
-    </div>
+    <Window>
+      <WindowHeader> Message Feed</WindowHeader>
+
+      <div className="message-feed-container">
+        {message.map((message) => (
+          <span key={crypto.randomUUID()} className={`message-item ${getMessageStyle(message)}`}>
+            {message.message}
+          </span>
+        ))}
+      </div>
+    </Window>
   );
 }

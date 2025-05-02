@@ -2,17 +2,13 @@ import { MainView } from '@views/mainView/MainView';
 import { useState } from 'react';
 import SplashView from './splashView/SplashView';
 import { GameConfigOptions } from '@/game/GameClient';
-import { styleReset } from 'react95';
 import { createGlobalStyle, ThemeProvider } from 'styled-components';
 
 /* Pick a theme of your choice */
 import original from 'react95/dist/themes/original';
+import { styleReset } from 'react95';
 
-/* Original Windows95 font (optional) */
-
-const GlobalStyles = createGlobalStyle`
-  ${styleReset}
-`;
+const GlobalStyles = createGlobalStyle`${styleReset}`;
 
 export enum View {
   SPLASH = 'splash',

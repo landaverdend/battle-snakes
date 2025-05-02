@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { PlayerData } from '@battle-snakes/shared';
 import { LeaderBoardService } from '@/game/LeaderBoardService';
 import './player-list.css';
+import { Window, WindowHeader } from 'react95';
 
 type PLIProps = {
   player: PlayerData;
@@ -36,13 +37,15 @@ export function PlayerList() {
   }, []);
 
   return (
-    <div className="player-list-container">
-      <h3>Leaderboard</h3>
-      <div className="player-list">
-        {players.map((player) => (
-          <PlayerListItem key={player.name} player={player} />
-        ))}
+    <Window>
+      <WindowHeader>Leaderboard</WindowHeader>
+      <div className="player-list-container">
+        <div className="player-list">
+          {players.map((player) => (
+            <PlayerListItem key={player.name} player={player} />
+          ))}
+        </div>
       </div>
-    </div>
+    </Window>
   );
 }
