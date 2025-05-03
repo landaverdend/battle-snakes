@@ -1,5 +1,5 @@
 import './canvas-overlay.css';
 
 export function CanvasOverlay() {
-  return <div></div>;
+  return <div>canvas overlay</div>;
 }
