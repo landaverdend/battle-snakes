@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { MessageFeedService } from '@/game/MessageFeedService';
 import './message-feed.css';
 import { Message } from '@battle-snakes/shared';
-import { ScrollView, Window, WindowContent, WindowHeader } from 'react95';
+import { Frame, Window, WindowContent, WindowHeader } from 'react95';
 
 export function MessageFeed() {
   const [messages, setMessages] = useState<Message[]>([]);
@@ -38,7 +38,7 @@ export function MessageFeed() {
     MessageFeedService.getInstance().addListener(handleActionUpdate);
 
     // Initial state
-    setMessages(MessageFeedService.getInstance().getActions());
+    setMessages(MessageFeedService.getInstance().getMessages());
 
     // Cleanup
     return () => {
@@ -51,7 +51,6 @@ export function MessageFeed() {
     if (scrollRef.current) {
       // Scroll to the bottom
       scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
-      console.log(scrollRef.current.scrollHeight);
     }
   }, [messages]);
 
@@ -59,7 +58,7 @@ export function MessageFeed() {
     <Window>
       <WindowHeader> Message Feed</WindowHeader>
       <WindowContent>
-        <ScrollView ref={scrollRef} className="message-feed-scroll-view">
+        <Frame variant="field" className="message-feed-scroll-view" ref={scrollRef}>
           <div className="message-feed-container">
             {messages.map((message) => (
               <span key={crypto.randomUUID()} className={`message-item ${getMessageStyle(message)}`}>
@@ -67,7 +66,7 @@ export function MessageFeed() {
               </span>
             ))}
           </div>
-        </ScrollView>
+        </Frame>
       </WindowContent>
     </Window>
   );

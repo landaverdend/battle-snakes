@@ -2,6 +2,7 @@ import { useEffect, useRef } from 'react';
 import './canvas.css';
 import { GameClient, GameConfigOptions } from '../../game/GameClient';
 import { Window, WindowContent } from 'react95';
+import { CanvasOverlay } from '../canvasOverlay/CanvasOverlay';
 
 interface CanvasProps {
   gameConfig: GameConfigOptions;
@@ -47,6 +48,7 @@ const Canvas = ({ gameConfig }: CanvasProps) => {
   return (
     <Window className="canvas-window">
       <WindowContent>
+        <CanvasOverlay />
         <div ref={containerRef} className="canvas-container">
           <canvas ref={canvasRef} />
         </div>

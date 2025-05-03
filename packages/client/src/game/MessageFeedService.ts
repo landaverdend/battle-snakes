@@ -27,7 +27,7 @@ export class MessageFeedService {
     this.notifyListeners();
   }
 
-  public getActions(): Message[] {
+  public getMessages(): Message[] {
     return this.messageFeed;
   }
 
