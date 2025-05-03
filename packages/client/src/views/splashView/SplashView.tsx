@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import './splash-view.css';
 import { getRandomColor } from '@battle-snakes/shared';
-import { Button, ColorInput, GroupBox, TextInput, Window } from 'react95';
+import { Button, ColorInput, GroupBox, TextInput, Window, WindowHeader } from 'react95';
 
 type SVProps = {
   onComplete: (playerName: string, playerColor: string, isCpuGame: boolean) => void;
@@ -15,11 +15,9 @@ export default function SplashView({ onComplete }: SVProps) {
   const handleGameStart = (isCpuGame: boolean) => {
     if (playerName.length === 0) {
       setError('Name is required');
-    } 
-    else if (playerName.length > 12) {
-      setError('Name must be less than 12 characters')
-    }
-    else {
+    } else if (playerName.length > 12) {
+      setError('Name must be less than 12 characters');
+    } else {
       onComplete(playerName, playerColor, isCpuGame);
     }
   };
@@ -27,6 +25,7 @@ export default function SplashView({ onComplete }: SVProps) {
   return (
     <div className="splash-view-container">
       <Window>
+        <WindowHeader>snakes.exe</WindowHeader>
         <div className="splash-view-items">
           <h1>Battle Snakes</h1>
           <GroupBox label="Name">

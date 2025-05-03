@@ -88,9 +88,6 @@ export default function RoundHeader() {
         <h2>Round Number:</h2>
         <Counter value={roundInfo.roundNumber} minLength={2} size="lg" />
       </Frame>
-
-      {roundInfo.roundState === RoundState.INTERMISSION && <div className="item">New Round in: {countdown} </div>}
-      {roundInfo.roundState === RoundState.WAITING && <div className="item">Waiting for players...</div>}
     </div>
   );
 }

@@ -1,4 +1,4 @@
-import { Collision, Direction, GameEvents, RoundState } from '@battle-snakes/shared';
+import { Collision, Direction, GameEvents, Message, RoundState } from '@battle-snakes/shared';
 import { DEFAULT_FOOD_COUNT, GAME_STATE_UPDATE_INTERVAL_MS, MAX_ROOM_SIZE, TICK_RATE_MS } from '../../config/gameConfig';
 import { GameLoop } from './GameLoop';
 import { GameState } from './GameState';
@@ -106,7 +106,7 @@ export class Game {
       if (winner) {
         message += ` ${winner.getPlayerName()} wins!`;
       }
-      this.gameEventBus.emitMessage(this.roomId, message);
+      this.sendSingularMessage(message);
     }, 1500);
 
     this.sendLeaderboardUpdate();
@@ -134,6 +134,7 @@ export class Game {
     // If there is only one player, go back to waiting state.
     if (this.gameState.getAllPlayers().length === 1) {
       this.gameState.setRoundState(RoundState.WAITING);
+      if (!this.isCpuGame) this.sendSingularMessage('Waiting for players to join...');
     }
 
     // Send out grid updates still even though the game isn't active so that players can see their spawn position
@@ -146,6 +147,7 @@ export class Game {
       this.spawnService.spawnInitialFood();
       this.spawnService.spawnAllPlayers();
       this.haveEntitiesBeenSpawned = true;
+      if (!this.isCpuGame) this.sendSingularMessage('Waiting for players to join...');
     }
 
     // Switch to intermission countdown if there is more than one player.
@@ -243,6 +245,10 @@ export class Game {
       this.spawnService.spawnFood();
       this.sendLeaderboardUpdate();
     }
+  }
+
+  private sendSingularMessage(message: string, type: Message['type'] = 'default') {
+    this.gameEventBus.emit(GameEvents.MESSAGE_EVENT, this.roomId, [{ type, message }]);
   }
 
   private sendLeaderboardUpdate() {
