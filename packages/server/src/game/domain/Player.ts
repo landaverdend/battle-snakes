@@ -84,6 +84,8 @@ export class Player {
       name: this.name,
       color: this.color,
       score: this.score,
+      isAlive: this.isAlive,
+      length: this.segments.length,
     };
   }
 

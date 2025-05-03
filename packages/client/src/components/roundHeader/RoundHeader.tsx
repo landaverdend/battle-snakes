@@ -2,6 +2,7 @@ import { RoundInfo, RoundState, SharedGameState } from '@battle-snakes/shared';
 import { ClientGameState } from '@/game/ClientGameState'; // Adjust path if needed
 import './round-header.css';
 import { useEffect, useState, useRef } from 'react'; // Import hooks
+import { Counter, Frame, GroupBox } from 'react95';
 
 export default function RoundHeader() {
   // State for rendering
@@ -83,8 +84,11 @@ export default function RoundHeader() {
   // Render the countdown string
   return (
     <div className="round-header-container">
-      <div className="item">Round Number: {roundInfo.roundNumber}</div>
-      <div className="item">Round Status: {roundInfo.roundState}</div>
+      <Frame className="round-number-container">
+        <h2>Round Number:</h2>
+        <Counter value={roundInfo.roundNumber} minLength={2} size="lg" />
+      </Frame>
+
       {roundInfo.roundState === RoundState.INTERMISSION && <div className="item">New Round in: {countdown} </div>}
       {roundInfo.roundState === RoundState.WAITING && <div className="item">Waiting for players...</div>}
     </div>

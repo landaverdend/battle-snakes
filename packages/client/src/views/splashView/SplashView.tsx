@@ -14,8 +14,12 @@ export default function SplashView({ onComplete }: SVProps) {
 
   const handleGameStart = (isCpuGame: boolean) => {
     if (playerName.length === 0) {
-      setError('Name is required...');
-    } else {
+      setError('Name is required');
+    } 
+    else if (playerName.length > 12) {
+      setError('Name must be less than 12 characters')
+    }
+    else {
       onComplete(playerName, playerColor, isCpuGame);
     }
   };

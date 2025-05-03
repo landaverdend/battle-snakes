@@ -35,6 +35,10 @@ export function PlayerList() {
     };
   }, []);
 
+  useEffect(() => {
+    console.log(players);
+  }, [players]);
+
   return (
     <Window>
       <WindowHeader>Leaderboard</WindowHeader>
@@ -45,18 +49,22 @@ export function PlayerList() {
               <TableHeadCell>Name</TableHeadCell>
               <TableHeadCell>Color</TableHeadCell>
               <TableHeadCell>Score</TableHeadCell>
+              <TableHeadCell>Length</TableHeadCell>
             </TableRow>
           </TableHead>
           <TableBody>
             {players.map((player) => (
-              <TableRow className="player-list-row">
-                <TableDataCell>{player.name}</TableDataCell>
+              <TableRow key={player.name} className="player-list-row">
+                <TableDataCell>
+                  {player.name} <span style={{ color: 'red' }}>{player.isAlive ? '' : ' (DEAD)'}</span>
+                </TableDataCell>
                 <TableDataCell className="avatar-cell">
                   <Avatar square size={20} style={{ background: player.color, color: player.color }}>
                     0
                   </Avatar>
                 </TableDataCell>
                 <TableDataCell>{player.score}</TableDataCell>
+                <TableDataCell>{player.length}</TableDataCell>
               </TableRow>
             ))}
           </TableBody>

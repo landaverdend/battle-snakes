@@ -12,6 +12,8 @@ export interface PlayerData {
   color: string;
   name: string;
   score: number;
+  isAlive: boolean;
+  length: number;
 }
 
 // Server to client messages

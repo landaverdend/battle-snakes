@@ -95,7 +95,7 @@ export class Game {
   private handleRoundEnd() {
     if (this.isRoundEnding) return;
     this.isRoundEnding = true;
-    
+
     const winner = this.gameState.getActivePlayers()[0];
 
     setTimeout(() => {
@@ -109,6 +109,7 @@ export class Game {
       this.gameEventBus.emitMessage(this.roomId, message);
     }, 1500);
 
+    this.sendLeaderboardUpdate();
     this.inputBuffer.clearAll();
   }
 
@@ -120,6 +121,8 @@ export class Game {
     for (const player of this.gameState.getAllPlayers()) {
       this.gameEventBus.emit(GameEvents.CLIENT_STATUS_UPDATE, player.getPlayerId(), { isAlive: true });
     }
+
+    this.sendLeaderboardUpdate();
   }
 
   private intermissionTick(): void {
@@ -171,7 +174,7 @@ export class Game {
   public removePlayerFromRoom(playerId: string) {
     this.gameState.removePlayer(playerId);
     this.inputBuffer.clearPlayer(playerId);
-    this.gameEventBus.emit(GameEvents.LEADERBOARD_UPDATE, this.roomId, this.gameState.getPlayerData());
+    this.sendLeaderboardUpdate();
   }
 
   public getPlayerData() {
@@ -238,7 +241,11 @@ export class Game {
 
     if (wasScoreUpdated) {
       this.spawnService.spawnFood();
-      this.gameEventBus.emit(GameEvents.LEADERBOARD_UPDATE, this.roomId, this.gameState.getPlayerData());
+      this.sendLeaderboardUpdate();
     }
+  }
+
+  private sendLeaderboardUpdate() {
+    this.gameEventBus.emit(GameEvents.LEADERBOARD_UPDATE, this.roomId, this.gameState.getPlayerData());
   }
 }
