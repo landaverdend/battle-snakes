@@ -15,6 +15,7 @@
 
 .message-item {
   width: 100%;
+  z-index: -10;
 
   &.collision {
     color: red;
