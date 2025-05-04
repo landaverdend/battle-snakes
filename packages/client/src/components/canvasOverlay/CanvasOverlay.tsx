@@ -1,11 +1,14 @@
 import './canvas-overlay.css';
 import { useEffect, useState } from 'react';
 import { RoundState } from '@battle-snakes/shared';
-import { useRoundInfo } from '@/hooks/useRoundInfo/useRoundInfo';
+import { useRoundInfo } from '@/hooks/useRoundInfo';
+import { useLeaderboard } from '@/hooks/useLeaderboard';
 
 export function CanvasOverlay() {
   const { roundInfo } = useRoundInfo();
-  const [countdown, setCountdown] = useState<string>('');
+  const { players } = useLeaderboard();
+
+  const [displayMessage, setDisplayMessage] = useState<string>('');
   const [shouldDisplay, setShouldDisplay] = useState<boolean>(false);
 
   // Effect for managing the countdown timer display logic
@@ -21,9 +24,9 @@ export function CanvasOverlay() {
         const remaining = Math.max(0, Math.ceil((roundIntermissionEndTime - now) / 1000));
         if (remaining <= 0) {
           setShouldDisplay(false);
-          setCountdown('GO!!');
+          setDisplayMessage('GO!!');
         } else {
-          setCountdown(`${remaining}`);
+          setDisplayMessage(`${remaining}`);
         }
         // Stop the interval early if the timer reaches zero
         if (remaining <= 0 && intervalId) {
@@ -53,5 +56,15 @@ export function CanvasOverlay() {
     };
   }, [roundInfo]);
 
-  return <>{shouldDisplay && <div className="canvas-overlay-container">{countdown}</div>}</>;
+  useEffect(() => {
+    const alive = players.filter((p) => p.isAlive);
+
+    if (roundInfo.roundState !== RoundState.WAITING && alive.length === 1) {
+      setDisplayMessage(`${alive[0]?.name} wins! +50 points!`);
+      setShouldDisplay(true);
+    } else {
+    }
+  }, [players]);
+
+  return <>{shouldDisplay && <div className="canvas-overlay-container">{displayMessage}</div>}</>;
 }

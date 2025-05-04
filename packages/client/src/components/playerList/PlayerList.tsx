@@ -14,36 +14,16 @@ import {
   WindowContent,
   WindowHeader,
 } from 'react95';
+import { useLeaderboard } from '@/hooks/useLeaderboard';
 
 export function PlayerList() {
-  const [players, setPlayers] = useState<PlayerData[]>([]);
-
-  useEffect(() => {
-    const handleLeaderboardUpdate = (players: PlayerData[]) => {
-      setPlayers(players);
-    };
-
-    // Subscribe to updates
-    LeaderBoardService.getInstance().addListener(handleLeaderboardUpdate);
-
-    // Initial state
-    setPlayers(LeaderBoardService.getInstance().getPlayers());
-
-    // Cleanup
-    return () => {
-      LeaderBoardService.getInstance().removeListener(handleLeaderboardUpdate);
-    };
-  }, []);
-
-  useEffect(() => {
-    console.log(players);
-  }, [players]);
+  const { players } = useLeaderboard();
 
   return (
     <Window>
       <WindowHeader>Leaderboard</WindowHeader>
       <WindowContent>
-        <Table style={{ width: '300px' }}>
+        <Table style={{ width: '350px' }}>
           <TableHead>
             <TableRow>
               <TableHeadCell>Name</TableHeadCell>

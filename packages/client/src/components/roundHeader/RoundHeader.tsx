@@ -1,6 +1,6 @@
 import './round-header.css';
 import { Counter, Frame } from 'react95';
-import { useRoundInfo } from '@/hooks/useRoundInfo/useRoundInfo';
+import { useRoundInfo } from '@/hooks/useRoundInfo';
 
 export default function RoundHeader() {
   const { roundInfo } = useRoundInfo();
