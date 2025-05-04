@@ -39,7 +39,7 @@ export class ClientPlayerState {
   }
 
   private notifyListeners() {
-    [...this.listeners].forEach((listener) => {
+    this.listeners.forEach((listener) => {
       try {
         listener(this.playerState);
       } catch (error) {

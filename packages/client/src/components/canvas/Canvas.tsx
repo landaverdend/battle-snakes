@@ -47,7 +47,7 @@ const Canvas = ({ gameConfig }: CanvasProps) => {
 
   return (
     <Window className="canvas-window">
-      <WindowContent>
+      <WindowContent className="canvas-content">
         <CanvasOverlay />
         <div ref={containerRef} className="canvas-container">
           <canvas ref={canvasRef} />

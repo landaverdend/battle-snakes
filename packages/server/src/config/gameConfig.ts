@@ -1,7 +1,7 @@
 export const TICK_RATE_MS = 15; // 60 frames a second...
 export const GAME_STATE_UPDATE_INTERVAL_MS = 150;
 
-export const INTERMISSION_DURATION_MS = 5000;
+export const INTERMISSION_DURATION_MS = 8000;
 export const ROOM_CLEANUP_INTERVAL_MS = 1000 * 60 * 5; // 2 minute.
 
 export const DEFAULT_GRID_SIZE = 40;

@@ -41,7 +41,6 @@ export class GameClient {
     if (!this.isRunning) return;
 
     this.renderer.render();
-
     this.animationFrameId = requestAnimationFrame(() => this.gameLoop());
   }
 

@@ -4,7 +4,6 @@ export class ClientGameState {
   private gameState: SharedGameState;
   private listeners: ((state: SharedGameState) => void)[] = [];
 
-
   private constructor() {
     this.gameState = {
       players: [],
@@ -15,7 +14,7 @@ export class ClientGameState {
         roundIntermissionEndTime: null,
         roundNumber: 0,
       },
-      timestamp: 0
+      timestamp: 0,
     };
   }
 
@@ -48,7 +47,7 @@ export class ClientGameState {
   }
 
   private notifyListeners() {
-    [...this.listeners].forEach((listener) => {
+    this.listeners.forEach((listener) => {
       try {
         listener(this.gameState);
       } catch (error) {

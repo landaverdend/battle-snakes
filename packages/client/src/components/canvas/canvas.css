@@ -10,3 +10,7 @@ canvas {
 
   padding: 5px;
 }
+
+.canvas-content {
+  position: relative; /* Allows for absolute positioning of canvas overlay. */
+}
