@@ -1,5 +1,5 @@
 import { Direction, getRandomColor, OppositeDirection, PlayerData, Point } from '@battle-snakes/shared';
-import { DEFAULT_GROWTH_RATE } from '../../config/gameConfig';
+import { DEFAULT_GROWTH_RATE, ROUND_WIN_SCORE } from '../../config/gameConfig';
 
 export type PlayerConfigOptions = {
   color?: string;
@@ -19,6 +19,7 @@ export class Player {
 
   score: number;
   isAlive: boolean;
+  private roundsWon: number;
 
   constructor(id: string, { color, isAlive, name }: PlayerConfigOptions) {
     this.id = id;
@@ -31,6 +32,7 @@ export class Player {
     this.pendingDirection = 'up';
     this.growthQueue = 0;
     this.isAlive = isAlive ?? false;
+    this.roundsWon = 0;
   }
 
   // Initialize the player for a new round.
@@ -86,6 +88,7 @@ export class Player {
       score: this.score,
       isAlive: this.isAlive,
       length: this.segments.length,
+      roundsWon: this.roundsWon,
     };
   }
 
@@ -133,5 +136,10 @@ export class Player {
 
   public isValidMove(proposedMove: Direction) {
     return OppositeDirection[this.direction] !== proposedMove;
+  }
+
+  public addRoundWin() {
+    this.roundsWon++;
+    this.score += ROUND_WIN_SCORE;
   }
 }

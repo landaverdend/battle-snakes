@@ -20,13 +20,14 @@ export function PlayerList() {
     <Window>
       <WindowHeader>Leaderboard</WindowHeader>
       <WindowContent>
-        <Table style={{ width: '350px' }}>
+        <Table style={{ width: '400px' }}>
           <TableHead>
             <TableRow>
               <TableHeadCell>Name</TableHeadCell>
               <TableHeadCell>Color</TableHeadCell>
               <TableHeadCell>Score</TableHeadCell>
               <TableHeadCell>Length</TableHeadCell>
+              <TableHeadCell>Rounds Won</TableHeadCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -42,6 +43,7 @@ export function PlayerList() {
                 </TableDataCell>
                 <TableDataCell>{player.score}</TableDataCell>
                 <TableDataCell>{player.length}</TableDataCell>
+                <TableDataCell>{player.roundsWon}</TableDataCell>
               </TableRow>
             ))}
           </TableBody>

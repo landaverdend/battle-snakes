@@ -109,6 +109,9 @@ export class Game {
       this.sendSingularMessage(message);
     }, 2000);
 
+    if (winner) {
+      winner.addRoundWin();
+    }
     this.sendLeaderboardUpdate();
     this.inputBuffer.clearAll();
   }

@@ -61,7 +61,7 @@ export function CanvasOverlay() {
     if (roundInfo.roundState !== RoundState.WAITING && alive.length === 1) {
       setDisplayMessage(
         <>
-          <span style={{ color: alive[0]?.color }}>{alive[0]?.name} </span>wins! <span style={{ color: 'green' }}>+50</span>{' '}
+          <span style={{ color: alive[0]?.color }}>{alive[0]?.name} </span>{' '} wins! <span style={{ color: 'green' }}>+50</span>{' '}
           points
         </>
       );
