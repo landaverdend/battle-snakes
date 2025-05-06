@@ -8,7 +8,7 @@ export function CanvasOverlay() {
   const { roundInfo } = useRoundInfo();
   const { players } = useLeaderboard();
 
-  const [displayMessage, setDisplayMessage] = useState<string>('');
+  const [displayMessage, setDisplayMessage] = useState<React.ReactNode>(<></>);
   const [shouldDisplay, setShouldDisplay] = useState<boolean>(false);
 
   // Effect for managing the countdown timer display logic
@@ -24,7 +24,6 @@ export function CanvasOverlay() {
         const remaining = Math.max(0, Math.ceil((roundIntermissionEndTime - now) / 1000));
         if (remaining <= 0) {
           setShouldDisplay(false);
-          setDisplayMessage('GO!!');
         } else {
           setDisplayMessage(`${remaining}`);
         }
@@ -60,7 +59,12 @@ export function CanvasOverlay() {
     const alive = players.filter((p) => p.isAlive);
 
     if (roundInfo.roundState !== RoundState.WAITING && alive.length === 1) {
-      setDisplayMessage(`${alive[0]?.name} wins! +50 points!`);
+      setDisplayMessage(
+        <>
+          <span style={{ color: alive[0]?.color }}>{alive[0]?.name} </span>wins! <span style={{ color: 'green' }}>+50</span>{' '}
+          points
+        </>
+      );
       setShouldDisplay(true);
     } else {
     }

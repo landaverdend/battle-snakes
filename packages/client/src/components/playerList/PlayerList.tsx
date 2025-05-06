@@ -1,6 +1,3 @@
-import { useEffect, useState } from 'react';
-import { PlayerData } from '@battle-snakes/shared';
-import { LeaderBoardService } from '@/game/LeaderBoardService';
 import './player-list.css';
 import {
   Avatar,

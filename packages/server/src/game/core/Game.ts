@@ -107,7 +107,7 @@ export class Game {
         message += ` ${winner.getPlayerName()} wins!`;
       }
       this.sendSingularMessage(message);
-    }, 1500);
+    }, 2000);
 
     this.sendLeaderboardUpdate();
     this.inputBuffer.clearAll();
