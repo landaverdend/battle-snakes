@@ -1,9 +1,9 @@
-import { LeaderBoardService } from '@/game/LeaderBoardService';
+import { LeaderBoardState } from '@/game/LeaderboardState';
 import { PlayerData } from '@battle-snakes/shared';
 import { useEffect, useState } from 'react';
 
 export function useLeaderboard() {
-  const [players, setPlayers] = useState<PlayerData[]>([]);
+  const [players, setPlayers] = useState<Array<PlayerData>>([]);
 
   useEffect(() => {
     const handleLeaderboardUpdate = (players: PlayerData[]) => {
@@ -11,14 +11,14 @@ export function useLeaderboard() {
     };
 
     // Subscribe to updates
-    LeaderBoardService.getInstance().addListener(handleLeaderboardUpdate);
+    LeaderBoardState.getInstance().addListener(handleLeaderboardUpdate);
 
     // Initial state
-    setPlayers(LeaderBoardService.getInstance().getPlayers());
+    setPlayers(LeaderBoardState.getInstance().getState());
 
     // Cleanup
     return () => {
-      LeaderBoardService.getInstance().removeListener(handleLeaderboardUpdate);
+      LeaderBoardState.getInstance().removeListener(handleLeaderboardUpdate);
     };
   }, []);
 

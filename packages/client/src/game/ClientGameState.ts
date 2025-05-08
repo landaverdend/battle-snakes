@@ -1,11 +1,10 @@
 import { RoundState, SharedGameState } from '@battle-snakes/shared';
-export class ClientGameState {
+import StateManager from './StateManager';
+export class ClientGameState extends StateManager<SharedGameState> {
   private static instance: ClientGameState;
-  private gameState: SharedGameState;
-  private listeners: ((state: SharedGameState) => void)[] = [];
 
   private constructor() {
-    this.gameState = {
+    const initialState: SharedGameState = {
       players: [],
       grid: {},
       gridSize: 0,
@@ -16,6 +15,7 @@ export class ClientGameState {
       },
       timestamp: 0,
     };
+    super(initialState);
   }
 
   public static getInstance(): ClientGameState {
@@ -25,34 +25,7 @@ export class ClientGameState {
     return ClientGameState.instance;
   }
 
-  public addListener(listener: (state: SharedGameState) => void) {
-    this.listeners.push(listener);
-  }
-
-  public removeListener(listener: (state: SharedGameState) => void) {
-    this.listeners = this.listeners.filter((l) => l !== listener);
-  }
-
-  public updateState(newState: SharedGameState) {
-    this.gameState = { ...newState };
-    this.notifyListeners();
-  }
-
-  public getState(): SharedGameState {
-    return this.gameState;
-  }
-
   public isRoundActive(): boolean {
-    return this.gameState.roundInfo.roundState === RoundState.ACTIVE;
-  }
-
-  private notifyListeners() {
-    this.listeners.forEach((listener) => {
-      try {
-        listener(this.gameState);
-      } catch (error) {
-        console.error('Error in ClientGameState listener:', error);
-      }
-    });
+    return this.state.roundInfo.roundState === RoundState.ACTIVE;
   }
 }

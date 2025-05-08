@@ -1,16 +1,17 @@
+import StateManager from './StateManager';
+
 type PlayerState = {
   isAlive: boolean;
 };
 
-export class ClientPlayerState {
+export class ClientPlayerState extends StateManager<PlayerState> {
   private static instance: ClientPlayerState;
-  private playerState: PlayerState;
-  private listeners: ((state: PlayerState) => void)[] = [];
 
   private constructor() {
-    this.playerState = {
+    const initialState: PlayerState = {
       isAlive: true,
     };
+    super(initialState);
   }
 
   public static getInstance(): ClientPlayerState {
@@ -19,32 +20,5 @@ export class ClientPlayerState {
     }
 
     return ClientPlayerState.instance;
-  }
-
-  public addListener(listener: (state: PlayerState) => void) {
-    this.listeners.push(listener);
-  }
-
-  public removeListener(listener: (state: PlayerState) => void) {
-    this.listeners = this.listeners.filter((l) => l !== listener);
-  }
-
-  public updateState(newState: PlayerState) {
-    this.playerState = { ...newState };
-    this.notifyListeners();
-  }
-
-  public getState(): PlayerState {
-    return this.playerState;
-  }
-
-  private notifyListeners() {
-    this.listeners.forEach((listener) => {
-      try {
-        listener(this.playerState);
-      } catch (error) {
-        console.error('Error in ClientGameState listener:', error);
-      }
-    });
   }
 }

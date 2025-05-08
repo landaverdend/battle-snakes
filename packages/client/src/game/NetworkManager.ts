@@ -1,8 +1,8 @@
-import { GameEvents, SharedGameState, PlayerData, Message } from '@battle-snakes/shared';
+import { GameEvents, SharedGameState, PlayerData, Message, OverlayMessage } from '@battle-snakes/shared';
 import { io, Socket } from 'socket.io-client';
 import { ClientGameState } from './ClientGameState';
-import { LeaderBoardService } from './LeaderBoardService';
-import { MessageFeedService } from './MessageFeedService';
+import { LeaderBoardState } from './LeaderboardState';
+import { MessageFeedState } from './MessageFeedState';
 import { GameConfigOptions } from './GameClient';
 import { ClientPlayerState } from './ClientPlayerState';
 
@@ -26,7 +26,8 @@ export class NetworkManager {
     });
 
     this.socket.on(GameEvents.LEADERBOARD_UPDATE, (players: PlayerData[]) => {
-      LeaderBoardService.getInstance().updatePlayers(players);
+      console.log(players);
+      LeaderBoardState.getInstance().updateState(players);
     });
 
     this.socket.on(GameEvents.STATE_UPDATE, (state: SharedGameState) => {
@@ -44,12 +45,14 @@ export class NetworkManager {
     // }, 5000);
 
     this.socket.on(GameEvents.MESSAGE_EVENT, (messages: Message[]) => {
-      MessageFeedService.getInstance().addAction(messages);
+      MessageFeedState.getInstance().addAction(messages);
     });
 
     this.socket.on(GameEvents.CLIENT_STATUS_UPDATE, (playerUpdate) => {
       ClientPlayerState.getInstance().updateState(playerUpdate);
     });
+
+    this.socket.on(GameEvents.OVERLAY_MESSAGE, (overlayMessage: OverlayMessage) => {});
 
     this.socket.on('disconnect', () => {
       console.log('Disconnected from game server');

@@ -95,6 +95,10 @@ export class NetworkService extends EventEmitter {
     this.eventBus.on(GameEvents.CLIENT_STATUS_UPDATE, (socketId, clientStatusUpdate) => {
       this.io.to(socketId).emit(GameEvents.CLIENT_STATUS_UPDATE, clientStatusUpdate);
     });
+
+    this.eventBus.on(GameEvents.OVERLAY_MESSAGE, (roomId, message) => {
+      this.io.to(roomId).emit(GameEvents.OVERLAY_MESSAGE, message);
+    });
   }
 
   private setupCleanupInterval() {

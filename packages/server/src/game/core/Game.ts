@@ -6,6 +6,7 @@ import {
   GameEvents,
   MAX_ROOM_SIZE,
   Message,
+  OverlayMessage,
   RoundState,
   TICK_RATE_MS,
 } from '@battle-snakes/shared';
@@ -146,7 +147,7 @@ export class Game {
 
   private handleGameEnd() {
     this.sendSingularMessage('Game over!');
-
+    this.sendOverlayMessage({ type: 'game_over' });
     let message = '';
     const highestScorers = this.gameState.calculateGameWinner();
     if (highestScorers.length === 1) {
@@ -291,5 +292,9 @@ export class Game {
 
   private sendLeaderboardUpdate() {
     this.gameEventBus.emit(GameEvents.LEADERBOARD_UPDATE, this.roomId, this.gameState.getPlayerData());
+  }
+
+  private sendOverlayMessage(overlayMessage: OverlayMessage) {
+    this.gameEventBus.emit(GameEvents.OVERLAY_MESSAGE, this.roomId, overlayMessage);
   }
 }

@@ -9,6 +9,7 @@ export enum GameEvents {
   PLAYER_JOIN = 'game:player_join',
   PLAYER_EXIT = 'game:player_exit',
   CLIENT_STATUS_UPDATE = 'game:client_status_update',
+  OVERLAY_MESSAGE = 'game:overlay_message',
 }
 
 export type Message = {
@@ -44,3 +45,9 @@ export interface SharedGameState {
   roundInfo: RoundInfo;
   timestamp: number;
 }
+
+export type OverlayMessage = {
+  type: 'round_over' | 'game_over' | 'countdown';
+  message?: string;
+  playerName?: string;
+};
