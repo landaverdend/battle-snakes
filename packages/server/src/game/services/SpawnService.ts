@@ -1,5 +1,4 @@
-import { getRandomColor, getRandomNumber, Point } from '@battle-snakes/shared';
-import { DEFAULT_FOOD_COUNT, DEFAULT_GRID_SIZE, MAX_ROOM_SIZE } from '../../config/gameConfig';
+import { DEFAULT_FOOD_COUNT, DEFAULT_GRID_SIZE, getRandomColor, getRandomNumber, MAX_ROOM_SIZE, Point } from '@battle-snakes/shared';
 import { GameState } from '../core/GameState';
 import { Player } from '../domain/Player';
 

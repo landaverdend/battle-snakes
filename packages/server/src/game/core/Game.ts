@@ -1,5 +1,14 @@
-import { Collision, Direction, GameEvents, Message, RoundState } from '@battle-snakes/shared';
-import { DEFAULT_FOOD_COUNT, GAME_STATE_UPDATE_INTERVAL_MS, MAX_ROOM_SIZE, TICK_RATE_MS } from '../../config/gameConfig';
+import {
+  Collision,
+  DEFAULT_FOOD_COUNT,
+  Direction,
+  GAME_STATE_UPDATE_INTERVAL_MS,
+  GameEvents,
+  MAX_ROOM_SIZE,
+  Message,
+  RoundState,
+  TICK_RATE_MS,
+} from '@battle-snakes/shared';
 import { GameLoop } from './GameLoop';
 import { GameState } from './GameState';
 import { GameEventBus } from '../events/GameEventBus';
@@ -96,23 +105,30 @@ export class Game {
     if (this.isRoundEnding) return;
     this.isRoundEnding = true;
 
-    const winner = this.gameState.getActivePlayers()[0];
-
-    setTimeout(() => {
-      this.gameState.beginWaiting();
-
-      // Sometimes players can die on the same tick.
-      let message = `Round ${this.gameState.getRoundNumber()} over!`;
-      if (winner) {
-        message += ` ${winner.getPlayerName()} wins!`;
-      }
-      this.sendSingularMessage(message);
-    }, 2000);
-
-    if (winner) {
-      winner.addRoundWin();
+    const roundWinner = this.gameState.getActivePlayers()[0];
+    if (roundWinner) {
+      roundWinner.addRoundWin();
     }
+
+    if (this.gameState.shouldGameEnd()) {
+      this.handleGameEnd();
+    } else {
+      setTimeout(() => {
+        this.gameState.beginWaiting();
+
+        // Sometimes players can die on the same tick.
+        let message = `Round ${this.gameState.getRoundNumber()} over!`;
+        if (roundWinner) {
+          message += ` ${roundWinner.getPlayerName()} wins round ${this.gameState.getRoundNumber()}!`;
+        }
+
+        this.sendSingularMessage(message);
+      }, 2000);
+    }
+
     this.sendLeaderboardUpdate();
+
+    // Handle round cleanup
     this.inputBuffer.clearAll();
   }
 
@@ -126,6 +142,23 @@ export class Game {
     }
 
     this.sendLeaderboardUpdate();
+  }
+
+  private handleGameEnd() {
+    this.sendSingularMessage('Game over!');
+
+    let message = '';
+    const highestScorers = this.gameState.calculateGameWinner();
+    if (highestScorers.length === 1) {
+      message = `${highestScorers[0]?.getPlayerName()} wins the game!`;
+    } else {
+      message = 'Tie Game!';
+    }
+    setTimeout(() => {
+      this.gameState.resetGame();
+    }, 2000);
+
+    this.sendSingularMessage(message);
   }
 
   private intermissionTick(): void {
@@ -150,7 +183,9 @@ export class Game {
       this.spawnService.spawnInitialFood();
       this.spawnService.spawnAllPlayers();
       this.haveEntitiesBeenSpawned = true;
-      if (!this.isCpuGame) this.sendSingularMessage('Waiting for players to join...');
+      if (!this.isCpuGame && this.gameState.getAllPlayers().length === 1) {
+        this.sendSingularMessage('Waiting for players to join...');
+      }
     }
 
     // Switch to intermission countdown if there is more than one player.

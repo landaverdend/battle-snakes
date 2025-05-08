@@ -1,5 +1,4 @@
-import { Direction, getRandomColor, OppositeDirection, PlayerData, Point } from '@battle-snakes/shared';
-import { DEFAULT_GROWTH_RATE, ROUND_WIN_SCORE } from '../../config/gameConfig';
+import { DEFAULT_GROWTH_RATE, Direction, getRandomColor, OppositeDirection, PlayerData, Point, ROUND_WIN_SCORE } from '@battle-snakes/shared';
 
 export type PlayerConfigOptions = {
   color?: string;
@@ -43,6 +42,11 @@ export class Player {
     this.pendingDirection = 'up';
     this.growthQueue = 0;
     this.isAlive = true;
+  }
+
+  public resetForGame() {
+    this.score = 0;
+    this.roundsWon = 0;
   }
 
   public getPlayerId() {

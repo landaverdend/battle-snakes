@@ -1,6 +1,5 @@
-import { CellType, Entity, getRandomColor, Point, RoundState, SharedGameState } from '@battle-snakes/shared';
+import { CellType, Entity, getRandomColor, INTERMISSION_DURATION_MS, MAX_ROOM_SIZE, Point, ROUNDS_PER_GAME, RoundState, SharedGameState } from '@battle-snakes/shared';
 import { Player } from '../domain/Player';
-import { INTERMISSION_DURATION_MS, MAX_ROOM_SIZE } from '../../config/gameConfig';
 import { CpuPlayer } from '../domain/CpuPlayer';
 
 export class GameState {
@@ -86,6 +85,10 @@ export class GameState {
     return this.getActivePlayers().length <= 1;
   }
 
+  public shouldGameEnd(): boolean {
+    return this.roundNumber >= ROUNDS_PER_GAME;
+  }
+
   // State Mutation Methods
   public addPlayer(playerId: string, playerName: string, playerColor: string, isCpu = false): Player {
     // Set the player to alive if the round is waiting or in intermission.
@@ -125,6 +128,25 @@ export class GameState {
 
   public growPlayer(playerId: string) {
     this.players.get(playerId)?.grow();
+  }
+
+  // Just return an array of players with highest score. If there is more then one then it was a tie...
+  public calculateGameWinner(): Player[] {
+    const players = this.getAllPlayers();
+
+    let highestScore = Number.NEGATIVE_INFINITY;
+    let currentHighestScorers: Player[] = [];
+
+    for (const player of players) {
+      if (player.score > highestScore) {
+        highestScore = player.score;
+        currentHighestScorers = [player];
+      } else if (player.score === highestScore) {
+        currentHighestScorers.push(player);
+      }
+    }
+
+    return currentHighestScorers;
   }
 
   // Grid Update Method
@@ -173,14 +195,21 @@ export class GameState {
     this.roundIntermissionEndTime = null;
   }
 
+  public resetGame() {
+    this.roundNumber = 1;
+    this.roundState = RoundState.WAITING;
+
+    for (const player of this.players.values()) {
+      player.resetForGame();
+    }
+  }
+
   public beginIntermissionCountdown() {
     this.roundState = RoundState.INTERMISSION;
     this.roundIntermissionEndTime = Date.now() + INTERMISSION_DURATION_MS;
   }
 
   public beginWaiting() {
-    console.log(`Round ${this.roundNumber} over for room, beginning intermission.`);
-
     this.roundState = RoundState.WAITING;
     this.roundNumber++;
     this.foodPositions.clear();
@@ -201,7 +230,7 @@ export class GameState {
         roundIntermissionEndTime: this.roundIntermissionEndTime,
         roundNumber: this.roundNumber,
       },
-      timestamp: Date.now()
+      timestamp: Date.now(),
     };
   }
 }

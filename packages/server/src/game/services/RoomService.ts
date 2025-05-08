@@ -1,4 +1,4 @@
-import { DEFAULT_GRID_SIZE } from '../../config/gameConfig';
+import { DEFAULT_GRID_SIZE } from '@battle-snakes/shared';
 import { Game } from '../core/Game';
 import { GameEventBus } from '../events/GameEventBus';
 

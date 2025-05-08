@@ -1,6 +1,6 @@
 import './canvas-overlay.css';
 import { useEffect, useState } from 'react';
-import { RoundState } from '@battle-snakes/shared';
+import { PlayerData, RoundInfo, ROUNDS_PER_GAME, RoundState } from '@battle-snakes/shared';
 import { useRoundInfo } from '@/hooks/useRoundInfo';
 import { useLeaderboard } from '@/hooks/useLeaderboard';
 
@@ -8,14 +8,13 @@ export function CanvasOverlay() {
   const { roundInfo } = useRoundInfo();
   const { players } = useLeaderboard();
 
-  const [displayMessage, setDisplayMessage] = useState<React.ReactNode>(<></>);
   const [shouldDisplay, setShouldDisplay] = useState<boolean>(false);
+  const [countdown, setCountdown] = useState<number | null>(null);
 
   // Effect for managing the countdown timer display logic
   useEffect(() => {
     let intervalId: NodeJS.Timeout | null = null;
     const { roundState, roundIntermissionEndTime } = roundInfo;
-    console.log('roundinfo was changed', roundInfo);
 
     // Function to update the countdown string
     const updateCountdown = () => {
@@ -25,10 +24,11 @@ export function CanvasOverlay() {
         if (remaining <= 0) {
           setShouldDisplay(false);
         } else {
-          setDisplayMessage(`${remaining}`);
+          setCountdown(remaining);
         }
         // Stop the interval early if the timer reaches zero
         if (remaining <= 0 && intervalId) {
+          setCountdown(null);
           clearInterval(intervalId);
           intervalId = null; // Clear the interval ID
         }
@@ -58,17 +58,48 @@ export function CanvasOverlay() {
   useEffect(() => {
     const alive = players.filter((p) => p.isAlive);
 
-    if (roundInfo.roundState !== RoundState.WAITING && alive.length === 1) {
-      setDisplayMessage(
-        <>
-          <span style={{ color: alive[0]?.color }}>{alive[0]?.name} </span>{' '} wins! <span style={{ color: 'green' }}>+50</span>{' '}
-          points
-        </>
-      );
+    if (roundInfo.roundState !== RoundState.WAITING && alive.length <= 1) {
       setShouldDisplay(true);
-    } else {
     }
   }, [players]);
 
-  return <>{shouldDisplay && <div className="canvas-overlay-container">{displayMessage}</div>}</>;
+  return (
+    <>
+      {shouldDisplay && (
+        <div className="canvas-overlay-container">
+          <DisplayMessage roundInfo={roundInfo} players={players} countdown={countdown} />
+        </div>
+      )}
+    </>
+  );
+}
+
+type DMProps = {
+  roundInfo: RoundInfo;
+  players: PlayerData[];
+  countdown: number | null;
+};
+function DisplayMessage({ roundInfo, players, countdown }: DMProps) {
+  const isGameOver = roundInfo.roundNumber === ROUNDS_PER_GAME;
+  const survivor = players.find((p) => p.isAlive);
+
+  let toRender = <></>;
+  if (countdown !== null) {
+    toRender = <span>{countdown}</span>;
+  } else if (isGameOver) {
+    toRender = <span>Game Over!</span>;
+  } else {
+    toRender = (
+      <>
+        Round Over! 
+        {survivor && (
+          <>
+            <span style={{ color: survivor.color }}>{survivor.name}</span> survived! <span style={{ color: 'green' }}>+50</span>
+          </>
+        )}
+      </>
+    );
+  }
+
+  return <span>{toRender}</span>;
 }

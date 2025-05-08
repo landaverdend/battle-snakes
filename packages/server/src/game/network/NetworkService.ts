@@ -1,10 +1,9 @@
 import { Server, Socket } from 'socket.io';
 import { createServer } from 'http';
-import { GameEvents, MoveRequest } from '@battle-snakes/shared';
+import { GameEvents, MoveRequest, ROOM_CLEANUP_INTERVAL_MS } from '@battle-snakes/shared';
 import EventEmitter from 'events';
 import { RoomService } from '../services/RoomService';
 import { GameEventBus } from '../events/GameEventBus';
-import { ROOM_CLEANUP_INTERVAL_MS } from '../../config/gameConfig';
 
 const PORT = process.env['PORT'] || 3030;
 export class NetworkService extends EventEmitter {
