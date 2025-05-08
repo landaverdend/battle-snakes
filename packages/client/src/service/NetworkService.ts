@@ -1,14 +1,14 @@
 import { GameEvents, SharedGameState, PlayerData, Message, OverlayMessage } from '@battle-snakes/shared';
 import { io, Socket } from 'socket.io-client';
-import { ClientGameState } from './ClientGameState';
-import { LeaderBoardState } from './LeaderboardState';
-import { MessageFeedState } from './MessageFeedState';
-import { GameConfigOptions } from './GameClient';
-import { ClientPlayerState } from './ClientPlayerState';
+import { ClientGameState } from '../state/ClientGameState';
+import { LeaderBoardState } from '../state/LeaderboardState';
+import { MessageFeedState } from '../state/MessageFeedState';
+import { GameConfigOptions } from '../game/GameClient';
+import { ClientPlayerState } from '../state/ClientPlayerState';
 
-// To something like this:
 const SOCKET_URL = window.location.hostname === 'localhost' ? 'http://localhost:3030' : window.location.origin;
-export class NetworkManager {
+
+export class NetworkService {
   private socket: Socket;
 
   private stateUpdateLatencySum = 0;

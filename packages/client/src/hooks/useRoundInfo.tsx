@@ -1,4 +1,4 @@
-import { ClientGameState } from '@/game/ClientGameState';
+import { ClientGameState } from '@/state/ClientGameState';
 import { RoundInfo, RoundState, SharedGameState } from '@battle-snakes/shared';
 import { useEffect, useRef, useState } from 'react';
 

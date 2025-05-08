@@ -1,5 +1,3 @@
-
-
 export default class ObservableStateManager<T> {
   protected state: T;
   private listeners: ((data: T) => void)[] = [];

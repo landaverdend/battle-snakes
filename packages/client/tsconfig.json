@@ -10,7 +10,9 @@
       "@/*": ["src/*"],
       "@components/*": ["src/components/*"],
       "@game/*": ["src/game/*"],
-      "@views/*": ["src/views/*"]
+      "@views/*": ["src/views/*"],
+      "@state/*": ["src/state/*"],
+      "@service/*": ["src/service/*"]
     }
   },
   "include": ["src/**/*"],

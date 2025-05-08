@@ -1,5 +1,5 @@
 import { CellType, Point } from '@battle-snakes/shared';
-import { ClientGameState } from './ClientGameState';
+import { ClientGameState } from '../state/ClientGameState';
 
 export class Renderer {
   private ctx: CanvasRenderingContext2D;

@@ -1,4 +1,4 @@
-import { LeaderBoardState } from '@/game/LeaderboardState';
+import { LeaderBoardState } from '@/state/LeaderboardState';
 import { PlayerData } from '@battle-snakes/shared';
 import { useEffect, useState } from 'react';
 

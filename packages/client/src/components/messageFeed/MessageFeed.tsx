@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { MessageFeedState } from '@/game/MessageFeedState';
+import { MessageFeedState } from '@/state/MessageFeedState';
 import './message-feed.css';
 import { Message } from '@battle-snakes/shared';
 import { Frame, Window, WindowContent, WindowHeader } from 'react95';
