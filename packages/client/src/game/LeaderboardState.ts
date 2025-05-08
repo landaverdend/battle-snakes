@@ -1,8 +1,8 @@
 import { PlayerData } from '@battle-snakes/shared';
-import StateManager from './StateManager';
+import ObservableStateManager from './ObservableStateManager';
 
 // Singleton class for managing the leaderboard.
-export class LeaderBoardState extends StateManager<PlayerData[]> {
+export class LeaderBoardState extends ObservableStateManager<PlayerData[]> {
   private static instance: LeaderBoardState;
 
   private constructor() {

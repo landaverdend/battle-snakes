@@ -1,7 +1,7 @@
 import { Message } from '@battle-snakes/shared';
-import StateManager from './StateManager';
+import ObservableStateManager from './ObservableStateManager';
 
-export class MessageFeedState extends StateManager<Message[]> {
+export class MessageFeedState extends ObservableStateManager<Message[]> {
   private static instance: MessageFeedState;
 
   private constructor() {

@@ -1,10 +1,10 @@
-import StateManager from './StateManager';
+import ObservableStateManager from './ObservableStateManager';
 
 type PlayerState = {
   isAlive: boolean;
 };
 
-export class ClientPlayerState extends StateManager<PlayerState> {
+export class ClientPlayerState extends ObservableStateManager<PlayerState> {
   private static instance: ClientPlayerState;
 
   private constructor() {
