@@ -151,20 +151,25 @@ export class Game {
   }
 
   private handleGameEnd() {
-    this.sendSingularMessage('Game over!');
-    this.sendOverlayMessage({ type: 'game_over' });
     let message = '';
+    let overlayMessage: OverlayMessage = { type: 'game_over' };
+
     const highestScorers = this.gameState.calculateGameWinner();
     if (highestScorers.length === 1) {
       message = `${highestScorers[0]?.getPlayerName()} wins the game!`;
+      overlayMessage.player = highestScorers[0]?.toPlayerData();
     } else {
       message = 'Tie Game!';
+      overlayMessage.message = message;
     }
+
+    // Let the players see the game over message for a few seconds...
     setTimeout(() => {
       this.gameState.resetGame();
     }, 2000);
 
     this.sendSingularMessage(message);
+    this.sendOverlayMessage(overlayMessage);
   }
 
   private waitingTick(): void {
@@ -213,7 +218,6 @@ export class Game {
       clearInterval(this.countdownIntervalRef);
       this.countdownIntervalRef = null;
       this.countdownValue = null;
-      this.sendSingularMessage('Waiting for players...');
     }
   }
 

@@ -40,13 +40,28 @@ export function CanvasOverlay() {
 
 function RoundOverMessage({ overlayMessage }: { overlayMessage: OverlayMessage }) {
   return (
-    <div className="round-over-container">
+    <div className="message-container">
       <span className="normal-text">{overlayMessage.message}</span>
       {overlayMessage.player && (
         <div>
           <span style={{ color: overlayMessage.player.color }}>{overlayMessage.player.name + ' '}</span> survived!
           <br />
           <span style={{ color: 'green' }}>+50</span> points!
+        </div>
+      )}
+    </div>
+  );
+}
+
+function GameOverMessage({ overlayMessage }: { overlayMessage: OverlayMessage }) {
+  let messageText = overlayMessage.message ? overlayMessage.message : '';
+
+  return (
+    <div className="message-container">
+      <span className="normal-text">Game Over! {' ' + messageText}</span>
+      {overlayMessage.player && (
+        <div>
+          <span style={{ color: overlayMessage.player.color }}>{overlayMessage.player.name}</span> wins!!
         </div>
       )}
     </div>
@@ -67,6 +82,7 @@ function DisplayMessage({ overlayMessage }: DMProps) {
       toRender = <RoundOverMessage overlayMessage={overlayMessage} />;
       break;
     case 'game_over':
+      toRender = <GameOverMessage overlayMessage={overlayMessage} />;
       break;
     case 'countdown':
       toRender = <span style={{ fontSize: '6rem' }}>{overlayMessage.message}</span>;

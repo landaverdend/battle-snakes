@@ -16,11 +16,8 @@
   font-size: 4rem;
 }
 
-
-
-.round-over-container {
+.message-container {
   display: flex;
   flex-direction: column;
   font-size: 2.5rem;
-
 }
