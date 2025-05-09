@@ -1,4 +1,12 @@
-import { DEFAULT_GROWTH_RATE, Direction, getRandomColor, OppositeDirection, PlayerData, Point, ROUND_WIN_SCORE } from '@battle-snakes/shared';
+import {
+  DEFAULT_GROWTH_RATE,
+  Direction,
+  getRandomColor,
+  OppositeDirection,
+  PlayerData,
+  Point,
+  ROUND_WIN_SCORE,
+} from '@battle-snakes/shared';
 
 export type PlayerConfigOptions = {
   color?: string;
@@ -18,7 +26,7 @@ export class Player {
 
   score: number;
   isAlive: boolean;
-  private roundsWon: number;
+  private gamesWon: number;
 
   constructor(id: string, { color, isAlive, name }: PlayerConfigOptions) {
     this.id = id;
@@ -31,7 +39,7 @@ export class Player {
     this.pendingDirection = 'up';
     this.growthQueue = 0;
     this.isAlive = isAlive ?? false;
-    this.roundsWon = 0;
+    this.gamesWon = 0;
   }
 
   // Initialize the player for a new round.
@@ -46,7 +54,6 @@ export class Player {
 
   public resetForGame() {
     this.score = 0;
-    this.roundsWon = 0;
   }
 
   public getPlayerId() {
@@ -92,8 +99,12 @@ export class Player {
       score: this.score,
       isAlive: this.isAlive,
       length: this.segments.length,
-      roundsWon: this.roundsWon,
+      gamesWon: this.gamesWon,
     };
+  }
+
+  public addGameWin() {
+    this.gamesWon++;
   }
 
   public grow() {

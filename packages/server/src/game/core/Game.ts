@@ -158,6 +158,7 @@ export class Game {
     if (highestScorers.length === 1) {
       message = `${highestScorers[0]?.getPlayerName()} wins the game!`;
       overlayMessage.player = highestScorers[0]?.toPlayerData();
+      highestScorers[0]?.addGameWin();
     } else {
       message = 'Tie Game!';
       overlayMessage.message = message;
@@ -319,7 +320,11 @@ export class Game {
   }
 
   private sendLeaderboardUpdate() {
-    this.gameEventBus.emit(GameEvents.LEADERBOARD_UPDATE, this.roomId, this.gameState.getPlayerData());
+    this.gameEventBus.emit(
+      GameEvents.LEADERBOARD_UPDATE,
+      this.roomId,
+      this.gameState.getPlayerData().sort((a, b) => b.score - a.score)
+    );
   }
 
   private sendOverlayMessage(overlayMessage: OverlayMessage) {

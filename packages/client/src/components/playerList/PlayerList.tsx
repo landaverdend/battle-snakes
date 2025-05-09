@@ -27,7 +27,7 @@ export function PlayerList() {
               <TableHeadCell>Color</TableHeadCell>
               <TableHeadCell>Score</TableHeadCell>
               <TableHeadCell>Length</TableHeadCell>
-              <TableHeadCell>Rounds Won</TableHeadCell>
+              <TableHeadCell>Games Won</TableHeadCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -43,7 +43,7 @@ export function PlayerList() {
                 </TableDataCell>
                 <TableDataCell>{player.score}</TableDataCell>
                 <TableDataCell>{player.length}</TableDataCell>
-                <TableDataCell>{player.roundsWon}</TableDataCell>
+                <TableDataCell>{player.gamesWon}</TableDataCell>
               </TableRow>
             ))}
           </TableBody>

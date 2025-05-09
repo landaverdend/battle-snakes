@@ -14,7 +14,7 @@ export interface PlayerData {
   score: number;
   isAlive: boolean;
   length: number;
-  roundsWon: number;
+  gamesWon: number;
 }
 
 // Server to client messages
