@@ -20,7 +20,7 @@ export type Message = {
 export enum RoundState {
   WAITING = 'waiting',
   ACTIVE = 'active',
-  INTERMISSION = 'intermission',
+  COUNTDOWN = 'countdown',
 }
 
 export type Collision = {
@@ -47,7 +47,7 @@ export interface SharedGameState {
 }
 
 export type OverlayMessage = {
-  type: 'round_over' | 'game_over' | 'countdown';
+  type: 'round_over' | 'game_over' | 'countdown' | 'waiting' | 'clear';
   message?: string;
-  playerName?: string;
+  player?: PlayerData | undefined;
 };

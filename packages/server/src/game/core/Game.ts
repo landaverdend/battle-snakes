@@ -1,5 +1,6 @@
 import {
   Collision,
+  COUNTDOWN_TIME,
   DEFAULT_FOOD_COUNT,
   Direction,
   GAME_STATE_UPDATE_INTERVAL_MS,
@@ -30,6 +31,9 @@ export class Game {
   private movementAccumulator = 0;
   private isRoundEnding = false;
 
+  private countdownIntervalRef: NodeJS.Timeout | null = null;
+  private countdownValue: number | null = null;
+
   constructor(roomId: string, gridSize: number, private readonly gameEventBus: GameEventBus, isCpuGame = false) {
     this.roomId = roomId;
     this.gameState = new GameState(gridSize);
@@ -59,11 +63,9 @@ export class Game {
       case RoundState.ACTIVE:
         this.gameLoopTick(deltaTime);
         break;
-      case RoundState.INTERMISSION:
-        this.intermissionTick();
-        break;
+
       case RoundState.WAITING:
-        this.waitingtick();
+        this.waitingTick();
         break;
     }
   }
@@ -106,21 +108,24 @@ export class Game {
     if (this.isRoundEnding) return;
     this.isRoundEnding = true;
 
-    const roundWinner = this.gameState.getActivePlayers()[0];
-    if (roundWinner) {
-      roundWinner.addRoundWin();
+    const roundSurvivor = this.gameState.getActivePlayers()[0];
+    if (roundSurvivor) {
+      roundSurvivor.addRoundSurvivalBonus();
     }
 
     if (this.gameState.shouldGameEnd()) {
       this.handleGameEnd();
-    } else {
+    }
+    // Normal round end.
+    else {
+      this.sendOverlayMessage({ type: 'round_over', message: 'Round Over!', player: roundSurvivor?.toPlayerData() });
       setTimeout(() => {
         this.gameState.beginWaiting();
 
         // Sometimes players can die on the same tick.
         let message = `Round ${this.gameState.getRoundNumber()} over!`;
-        if (roundWinner) {
-          message += ` ${roundWinner.getPlayerName()} wins round ${this.gameState.getRoundNumber()}!`;
+        if (roundSurvivor) {
+          message += ` ${roundSurvivor.getPlayerName()} survived round ${this.gameState.getRoundNumber()}!`;
         }
 
         this.sendSingularMessage(message);
@@ -162,40 +167,54 @@ export class Game {
     this.sendSingularMessage(message);
   }
 
-  private intermissionTick(): void {
-    // If intermission time is over, set round to active and reset the intermission end time.
-    if (this.gameState.isIntermissionOver()) {
-      this.handleRoundStart();
-    }
-
-    // If there is only one player, go back to waiting state.
-    if (this.gameState.getAllPlayers().length === 1) {
-      this.gameState.setRoundState(RoundState.WAITING);
-      if (!this.isCpuGame) this.sendSingularMessage('Waiting for players to join...');
-    }
-
-    // Send out grid updates still even though the game isn't active so that players can see their spawn position
-    this.gameState.updateGrid();
-    this.gameEventBus.emit(GameEvents.STATE_UPDATE, this.roomId, this.gameState.toSharedGameState());
-  }
-
-  private waitingtick(): void {
+  private waitingTick(): void {
+    // Spawn initial entities if they aren't there yet.
     if (!this.haveEntitiesBeenSpawned) {
       this.spawnService.spawnInitialFood();
       this.spawnService.spawnAllPlayers();
       this.haveEntitiesBeenSpawned = true;
       if (!this.isCpuGame && this.gameState.getAllPlayers().length === 1) {
         this.sendSingularMessage('Waiting for players to join...');
+        this.sendOverlayMessage({ type: 'waiting', message: 'Waiting for players to join...' });
       }
     }
 
     // Switch to intermission countdown if there is more than one player.
-    if (this.gameState.getAllPlayers().length > 1) {
-      this.gameState.beginIntermissionCountdown();
+    if (!this.countdownIntervalRef && this.gameState.getAllPlayers().length > 1) {
+      this.beginCountdown();
     }
 
     this.gameState.updateGrid(); // We want to show the players spawn positions before the game starts.
     this.gameEventBus.emit(GameEvents.STATE_UPDATE, this.roomId, this.gameState.toSharedGameState());
+  }
+
+  private beginCountdown() {
+    this.countdownValue = COUNTDOWN_TIME;
+    this.sendOverlayMessage({ type: 'countdown', message: String(this.countdownValue) });
+
+    this.countdownIntervalRef = setInterval(() => {
+      if (this.countdownValue === null) {
+        return;
+      }
+
+      this.countdownValue--;
+      if (this.countdownValue > 0) {
+        this.sendOverlayMessage({ type: 'countdown', message: String(this.countdownValue) });
+      } else {
+        this.clearCountdown();
+        this.handleRoundStart();
+        this.sendOverlayMessage({ type: 'clear' });
+      }
+    }, 1000);
+  }
+
+  private clearCountdown() {
+    if (this.countdownIntervalRef) {
+      clearInterval(this.countdownIntervalRef);
+      this.countdownIntervalRef = null;
+      this.countdownValue = null;
+      this.sendSingularMessage('Waiting for players...');
+    }
   }
 
   public tryToAddPlayerToRoom(playerId: string, playerName: string, playerColor: string): boolean {
@@ -216,6 +235,11 @@ export class Game {
     this.gameState.removePlayer(playerId);
     this.inputBuffer.clearPlayer(playerId);
     this.sendLeaderboardUpdate();
+
+    // Clear the countdown if there was one...
+    if (this.gameState.getAllPlayers().length === 1) {
+      this.clearCountdown();
+    }
   }
 
   public getPlayerData() {

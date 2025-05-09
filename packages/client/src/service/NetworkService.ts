@@ -5,6 +5,7 @@ import { LeaderboardObservable } from '../state/LeaderboardObservable';
 import { MessageFeedObservable } from '../state/MessageFeedObservable';
 import { GameConfigOptions } from '../game/GameClient';
 import { ClientPlayerObservable } from '../state/ClientPlayerObservable';
+import { OverlayMessageEventBus } from './OverlayMessageEventBus';
 
 const SOCKET_URL = window.location.hostname === 'localhost' ? 'http://localhost:3030' : window.location.origin;
 
@@ -26,7 +27,6 @@ export class NetworkService {
     });
 
     this.socket.on(GameEvents.LEADERBOARD_UPDATE, (players: PlayerData[]) => {
-      console.log(players);
       LeaderboardObservable.getInstance().publish(players);
     });
 
@@ -52,7 +52,9 @@ export class NetworkService {
       ClientPlayerObservable.getInstance().publish(playerUpdate);
     });
 
-    this.socket.on(GameEvents.OVERLAY_MESSAGE, (overlayMessage: OverlayMessage) => {});
+    this.socket.on(GameEvents.OVERLAY_MESSAGE, (overlayMessage: OverlayMessage) => {
+      OverlayMessageEventBus.getInstance().publish(overlayMessage);
+    });
 
     this.socket.on('disconnect', () => {
       console.log('Disconnected from game server');

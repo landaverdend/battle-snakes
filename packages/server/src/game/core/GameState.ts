@@ -1,4 +1,13 @@
-import { CellType, Entity, getRandomColor, INTERMISSION_DURATION_MS, MAX_ROOM_SIZE, Point, ROUNDS_PER_GAME, RoundState, SharedGameState } from '@battle-snakes/shared';
+import {
+  CellType,
+  Entity,
+  getRandomColor,
+  MAX_ROOM_SIZE,
+  Point,
+  ROUNDS_PER_GAME,
+  RoundState,
+  SharedGameState,
+} from '@battle-snakes/shared';
 import { Player } from '../domain/Player';
 import { CpuPlayer } from '../domain/CpuPlayer';
 
@@ -33,7 +42,7 @@ export class GameState {
   }
 
   public isWaiting(): boolean {
-    return this.roundState === RoundState.WAITING || this.roundState === RoundState.INTERMISSION;
+    return this.roundState === RoundState.WAITING || this.roundState === RoundState.COUNTDOWN;
   }
 
   public getGrid() {
@@ -92,7 +101,7 @@ export class GameState {
   // State Mutation Methods
   public addPlayer(playerId: string, playerName: string, playerColor: string, isCpu = false): Player {
     // Set the player to alive if the round is waiting or in intermission.
-    const isAlive = this.roundState === RoundState.INTERMISSION || this.roundState === RoundState.WAITING;
+    const isAlive = this.roundState === RoundState.COUNTDOWN || this.roundState === RoundState.WAITING;
     const thePlayer = isCpu
       ? new CpuPlayer(playerId, {
           color: getRandomColor(),
@@ -204,19 +213,10 @@ export class GameState {
     }
   }
 
-  public beginIntermissionCountdown() {
-    this.roundState = RoundState.INTERMISSION;
-    this.roundIntermissionEndTime = Date.now() + INTERMISSION_DURATION_MS;
-  }
-
   public beginWaiting() {
     this.roundState = RoundState.WAITING;
     this.roundNumber++;
     this.foodPositions.clear();
-  }
-
-  public isIntermissionOver(): boolean {
-    return this.players.size > 1 && this.roundIntermissionEndTime !== null && this.roundIntermissionEndTime < Date.now();
   }
 
   // Serialization for network

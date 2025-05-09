@@ -142,8 +142,7 @@ export class Player {
     return OppositeDirection[this.direction] !== proposedMove;
   }
 
-  public addRoundWin() {
-    this.roundsWon++;
+  public addRoundSurvivalBonus() {
     this.score += ROUND_WIN_SCORE;
   }
 }
