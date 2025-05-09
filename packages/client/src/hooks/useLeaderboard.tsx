@@ -1,4 +1,4 @@
-import { LeaderBoardState } from '@/state/LeaderboardState';
+import { LeaderboardObservable } from '@/state/LeaderboardObservable';
 import { PlayerData } from '@battle-snakes/shared';
 import { useEffect, useState } from 'react';
 
@@ -11,14 +11,15 @@ export function useLeaderboard() {
     };
 
     // Subscribe to updates
-    LeaderBoardState.getInstance().addListener(handleLeaderboardUpdate);
+    LeaderboardObservable.getInstance().subscribe(handleLeaderboardUpdate);
+
 
     // Initial state
-    setPlayers(LeaderBoardState.getInstance().getState());
+    setPlayers(LeaderboardObservable.getInstance().getState());
 
     // Cleanup
     return () => {
-      LeaderBoardState.getInstance().removeListener(handleLeaderboardUpdate);
+      LeaderboardObservable.getInstance().unsubscribe(handleLeaderboardUpdate);
     };
   }, []);
 

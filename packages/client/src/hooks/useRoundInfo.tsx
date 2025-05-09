@@ -37,11 +37,11 @@ export function useRoundInfo() {
     memoizedRoundInfo.current = initialState.roundInfo;
 
     // Subscribe to future updates
-    gameStateManager.addListener(handleStateUpdate);
+    gameStateManager.subscribe(handleStateUpdate);
 
     // Cleanup: Unsubscribe on component unmount
     return () => {
-      gameStateManager.removeListener(handleStateUpdate);
+      gameStateManager.unsubscribe(handleStateUpdate);
     };
   }, []);
 

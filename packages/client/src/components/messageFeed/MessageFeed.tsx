@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { MessageFeedState } from '@/state/MessageFeedState';
+import { MessageFeedObservable } from '@/state/MessageFeedObservable';
 import './message-feed.css';
 import { Message } from '@battle-snakes/shared';
 import { Frame, Window, WindowContent, WindowHeader } from 'react95';
@@ -35,14 +35,14 @@ export function MessageFeed() {
     };
 
     // Subscribe to updates
-    MessageFeedState.getInstance().addListener(handleActionUpdate);
+    MessageFeedObservable.getInstance().subscribe(handleActionUpdate);
 
     // Initial state
-    setMessages(MessageFeedState.getInstance().getState());
+    setMessages(MessageFeedObservable.getInstance().getState());
 
     // Cleanup
     return () => {
-      MessageFeedState.getInstance().removeListener(handleActionUpdate);
+      MessageFeedObservable.getInstance().unsubscribe(handleActionUpdate);
     };
   }, []);
 

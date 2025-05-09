@@ -1,10 +1,10 @@
 import { GameEvents, SharedGameState, PlayerData, Message, OverlayMessage } from '@battle-snakes/shared';
 import { io, Socket } from 'socket.io-client';
 import { ClientGameState } from '../state/ClientGameState';
-import { LeaderBoardState } from '../state/LeaderboardState';
-import { MessageFeedState } from '../state/MessageFeedState';
+import { LeaderboardObservable } from '../state/LeaderboardObservable';
+import { MessageFeedObservable } from '../state/MessageFeedObservable';
 import { GameConfigOptions } from '../game/GameClient';
-import { ClientPlayerState } from '../state/ClientPlayerState';
+import { ClientPlayerObservable } from '../state/ClientPlayerObservable';
 
 const SOCKET_URL = window.location.hostname === 'localhost' ? 'http://localhost:3030' : window.location.origin;
 
@@ -27,7 +27,7 @@ export class NetworkService {
 
     this.socket.on(GameEvents.LEADERBOARD_UPDATE, (players: PlayerData[]) => {
       console.log(players);
-      LeaderBoardState.getInstance().updateState(players);
+      LeaderboardObservable.getInstance().publish(players);
     });
 
     this.socket.on(GameEvents.STATE_UPDATE, (state: SharedGameState) => {
@@ -37,7 +37,7 @@ export class NetworkService {
       this.stateUpdateLatencySamples++;
       this.stateUpdateLatencyAverage = this.stateUpdateLatencySum / this.stateUpdateLatencySamples;
 
-      ClientGameState.getInstance().updateState(state);
+      ClientGameState.getInstance().publish(state);
     });
 
     // setInterval(() => {
@@ -45,11 +45,11 @@ export class NetworkService {
     // }, 5000);
 
     this.socket.on(GameEvents.MESSAGE_EVENT, (messages: Message[]) => {
-      MessageFeedState.getInstance().addAction(messages);
+      MessageFeedObservable.getInstance().publishMessages(messages);
     });
 
     this.socket.on(GameEvents.CLIENT_STATUS_UPDATE, (playerUpdate) => {
-      ClientPlayerState.getInstance().updateState(playerUpdate);
+      ClientPlayerObservable.getInstance().publish(playerUpdate);
     });
 
     this.socket.on(GameEvents.OVERLAY_MESSAGE, (overlayMessage: OverlayMessage) => {});

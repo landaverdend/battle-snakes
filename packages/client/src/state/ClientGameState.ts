@@ -1,5 +1,6 @@
 import { RoundState, SharedGameState } from '@battle-snakes/shared';
 import ObservableStateManager from './ObservableStateManager';
+
 export class ClientGameState extends ObservableStateManager<SharedGameState> {
   private static instance: ClientGameState;
 

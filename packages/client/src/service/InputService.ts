@@ -1,18 +1,18 @@
 import { Direction, GameEvents, getCurrentTimeISOString } from '@battle-snakes/shared';
 import { Socket } from 'socket.io-client';
 import { ClientGameState } from '../state/ClientGameState';
-import { ClientPlayerState } from '../state/ClientPlayerState';
+import { ClientPlayerObservable } from '../state/ClientPlayerObservable';
 
 export class InputService {
   private socket: Socket;
   private handleKeydown: (event: KeyboardEvent) => void;
   private gameState: ClientGameState;
-  private playerState: ClientPlayerState;
+  private playerState: ClientPlayerObservable;
 
   constructor(socket: Socket) {
     this.socket = socket;
     this.gameState = ClientGameState.getInstance();
-    this.playerState = ClientPlayerState.getInstance();
+    this.playerState = ClientPlayerObservable.getInstance();
 
     this.handleKeydown = this.createKeydownHandler();
     document.addEventListener('keydown', this.handleKeydown);
