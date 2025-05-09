@@ -22,6 +22,10 @@ export class InputService {
     return (event: KeyboardEvent) => {
       event.preventDefault();
 
+      if (event.repeat) {
+        console.log('repeat');
+        return;
+      }
       // If the game isn't active, don't send data..
       if (!this.gameState.isRoundActive() || !this.playerState.getState().isAlive) {
         return;

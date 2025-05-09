@@ -10,7 +10,7 @@ export interface GameConfigOptions {
 export class GameClient {
   private renderer: Renderer;
   private network: NetworkService;
-  private inputManager: InputService;
+  private inputService: InputService;
 
   private isRunning: boolean = false;
   private animationFrameId: number | null = null;
@@ -18,7 +18,7 @@ export class GameClient {
   constructor(ctx: CanvasRenderingContext2D, gameConfig: GameConfigOptions) {
     this.renderer = new Renderer(ctx);
     this.network = new NetworkService(gameConfig);
-    this.inputManager = new InputService(this.network.getSocket());
+    this.inputService = new InputService(this.network.getSocket());
   }
 
   public start() {
