@@ -8,6 +8,7 @@ import { GameEventBus } from '../events/GameEventBus';
 const PORT = process.env['PORT'] || 3030;
 export class NetworkService extends EventEmitter {
   private io: Server;
+  private bannedIPs: Set<string> = new Set<string>();
 
   constructor(private readonly roomService: RoomService, private readonly eventBus: GameEventBus) {
     super();
@@ -29,16 +30,25 @@ export class NetworkService extends EventEmitter {
 
   public initialize() {
     this.io.on('connection', (socket) => this.handleConnection(socket));
-    this.setupEventListeners();
+    this.setupGlobalEventListeners();
     this.setupCleanupInterval();
   }
 
   private handleConnection(socket: Socket) {
     const playerId = socket.id;
-    console.log('A user connected:', playerId);
+    const clientIp = socket.handshake.address;
+
+    console.log('A user connected:', playerId, ' from IP: ', socket.handshake.address);
     const { playerName, playerColor, isCpuGame } = socket.handshake.auth;
+
+    if (this.bannedIPs.has(clientIp)) {
+      console.log(`IP ${clientIp} is banned. Disconnecting.`);
+      socket.disconnect(true);
+      return;
+    }
+
     try {
-      console.log(`Player name: ${playerName}, Player color: ${playerColor} has joined.`);
+      console.log(`Player name: ${playerName} has joined.`);
       if (!playerName) {
         throw new Error('Player name is required');
       }
@@ -79,7 +89,7 @@ export class NetworkService extends EventEmitter {
     }
   }
 
-  private setupEventListeners() {
+  private setupGlobalEventListeners() {
     this.eventBus.on(GameEvents.STATE_UPDATE, (roomId, state) => {
       this.io.to(roomId).emit(GameEvents.STATE_UPDATE, state);
     });
@@ -100,8 +110,16 @@ export class NetworkService extends EventEmitter {
       this.io.to(roomId).emit(GameEvents.OVERLAY_MESSAGE, message);
     });
 
+    // IP ban and disconnect player if they exceed the input rate limit
     this.eventBus.on(GameEvents.INPUT_RATE_LIMIT_EXCEEDED, (playerId) => {
       console.log(`Input rate limit exceeded for player ${playerId} `);
+
+      const clientIP = this.io.sockets.sockets.get(playerId)?.handshake.address;
+      if (clientIP) {
+        console.log(`Banned IP: ${clientIP}`);
+        this.bannedIPs.add(clientIP);
+      }
+
       this.io.to(playerId).disconnectSockets(true);
     });
   }

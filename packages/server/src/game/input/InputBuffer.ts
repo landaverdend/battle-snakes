@@ -18,6 +18,7 @@ export class InputBuffer {
   private readonly maxQueuedInputsPerPlayer = 3;
   private readonly RATE_LIMIT_WINDOW_MS = 1000;
   private readonly MAX_INPUTS_PER_WINDOW = 10;
+
   constructor(private readonly eventBus: GameEventBus) {}
 
   addInput(playerId: string, direction: Direction) {
