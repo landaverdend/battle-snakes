@@ -1,4 +1,4 @@
-import { Collision, Message, Point } from '@battle-snakes/shared';
+import { Collision, GameMessage, Point } from '@battle-snakes/shared';
 import { GameState } from '../core/GameState';
 
 export class CollisionService {
@@ -11,13 +11,14 @@ export class CollisionService {
     for (const player of players) {
       const head = player.getHead();
       const playerId = player.getPlayerId();
+      const playerData = player.toPlayerData();
 
       // Check food collision
       if (gameState.getFoodPositions().has(head.toString())) {
         collisions.push({
           point: head,
           type: 'food',
-          playerName: player.name,
+          playerData: playerData,
           playerId,
         });
       }
@@ -27,7 +28,7 @@ export class CollisionService {
         collisions.push({
           type: 'wall',
           playerId,
-          playerName: player.name,
+          playerData: player.toPlayerData(),
           point: head,
         });
         continue;
@@ -41,7 +42,7 @@ export class CollisionService {
           collisions.push({
             type: 'self',
             playerId,
-            playerName: player.name,
+            playerData: playerData,
             point: head,
           });
           continue;
@@ -63,9 +64,9 @@ export class CollisionService {
             type: 'snake',
             point: head,
             playerId,
-            playerName: player.name,
             otherPlayerId: otherPlayer.getPlayerId(),
-            otherPlayerName: otherPlayer.getPlayerName(),
+            playerData: playerData,
+            otherPlayerData: otherPlayer.toPlayerData(),
           });
           snakeCollisionDetected = true;
           break; // Found a collision with another snake, no need to check more snakes for this player
@@ -89,26 +90,31 @@ export class CollisionService {
     return isXOutOfBounds || isYOutOfBounds;
   }
 
-  public static convertCollisionsToMessages(collisions: Collision[]): Message[] {
-    const messages: Message[] = [];
+  public static convertCollisionsToMessages(collisions: Collision[]): GameMessage[] {
+    const messages: GameMessage[] = [];
 
     for (const collision of collisions) {
       let str = '';
       switch (collision.type) {
         case 'wall':
-          str = `${collision.playerName} hit the wall.`;
+          str = `{playerName} hit the wall.`;
           break;
         case 'snake':
-          str = `${collision.playerName} hit ${collision.otherPlayerName}.`;
+          str = `{playerName} hit {otherPlayerName}.`;
           break;
         case 'self':
-          str = `${collision.playerName} hit themselves.`;
+          str = `{playerName} hit themselves.`;
           break;
         case 'food':
           continue;
       }
 
-      messages.push({ type: 'collision', message: str });
+      messages.push({
+        type: 'player',
+        message: str,
+        playerData: collision.playerData,
+        otherPlayerData: collision.otherPlayerData,
+      });
     }
 
     return messages;

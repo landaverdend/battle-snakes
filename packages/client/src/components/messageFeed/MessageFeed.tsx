@@ -1,36 +1,66 @@
 import { useEffect, useRef, useState } from 'react';
 import { MessageFeedObservable } from '@/state/MessageFeedObservable';
 import './message-feed.css';
-import { Message } from '@battle-snakes/shared';
+import { GameMessage, PlayerMessage } from '@battle-snakes/shared';
 import { Frame, Window, WindowContent, WindowHeader } from 'react95';
 
+type MCProps = {
+  message: PlayerMessage;
+};
+function PlayerMessageComponent({ message }: MCProps) {
+  const { playerData, otherPlayerData } = message;
+
+  const playerName = playerData?.name as string;
+  const playerColor = playerData?.color as string;
+  const otherPlayerName = otherPlayerData?.name;
+  const otherPlayerColor = otherPlayerData?.color;
+
+  // Split the message by the placeholders
+  const parts = message.message.split(/(\{playerName\}|\{otherPlayerName\})/);
+
+  return (
+    <div key={crypto.randomUUID()}>
+      {parts.map((part, index) => {
+        if (part === '{playerName}') {
+          return (
+            <span key={index} style={{ color: playerColor }}>
+              {playerName}
+            </span>
+          );
+        }
+        if (part === '{otherPlayerName}' && otherPlayerName && otherPlayerColor) {
+          return (
+            <span key={index} style={{ color: otherPlayerColor }}>
+              {otherPlayerName}
+            </span>
+          );
+        }
+        return <span key={index}>{part}</span>;
+      })}
+    </div>
+  );
+}
+
 export function MessageFeed() {
-  const [messages, setMessages] = useState<Message[]>([]);
+  const [messages, setMessages] = useState<GameMessage[]>([]);
   const scrollRef = useRef<HTMLDivElement>(null);
 
-  const getMessageStyle = (message: Message) => {
-    let toRet = '';
-
+  const getMessageComponent = (message: GameMessage) => {
+    let toRender = <></>;
     switch (message.type) {
-      case 'collision':
-        toRet = 'collision';
+      case 'player':
+        toRender = <PlayerMessageComponent key={crypto.randomUUID()} message={message} />;
         break;
-      case 'player_exit':
-        toRet = 'player-exit';
-        break;
-      case 'player_join':
-        toRet = 'player-join';
-        break;
-      default:
-        toRet = 'default';
+      case 'default':
+        toRender = <>{message.message}</>;
         break;
     }
 
-    return toRet;
+    return toRender;
   };
 
   useEffect(() => {
-    const handleActionUpdate = (newActions: Message[]) => {
+    const handleActionUpdate = (newActions: GameMessage[]) => {
       setMessages(newActions);
     };
 
@@ -59,13 +89,7 @@ export function MessageFeed() {
       <WindowHeader> Message Feed</WindowHeader>
       <WindowContent>
         <Frame variant="field" className="message-feed-scroll-view" ref={scrollRef}>
-          <div className="message-feed-container">
-            {messages.map((message) => (
-              <span key={crypto.randomUUID()} className={`message-item ${getMessageStyle(message)}`}>
-                {message.message}
-              </span>
-            ))}
-          </div>
+          <div className="message-feed-container">{messages.map((message) => getMessageComponent(message))}</div>
         </Frame>
       </WindowContent>
     </Window>

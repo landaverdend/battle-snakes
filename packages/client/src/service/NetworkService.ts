@@ -1,4 +1,4 @@
-import { GameEvents, SharedGameState, PlayerData, Message, OverlayMessage } from '@battle-snakes/shared';
+import { GameEvents, SharedGameState, PlayerData, GameMessage, OverlayMessage } from '@battle-snakes/shared';
 import { io, Socket } from 'socket.io-client';
 import { ClientGameState } from '../state/ClientGameState';
 import { LeaderboardObservable } from '../state/LeaderboardObservable';
@@ -44,7 +44,7 @@ export class NetworkService {
     //   console.log(`State update latency average ${this.stateUpdateLatencyAverage}ms`);
     // }, 5000);
 
-    this.socket.on(GameEvents.MESSAGE_EVENT, (messages: Message[]) => {
+    this.socket.on(GameEvents.MESSAGE_EVENT, (messages: GameMessage[]) => {
       MessageFeedObservable.getInstance().publishMessages(messages);
     });
 

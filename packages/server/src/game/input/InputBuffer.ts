@@ -1,7 +1,6 @@
 import { Direction, GameEvents, getCurrentTimeISOString } from '@battle-snakes/shared';
 import { GameEventBus } from '../events/GameEventBus';
 
-// TODO: move me to shared package
 export interface PlayerInput {
   playerId: string;
   direction: Direction;

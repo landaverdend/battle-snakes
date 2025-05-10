@@ -6,7 +6,7 @@ import {
   GAME_STATE_UPDATE_INTERVAL_MS,
   GameEvents,
   MAX_ROOM_SIZE,
-  Message,
+  GameMessage,
   OverlayMessage,
   RoundState,
   TICK_RATE_MS,
@@ -125,10 +125,11 @@ export class Game {
         // Sometimes players can die on the same tick.
         let message = `Round ${this.gameState.getRoundNumber()} over!`;
         if (roundSurvivor) {
-          message += ` ${roundSurvivor.getPlayerName()} survived round ${this.gameState.getRoundNumber()}!`;
+          message += ` {playerName} survived round ${this.gameState.getRoundNumber()}!`;
+          this.sendPlayerMessage(message, roundSurvivor.getPlayerId());
+        } else {
+          this.sendDefaultMessage(message);
         }
-
-        this.sendSingularMessage(message);
       }, 2000);
     }
 
@@ -156,12 +157,15 @@ export class Game {
 
     const highestScorers = this.gameState.calculateGameWinner();
     if (highestScorers.length === 1) {
-      message = `${highestScorers[0]?.getPlayerName()} wins the game!`;
+      message = `{playerName} wins the game!`;
       overlayMessage.player = highestScorers[0]?.toPlayerData();
       highestScorers[0]?.addGameWin();
+
+      this.sendPlayerMessage(message, highestScorers[0]?.getPlayerId() ?? '');
     } else {
       message = 'Tie Game!';
       overlayMessage.message = message;
+      this.sendDefaultMessage(message);
     }
 
     // Let the players see the game over message for a few seconds...
@@ -169,7 +173,6 @@ export class Game {
       this.gameState.resetGame();
     }, 2000);
 
-    this.sendSingularMessage(message);
     this.sendOverlayMessage(overlayMessage);
   }
 
@@ -180,7 +183,7 @@ export class Game {
       this.spawnService.spawnAllPlayers();
       this.haveEntitiesBeenSpawned = true;
       if (!this.isCpuGame && this.gameState.getAllPlayers().length === 1) {
-        this.sendSingularMessage('Waiting for players to join...');
+        this.sendDefaultMessage('Waiting for players to join...');
         this.sendOverlayMessage({ type: 'waiting', message: 'Waiting for players to join...' });
       }
     }
@@ -251,6 +254,10 @@ export class Game {
     return this.gameState.getPlayerData();
   }
 
+  public getPlayerDataById(playerId: string) {
+    return this.gameState.getPlayer(playerId)?.toPlayerData();
+  }
+
   private movementTick() {
     const players = this.gameState.getActivePlayers();
 
@@ -315,8 +322,14 @@ export class Game {
     }
   }
 
-  private sendSingularMessage(message: string, type: Message['type'] = 'default') {
+  private sendDefaultMessage(message: string, type: GameMessage['type'] = 'default') {
     this.gameEventBus.emit(GameEvents.MESSAGE_EVENT, this.roomId, [{ type, message }]);
+  }
+
+  private sendPlayerMessage(message: string, playerId: string) {
+    this.gameEventBus.emit(GameEvents.MESSAGE_EVENT, this.roomId, [
+      { type: 'player', message: message, playerData: this.getPlayerDataById(playerId) },
+    ]);
   }
 
   private sendLeaderboardUpdate() {

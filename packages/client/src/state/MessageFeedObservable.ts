@@ -1,11 +1,11 @@
-import { Message } from '@battle-snakes/shared';
+import { GameMessage } from '@battle-snakes/shared';
 import ObservableStateManager from './ObservableStateManager';
 
-export class MessageFeedObservable extends ObservableStateManager<Message[]> {
+export class MessageFeedObservable extends ObservableStateManager<GameMessage[]> {
   private static instance: MessageFeedObservable;
 
   private constructor() {
-    const initialState: Message[] = [];
+    const initialState: GameMessage[] = [];
     super(initialState);
   }
 
@@ -16,7 +16,7 @@ export class MessageFeedObservable extends ObservableStateManager<Message[]> {
     return MessageFeedObservable.instance;
   }
 
-  public publishMessages(action: Message[]) {
+  public publishMessages(action: GameMessage[]) {
     this.publish([...this.state, ...action]);
   }
 }

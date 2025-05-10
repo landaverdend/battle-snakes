@@ -13,9 +13,20 @@ export enum GameEvents {
   INPUT_RATE_LIMIT_EXCEEDED = 'game:input_rate_limit_exceeded',
 }
 
-export type Message = {
-  type: 'collision' | 'player_join' | 'player_exit' | 'default';
+export type GameMessage = DefaultMessage | PlayerMessage;
+
+export type BaseGameMessage = {
   message: string;
+};
+
+export type PlayerMessage = BaseGameMessage & {
+  type: 'player_join' | 'player_exit' | 'collision' | 'player';
+  playerData?: PlayerData | undefined;
+  otherPlayerData?: PlayerData | undefined;
+};
+
+export type DefaultMessage = BaseGameMessage & {
+  type: 'default';
 };
 
 export enum RoundState {
@@ -27,9 +38,9 @@ export enum RoundState {
 export type Collision = {
   type: 'wall' | 'snake' | 'food' | 'self';
   playerId: string;
-  playerName: string;
+  playerData?: PlayerData;
   otherPlayerId?: string;
-  otherPlayerName?: string;
+  otherPlayerData?: PlayerData;
   point: Point;
 };
 
