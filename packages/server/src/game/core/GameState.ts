@@ -42,7 +42,7 @@ export class GameState {
   }
 
   public isWaiting(): boolean {
-    return this.roundState === RoundState.WAITING || this.roundState === RoundState.COUNTDOWN;
+    return this.roundState === RoundState.WAITING;
   }
 
   public getGrid() {
@@ -101,7 +101,7 @@ export class GameState {
   // State Mutation Methods
   public addPlayer(playerId: string, playerName: string, playerColor: string, isCpu = false): Player {
     // Set the player to alive if the round is waiting or in intermission.
-    const isAlive = this.roundState === RoundState.COUNTDOWN || this.roundState === RoundState.WAITING;
+    const isAlive = this.roundState === RoundState.WAITING;
     const thePlayer = isCpu
       ? new CpuPlayer(playerId, {
           color: getRandomColor(),

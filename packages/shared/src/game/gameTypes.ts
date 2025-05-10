@@ -32,15 +32,16 @@ export type DefaultMessage = BaseGameMessage & {
 export enum RoundState {
   WAITING = 'waiting',
   ACTIVE = 'active',
-  COUNTDOWN = 'countdown',
 }
 
 export type Collision = {
   type: 'wall' | 'snake' | 'food' | 'self';
+
   playerId: string;
   playerData?: PlayerData;
   otherPlayerId?: string;
   otherPlayerData?: PlayerData;
+  isHeadOnCollision?: boolean;
   point: Point;
 };
 

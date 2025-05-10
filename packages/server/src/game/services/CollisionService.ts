@@ -51,6 +51,7 @@ export class CollisionService {
 
       // Check collisions with other players
       let snakeCollisionDetected = false;
+
       for (const otherPlayer of players) {
         // Skip checking against self
         if (otherPlayer.getPlayerId() === playerId) {
@@ -67,6 +68,7 @@ export class CollisionService {
             otherPlayerId: otherPlayer.getPlayerId(),
             playerData: playerData,
             otherPlayerData: otherPlayer.toPlayerData(),
+            isHeadOnCollision: player.getHead().equals(otherPlayer.getHead()),
           });
           snakeCollisionDetected = true;
           break; // Found a collision with another snake, no need to check more snakes for this player
@@ -100,7 +102,11 @@ export class CollisionService {
           str = `{playerName} hit the wall.`;
           break;
         case 'snake':
-          str = `{playerName} hit {otherPlayerName}.`;
+          if (collision.isHeadOnCollision) {
+            str = `{playerName} and {otherPlayerName} collided head on.`;
+          } else {
+            str = `{playerName} hit {otherPlayerName}.`;
+          }
           break;
         case 'self':
           str = `{playerName} hit themselves.`;
