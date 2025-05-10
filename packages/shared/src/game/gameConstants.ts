@@ -1,5 +1,3 @@
-export const TICK_RATE_MS = 15; // 60 frames a second...
-
 export const COUNTDOWN_TIME = 5;
 export const ROOM_CLEANUP_INTERVAL_MS = 1000 * 60 * 5; // 2 minute.
 

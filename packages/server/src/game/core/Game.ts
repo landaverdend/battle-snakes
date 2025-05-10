@@ -8,7 +8,6 @@ import {
   GameMessage,
   OverlayMessage,
   RoundState,
-  TICK_RATE_MS,
 } from '@battle-snakes/shared';
 import { GameLoop } from './GameLoop';
 import { GameState } from './GameState';
