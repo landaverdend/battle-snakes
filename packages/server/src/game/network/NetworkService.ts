@@ -36,12 +36,12 @@ export class NetworkService extends EventEmitter {
 
   private handleConnection(socket: Socket) {
     const playerId = socket.id;
-    const clientIp = socket.handshake.address;
+    const clientIp = this.getClientIP(playerId);
 
     console.log('A user connected:', playerId, ' from IP: ', socket.handshake.address);
     const { playerName, playerColor, isCpuGame } = socket.handshake.auth;
 
-    if (this.bannedIPs.has(clientIp)) {
+    if (clientIp && this.bannedIPs.has(clientIp)) {
       console.log(`IP ${clientIp} is banned. Disconnecting.`);
       socket.disconnect(true);
       return;
@@ -112,16 +112,45 @@ export class NetworkService extends EventEmitter {
 
     // IP ban and disconnect player if they exceed the input rate limit
     this.eventBus.on(GameEvents.INPUT_RATE_LIMIT_EXCEEDED, (playerId) => {
-      console.log(`Input rate limit exceeded for player ${playerId} `);
+      this.banAndDisconnectPlayer(playerId);
+    });
+  }
 
-      const clientIP = this.io.sockets.sockets.get(playerId)?.handshake.address;
+  private getClientIP(playerId: string) {
+    const handshake = this.io.sockets.sockets.get(playerId)?.handshake;
+
+    let clientIP: string | string[] | undefined = '';
+    if (handshake && handshake?.headers) {
+      const { headers } = handshake;
+      clientIP = headers['x-real-ip'] || headers['x-forwarded-for'];
+
+      // X-Forwarded-For can be a comma-separated string or an array.
+      // We usually want the first IP in the list, which is the original client.
       if (clientIP) {
-        console.log(`Banned IP: ${clientIP}`);
-        this.bannedIPs.add(clientIP);
+        if (Array.isArray(clientIP)) {
+          clientIP = clientIP[0];
+        } else if (typeof clientIP === 'string' && clientIP.includes(',')) {
+          clientIP = clientIP.split(',')[0]?.trim();
+        }
       }
 
-      this.io.to(playerId).disconnectSockets(true);
-    });
+      // Ensure clientIp is a string at this point if found
+      if (typeof clientIP !== 'string') {
+        console.warn(`Could not determine client IP. Headers:`, headers);
+      }
+    }
+
+    return clientIP;
+  }
+
+  private banAndDisconnectPlayer(playerId: string) {
+    console.log(`Input rate limit exceeded for player ${playerId} `);
+    const clientIp = this.getClientIP(playerId);
+    if (clientIp) {
+      this.bannedIPs.add(clientIp);
+    }
+
+    this.io.to(playerId).disconnectSockets(true);
   }
 
   private setupCleanupInterval() {
