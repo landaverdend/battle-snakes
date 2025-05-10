@@ -16,12 +16,14 @@ services:
     build:
       context: .
       dockerfile: Dockerfile.frontend
+    environment:
+      - VITE_ENABLE_ANALYTICS=true
     ports:
       - '3004:3031'
     restart: unless-stopped
     networks:
-      - web 
+      - web
 
 networks:
   web:
-    external: true 
+    external: true

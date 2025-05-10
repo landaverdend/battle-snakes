@@ -7,6 +7,7 @@ export default defineConfig({
   server: {
     port: 3000,
   },
+  envDir: path.resolve(__dirname, './'),
   resolve: {
     alias: {
       '@': path.resolve(__dirname, './src'),
