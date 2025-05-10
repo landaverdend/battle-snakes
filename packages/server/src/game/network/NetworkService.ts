@@ -4,11 +4,13 @@ import { GameEvents, MoveRequest, ROOM_CLEANUP_INTERVAL_MS } from '@battle-snake
 import EventEmitter from 'events';
 import { RoomService } from '../services/RoomService';
 import { GameEventBus } from '../events/GameEventBus';
+import { RateLimiter } from './RateLimiter';
 
 const PORT = process.env['PORT'] || 3030;
 export class NetworkService extends EventEmitter {
   private io: Server;
   private bannedIPs: Set<string> = new Set<string>();
+  private connectionRateLimiter: RateLimiter;
 
   constructor(private readonly roomService: RoomService, private readonly eventBus: GameEventBus) {
     super();
@@ -26,6 +28,15 @@ export class NetworkService extends EventEmitter {
     });
     this.roomService = roomService;
 
+    // If a user trys to connect more than 30 times a minute, IP ban them lol
+    this.connectionRateLimiter = new RateLimiter({
+      maxActions: 30,
+      windowMS: 60000,
+      onLimitExceeded: (ip) => {
+        this.bannedIPs.add(ip);
+      },
+    });
+
     httpServer.listen(PORT, () => {
       console.log(`Server running on port ${PORT}`);
     });
@@ -40,6 +51,12 @@ export class NetworkService extends EventEmitter {
   private handleConnection(socket: Socket) {
     const playerId = socket.id;
     const clientIp = this.getClientIP(playerId);
+
+    if (clientIp && !this.connectionRateLimiter.tryAction(clientIp)) {
+      console.warn('Connection rate limit exceeded for IP: ', clientIp);
+      socket.disconnect(true);
+      return;
+    }
 
     console.log('A user connected:', playerId, ' from IP: ', clientIp);
     const { playerName, playerColor, isCpuGame } = socket.handshake.auth;
