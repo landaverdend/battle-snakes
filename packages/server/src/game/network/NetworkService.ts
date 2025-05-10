@@ -122,6 +122,7 @@ export class NetworkService extends EventEmitter {
     let clientIP: string | string[] | undefined = '';
     if (handshake && handshake?.headers) {
       const { headers } = handshake;
+      console.log('Headers:', headers);
       clientIP = headers['x-real-ip'] || headers['x-forwarded-for'];
 
       // X-Forwarded-For can be a comma-separated string or an array.
