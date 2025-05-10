@@ -23,7 +23,6 @@ export class InputService {
       event.preventDefault();
 
       if (event.repeat) {
-        console.log('repeat');
         return;
       }
       // If the game isn't active, don't send data..

@@ -39,7 +39,7 @@ export class Game {
     this.gameState = new GameState(gridSize);
     this.gameLoop = new GameLoop((deltaTime: number) => this.tick(deltaTime), TICK_RATE_MS);
     this.gameEventBus = gameEventBus;
-    this.inputBuffer = new InputBuffer();
+    this.inputBuffer = new InputBuffer(gameEventBus);
     this.spawnService = new SpawnService(this.gameState);
 
     this.isCpuGame = isCpuGame;

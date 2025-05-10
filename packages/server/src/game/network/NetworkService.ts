@@ -99,6 +99,11 @@ export class NetworkService extends EventEmitter {
     this.eventBus.on(GameEvents.OVERLAY_MESSAGE, (roomId, message) => {
       this.io.to(roomId).emit(GameEvents.OVERLAY_MESSAGE, message);
     });
+
+    this.eventBus.on(GameEvents.INPUT_RATE_LIMIT_EXCEEDED, (playerId) => {
+      console.log(`Input rate limit exceeded for player ${playerId} `);
+      this.io.to(playerId).disconnectSockets(true);
+    });
   }
 
   private setupCleanupInterval() {

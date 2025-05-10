@@ -71,7 +71,7 @@ export class Renderer {
     const centerX = x * cellWidth + cellWidth / 2;
     const centerY = y * cellHeight + cellHeight / 2;
 
-    const padding = 2;
+    const padding = 1;
     const radius = (cellWidth - padding * 2) / 2;
 
     // Draw circle

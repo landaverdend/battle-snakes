@@ -7,6 +7,7 @@ export interface GameEventPayloads {
   [GameEvents.MESSAGE_EVENT]: [roomId: string, message: Message[]];
   [GameEvents.CLIENT_STATUS_UPDATE]: [socketId: string, playerUpdate: ClientStatusUpdate];
   [GameEvents.OVERLAY_MESSAGE]: [roomId: string, overlayMessage: OverlayMessage];
+  [GameEvents.INPUT_RATE_LIMIT_EXCEEDED]: [playerId: string];
 }
 
 export class GameEventBus extends EventEmitter {

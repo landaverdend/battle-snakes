@@ -10,6 +10,7 @@ export enum GameEvents {
   PLAYER_EXIT = 'game:player_exit',
   CLIENT_STATUS_UPDATE = 'game:client_status_update',
   OVERLAY_MESSAGE = 'game:overlay_message',
+  INPUT_RATE_LIMIT_EXCEEDED = 'game:input_rate_limit_exceeded',
 }
 
 export type Message = {
