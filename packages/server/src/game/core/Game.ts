@@ -3,7 +3,6 @@ import {
   COUNTDOWN_TIME,
   DEFAULT_FOOD_COUNT,
   Direction,
-  GAME_STATE_UPDATE_INTERVAL_MS,
   GameEvents,
   MAX_ROOM_SIZE,
   GameMessage,
@@ -37,7 +36,7 @@ export class Game {
   constructor(roomId: string, gridSize: number, private readonly gameEventBus: GameEventBus, isCpuGame = false) {
     this.roomId = roomId;
     this.gameState = new GameState(gridSize);
-    this.gameLoop = new GameLoop((deltaTime: number) => this.tick(deltaTime), TICK_RATE_MS);
+    this.gameLoop = new GameLoop((deltaTime: number) => this.tick(deltaTime));
     this.gameEventBus = gameEventBus;
     this.inputBuffer = new InputBuffer(gameEventBus);
     this.spawnService = new SpawnService(this.gameState);
@@ -73,13 +72,13 @@ export class Game {
   private gameLoopTick(deltaTime: number): void {
     // Only update the game state at the designated interval.
     this.movementAccumulator += deltaTime;
-    if (this.movementAccumulator < GAME_STATE_UPDATE_INTERVAL_MS) {
+    if (this.movementAccumulator < GameLoop.GAME_STATE_UPDATE_INTERVAL_MS) {
       return;
     }
 
     // Step One: process all inputs.
     this.processInputs();
-    this.movementAccumulator -= GAME_STATE_UPDATE_INTERVAL_MS;
+    this.movementAccumulator -= GameLoop.GAME_STATE_UPDATE_INTERVAL_MS;
 
     // Step Two: update all player positions.
     this.movementTick();
