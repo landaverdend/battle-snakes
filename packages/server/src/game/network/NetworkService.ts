@@ -38,7 +38,7 @@ export class NetworkService extends EventEmitter {
     const playerId = socket.id;
     const clientIp = this.getClientIP(playerId);
 
-    console.log('A user connected:', playerId, ' from IP: ', socket.handshake.address);
+    console.log('A user connected:', playerId, ' from IP: ', clientIp);
     const { playerName, playerColor, isCpuGame } = socket.handshake.auth;
 
     if (clientIp && this.bannedIPs.has(clientIp)) {
