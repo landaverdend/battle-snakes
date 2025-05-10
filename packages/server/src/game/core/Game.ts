@@ -271,7 +271,9 @@ export class Game {
   }
 
   public handlePlayerInput(playerId: string, direction: Direction) {
-    if (this.gameState.isActive()) this.inputBuffer.addInput(playerId, direction);
+    if (this.gameState.isActive()) {
+      this.inputBuffer.addInput(playerId, direction);
+    }
   }
 
   // Grab the inputs for the current tick, update the player's direction based off the buffer.

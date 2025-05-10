@@ -20,6 +20,9 @@ export class NetworkService extends EventEmitter {
         origin: ['http://localhost:3000', 'https://battlesnakes.io'],
         methods: ['GET', 'POST'],
       },
+      maxHttpBufferSize: 1024, // limit message size to 1kb
+      pingTimeout: 10000,
+      pingInterval: 5000,
     });
     this.roomService = roomService;
 
@@ -153,8 +156,9 @@ export class NetworkService extends EventEmitter {
   }
 
   private banAndDisconnectPlayer(playerId: string) {
-    console.log(`Input rate limit exceeded for player ${playerId} `);
     const clientIp = this.getClientIP(playerId);
+    console.warn(`Banning IP for player ${playerId} and IP: ${clientIp}`);
+
     if (clientIp) {
       this.bannedIPs.add(clientIp);
     }
