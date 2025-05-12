@@ -1,5 +1,7 @@
 .canvas-window {
   padding-bottom: 5px;
+
+  height: fit-content;
 }
 
 canvas {

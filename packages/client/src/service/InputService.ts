@@ -20,8 +20,6 @@ export class InputService {
 
   private createKeydownHandler() {
     return (event: KeyboardEvent) => {
-      event.preventDefault();
-
       if (event.repeat) {
         return;
       }
@@ -49,6 +47,8 @@ export class InputService {
         case 'd':
           direction = 'right';
           break;
+        default:
+          return;
       }
 
       console.log(`${getCurrentTimeISOString()} sending out input request: ${direction?.toString()}`);

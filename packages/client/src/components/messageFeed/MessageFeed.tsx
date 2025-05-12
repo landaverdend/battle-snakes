@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { MessageFeedObservable } from '@/state/MessageFeedObservable';
 import './message-feed.css';
 import { GameMessage, PlayerMessage } from '@battle-snakes/shared';
-import { Frame, Window, WindowContent, WindowHeader } from 'react95';
+import { Button, Frame, TextInput, Window, WindowContent, WindowHeader } from 'react95';
 
 type MCProps = {
   message: PlayerMessage;
@@ -44,6 +44,7 @@ function PlayerMessageComponent({ message }: MCProps) {
 export function MessageFeed() {
   const [messages, setMessages] = useState<GameMessage[]>([]);
   const scrollRef = useRef<HTMLDivElement>(null);
+  const [playerChat, setPlayerChat] = useState('');
 
   const getMessageComponent = (message: GameMessage) => {
     let toRender = <></>;
@@ -59,6 +60,10 @@ export function MessageFeed() {
     return toRender;
   };
 
+  const sendMessage = (message: string = playerChat) => {
+    if (message.trim()) {
+    }
+  };
   useEffect(() => {
     const handleActionUpdate = (newActions: GameMessage[]) => {
       setMessages(newActions);
@@ -91,6 +96,19 @@ export function MessageFeed() {
         <Frame variant="field" className="message-feed-scroll-view" ref={scrollRef}>
           <div className="message-feed-container">{messages.map((message) => getMessageComponent(message))}</div>
         </Frame>
+
+        <div style={{ display: 'flex' }}>
+          <TextInput
+            value={playerChat}
+            onChange={(e) => {
+              setPlayerChat(e.target.value);
+            }}
+            fullWidth
+          />
+          <Button onClick={() => sendMessage()} style={{ marginLeft: 4 }}>
+            Send
+          </Button>
+        </div>
       </WindowContent>
     </Window>
   );
