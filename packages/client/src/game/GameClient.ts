@@ -1,6 +1,7 @@
 import { Renderer } from './Renderer';
 import { NetworkService } from '../service/NetworkService';
 import { InputService } from '../service/InputService';
+import { ChatService } from '@/service/ChatService';
 
 export interface GameConfigOptions {
   playerName: string;
@@ -11,6 +12,7 @@ export class GameClient {
   private renderer: Renderer;
   private network: NetworkService;
   private inputService: InputService;
+  private chatService: ChatService;
 
   private isRunning: boolean = false;
   private animationFrameId: number | null = null;
@@ -19,6 +21,7 @@ export class GameClient {
     this.renderer = new Renderer(ctx);
     this.network = new NetworkService(gameConfig);
     this.inputService = new InputService(this.network.getSocket());
+    this.chatService = ChatService.getInstance(this.network.getSocket());
   }
 
   public start() {

@@ -3,6 +3,7 @@ import { MessageFeedObservable } from '@/state/MessageFeedObservable';
 import './message-feed.css';
 import { GameMessage, PlayerMessage } from '@battle-snakes/shared';
 import { Button, Frame, TextInput, Window, WindowContent, WindowHeader } from 'react95';
+import { ChatService } from '@/service/ChatService';
 
 type MCProps = {
   message: PlayerMessage;
@@ -49,6 +50,7 @@ export function MessageFeed() {
   const getMessageComponent = (message: GameMessage) => {
     let toRender = <></>;
     switch (message.type) {
+      case 'chat':
       case 'player':
         toRender = <PlayerMessageComponent key={crypto.randomUUID()} message={message} />;
         break;
@@ -61,7 +63,9 @@ export function MessageFeed() {
   };
 
   const sendMessage = (message: string = playerChat) => {
-    if (message.trim()) {
+    if (message) {
+      ChatService.getInstance().sendMessage(message.trim());
+      setPlayerChat('');
     }
   };
   useEffect(() => {
@@ -102,6 +106,11 @@ export function MessageFeed() {
             value={playerChat}
             onChange={(e) => {
               setPlayerChat(e.target.value);
+            }}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter') {
+                sendMessage();
+              }
             }}
             fullWidth
           />

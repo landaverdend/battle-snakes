@@ -100,6 +100,16 @@ export class NetworkService extends EventEmitter {
         }
       });
 
+      socket.on(GameEvents.CHAT_MESSAGE, (message: string) => {
+        this.eventBus.emit(GameEvents.MESSAGE_EVENT, roomId, [
+          {
+            type: 'chat',
+            message: `{playerName}: ${message}`,
+            playerData: game?.getPlayerDataById(playerId),
+          },
+        ]);
+      });
+
       socket.on('disconnect', () => {
         const game = this.roomService.getGameByRoomId(roomId);
         if (game) {

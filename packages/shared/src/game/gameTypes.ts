@@ -11,6 +11,7 @@ export enum GameEvents {
   CLIENT_STATUS_UPDATE = 'game:client_status_update',
   OVERLAY_MESSAGE = 'game:overlay_message',
   INPUT_RATE_LIMIT_EXCEEDED = 'game:input_rate_limit_exceeded',
+  CHAT_MESSAGE = 'game:chat_message',
 }
 
 export type GameMessage = DefaultMessage | PlayerMessage;
@@ -20,7 +21,7 @@ export type BaseGameMessage = {
 };
 
 export type PlayerMessage = BaseGameMessage & {
-  type: 'player_join' | 'player_exit' | 'collision' | 'player';
+  type: 'player_join' | 'player_exit' | 'collision' | 'player' | 'chat';
   playerData?: PlayerData | undefined;
   otherPlayerData?: PlayerData | undefined;
 };
