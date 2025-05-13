@@ -245,6 +245,7 @@ export class Game {
     // Clear the countdown if there was one...
     if (this.gameState.getAllPlayers().length === 1) {
       this.clearCountdown();
+      this.sendOverlayMessage({ type: 'waiting', message: 'Waiting for players to join...' });
     }
   }
 
