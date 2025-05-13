@@ -2,6 +2,8 @@ interface RateLimitConfig {
   maxActions: number;
   windowMS: number;
   onLimitExceeded: (key: string) => void;
+
+  shouldApplyCooldown?: boolean; // Should we apply cooldowns to certain actions if the limit is exceeded...
 }
 
 interface ActionRecord {
@@ -11,6 +13,7 @@ interface ActionRecord {
 
 export class RateLimiter {
   private records: Map<string, ActionRecord> = new Map();
+  private cooldownMap: Map<string, number> = new Map();
   private readonly config: RateLimitConfig;
 
   constructor(config: RateLimitConfig) {
@@ -23,6 +26,11 @@ export class RateLimiter {
    * @returns boolean indicating if the action is allowed
    */
   public tryAction(key: string): boolean {
+    if (this.config.shouldApplyCooldown && !this.canPerformAction(key)) {
+      return false;
+    }
+
+
     const now = Date.now();
     let record = this.records.get(key);
 
@@ -60,6 +68,15 @@ export class RateLimiter {
     // Remove timestamps that are older than the window.
     record.timestamps = record.timestamps.filter((timestamp) => now - timestamp < this.config.windowMS);
     record.lastCleanup = now;
+  }
+
+  private canPerformAction(key: string) {
+    if (!this.cooldownMap) return false;
+    const now = Date.now();
+    const cooldownEndtime = this.cooldownMap.get(key);
+
+    if (cooldownEndtime && now < cooldownEndtime) return false;
+    else return true;
   }
 
   /**

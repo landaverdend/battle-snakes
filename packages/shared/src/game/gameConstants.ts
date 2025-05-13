@@ -10,3 +10,5 @@ export const ROUNDS_PER_GAME = 5;
 
 export const MAX_ROOM_SIZE = 10;
 export const MAX_PLAYER_INPUT_BUFFER_SIZE = 3; // max of 3 inputs per player per.
+
+export const MAX_CHAT_MESSAGE_LENGTH = 100;

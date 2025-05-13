@@ -1,16 +1,20 @@
 import { Server, Socket } from 'socket.io';
 import { createServer } from 'http';
-import { GameEvents, MoveRequest, ROOM_CLEANUP_INTERVAL_MS } from '@battle-snakes/shared';
+import { GameEvents, MAX_CHAT_MESSAGE_LENGTH, MoveRequest, ROOM_CLEANUP_INTERVAL_MS } from '@battle-snakes/shared';
 import EventEmitter from 'events';
 import { RoomService } from '../services/RoomService';
 import { GameEventBus } from '../events/GameEventBus';
 import { RateLimiter } from './RateLimiter';
+import { CooldownManager } from './CooldownManager';
 
 const PORT = process.env['PORT'] || 3030;
 export class NetworkService extends EventEmitter {
   private io: Server;
   private bannedIPs: Set<string> = new Set<string>();
+
   private connectionRateLimiter: RateLimiter;
+  private chatRateLimiter: RateLimiter;
+  private chatCooldownManager: CooldownManager;
 
   constructor(private readonly roomService: RoomService, private readonly eventBus: GameEventBus) {
     super();
@@ -37,6 +41,16 @@ export class NetworkService extends EventEmitter {
       },
     });
 
+    this.chatRateLimiter = new RateLimiter({
+      maxActions: 4,
+      windowMS: 5000,
+      onLimitExceeded: (playerId) => {},
+    });
+
+    this.chatCooldownManager = new CooldownManager({
+      cooldownMS: 10000,
+    });
+
     httpServer.listen(PORT, () => {
       console.log(`Server running on port ${PORT}`);
     });
@@ -44,7 +58,7 @@ export class NetworkService extends EventEmitter {
 
   public initialize() {
     this.io.on('connection', (socket) => this.handleConnection(socket));
-    this.setupGlobalEventListeners();
+    this.setupEventBusListeners();
     this.setupCleanupInterval();
   }
 
@@ -101,6 +115,20 @@ export class NetworkService extends EventEmitter {
       });
 
       socket.on(GameEvents.CHAT_MESSAGE, (message: string) => {
+        if (message.length > MAX_CHAT_MESSAGE_LENGTH) return;
+
+        const playerKey = clientIp || playerId;
+
+        // Check if a cooldown has been applied to player chats...
+        if (this.chatCooldownManager.isCooldownActive(playerKey)) {
+          this.io.to(playerId).emit(GameEvents.SERVER_WARNING, 'Still on cooldown.');
+          return;
+        } else if (!this.chatRateLimiter.tryAction(playerKey)) {
+          this.io.to(playerId).emit(GameEvents.SERVER_WARNING, 'Stop spamming. Chat disabled for 10s');
+          this.chatCooldownManager.addCooldown(playerKey);
+          return;
+        }
+
         this.eventBus.emit(GameEvents.MESSAGE_EVENT, roomId, [
           {
             type: 'chat',
@@ -127,7 +155,7 @@ export class NetworkService extends EventEmitter {
     }
   }
 
-  private setupGlobalEventListeners() {
+  private setupEventBusListeners() {
     this.eventBus.on(GameEvents.STATE_UPDATE, (roomId, state) => {
       this.io.to(roomId).emit(GameEvents.STATE_UPDATE, state);
     });

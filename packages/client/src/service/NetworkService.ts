@@ -56,6 +56,10 @@ export class NetworkService {
       OverlayMessageEventBus.getInstance().publish(overlayMessage);
     });
 
+    this.socket.on(GameEvents.SERVER_WARNING, (warning: string) => {
+      alert(warning);
+    });
+
     this.socket.on('disconnect', () => {
       console.log('Disconnected from game server');
     });

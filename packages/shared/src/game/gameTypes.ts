@@ -12,6 +12,7 @@ export enum GameEvents {
   OVERLAY_MESSAGE = 'game:overlay_message',
   INPUT_RATE_LIMIT_EXCEEDED = 'game:input_rate_limit_exceeded',
   CHAT_MESSAGE = 'game:chat_message',
+  SERVER_WARNING = 'game:server_warning',
 }
 
 export type GameMessage = DefaultMessage | PlayerMessage;
