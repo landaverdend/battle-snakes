@@ -44,7 +44,7 @@ export class NetworkService extends EventEmitter {
     this.chatRateLimiter = new RateLimiter({
       maxActions: 4,
       windowMS: 5000,
-      onLimitExceeded: (playerId) => {},
+      onLimitExceeded: () => {},
     });
 
     this.chatCooldownManager = new CooldownManager({
