@@ -3,6 +3,7 @@ import './canvas.css';
 import { GameClient, GameConfigOptions } from '../../game/GameClient';
 import { Window, WindowContent } from 'react95';
 import { CanvasOverlay } from '../canvasOverlay/CanvasOverlay';
+import Draggable from 'react-draggable';
 
 interface CanvasProps {
   gameConfig: GameConfigOptions;
@@ -46,14 +47,16 @@ const Canvas = ({ gameConfig }: CanvasProps) => {
   }, []);
 
   return (
-    <Window className="canvas-window">
-      <WindowContent className="canvas-content">
-        <CanvasOverlay />
-        <div ref={containerRef} className="canvas-container">
-          <canvas ref={canvasRef} />
-        </div>
-      </WindowContent>
-    </Window>
+    <Draggable handle=".handle" defaultPosition={{ x: 0, y: 0 }} scale={1}>
+      <Window className="canvas-window handle">
+        <WindowContent className="canvas-content">
+          <CanvasOverlay />
+          <div ref={containerRef} className="canvas-container">
+            <canvas ref={canvasRef} />
+          </div>
+        </WindowContent>
+      </Window>
+    </Draggable>
   );
 };
 

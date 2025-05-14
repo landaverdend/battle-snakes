@@ -4,6 +4,7 @@ import './message-feed.css';
 import { GameMessage, PlayerMessage } from '@battle-snakes/shared';
 import { Button, Frame, TextInput, Window, WindowContent, WindowHeader } from 'react95';
 import { ChatService } from '@/service/ChatService';
+import Draggable from 'react-draggable';
 
 type MCProps = {
   message: PlayerMessage;
@@ -94,31 +95,33 @@ export function MessageFeed() {
   }, [messages]);
 
   return (
-    <Window className="message-feed-window">
-      <WindowHeader> Message Feed</WindowHeader>
-      <WindowContent>
-        <Frame variant="field" className="message-feed-scroll-view" ref={scrollRef}>
-          <div className="message-feed-container">{messages.map((message) => getMessageComponent(message))}</div>
-        </Frame>
+    <Draggable handle=".handle" defaultPosition={{ x: 0, y: 0 }} scale={1}>
+      <Window className="message-feed-window handle">
+        <WindowHeader> Message Feed</WindowHeader>
+        <WindowContent>
+          <Frame variant="field" className="message-feed-scroll-view" ref={scrollRef}>
+            <div className="message-feed-container">{messages.map((message) => getMessageComponent(message))}</div>
+          </Frame>
 
-        <div style={{ display: 'flex' }}>
-          <TextInput
-            value={playerChat}
-            onChange={(e) => {
-              setPlayerChat(e.target.value);
-            }}
-            onKeyDown={(e) => {
-              if (e.key === 'Enter') {
-                sendMessage();
-              }
-            }}
-            fullWidth
-          />
-          <Button onClick={() => sendMessage()} style={{ marginLeft: 4 }}>
-            Send
-          </Button>
-        </div>
-      </WindowContent>
-    </Window>
+          <div style={{ display: 'flex' }}>
+            <TextInput
+              value={playerChat}
+              onChange={(e) => {
+                setPlayerChat(e.target.value);
+              }}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') {
+                  sendMessage();
+                }
+              }}
+              fullWidth
+            />
+            <Button onClick={() => sendMessage()} style={{ marginLeft: 4 }}>
+              Send
+            </Button>
+          </div>
+        </WindowContent>
+      </Window>
+    </Draggable>
   );
 }
