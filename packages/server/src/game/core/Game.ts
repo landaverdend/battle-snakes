@@ -247,6 +247,7 @@ export class Game {
       this.clearCountdown();
       this.sendOverlayMessage({ type: 'waiting', message: 'Waiting for players to join...' });
     }
+    this.spawnService.handlePlayerRemoval();
   }
 
   public getPlayerData() {

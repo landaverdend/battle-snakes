@@ -1,4 +1,11 @@
-import { DEFAULT_FOOD_COUNT, DEFAULT_GRID_SIZE, getRandomColor, getRandomNumber, MAX_ROOM_SIZE, Point } from '@battle-snakes/shared';
+import {
+  DEFAULT_FOOD_COUNT,
+  DEFAULT_GRID_SIZE,
+  getRandomColor,
+  getRandomNumber,
+  MAX_ROOM_SIZE,
+  Point,
+} from '@battle-snakes/shared';
 import { GameState } from '../core/GameState';
 import { Player } from '../domain/Player';
 
@@ -101,6 +108,10 @@ export class SpawnService {
     // but we keep it as a safeguard.
     console.error('Failed to find position even though availableCount > 0. This indicates a logic error.');
     throw new Error('No available positions.');
+  }
+
+  public handlePlayerRemoval(player?: Player) {
+    this.spawnPointIndex = this.gameState.getAllPlayers().length;
   }
 
   addCpuPlayers(num: number) {
