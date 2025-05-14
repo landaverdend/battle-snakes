@@ -94,7 +94,7 @@ export function MessageFeed() {
   }, [messages]);
 
   return (
-    <Window>
+    <Window className="message-feed-window">
       <WindowHeader> Message Feed</WindowHeader>
       <WindowContent>
         <Frame variant="field" className="message-feed-scroll-view" ref={scrollRef}>

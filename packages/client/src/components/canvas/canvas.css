@@ -10,6 +10,9 @@ canvas {
   width: 600px;
   height: 600px;
 
+  width: clamp(300px, 30vw, 600px);
+  height: clamp(300px, 30vw, 600px);
+
   padding: 5px;
 }
 

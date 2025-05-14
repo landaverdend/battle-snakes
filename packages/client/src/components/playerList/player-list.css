@@ -1,3 +1,7 @@
+.player-list-window {
+  height: fit-content;
+}
+
 .player-list-row {
   td {
     text-align: center;

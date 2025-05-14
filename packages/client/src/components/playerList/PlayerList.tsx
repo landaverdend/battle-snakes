@@ -17,10 +17,10 @@ export function PlayerList() {
   const { players } = useLeaderboard();
 
   return (
-    <Window>
+    <Window className="player-list-window">
       <WindowHeader>Leaderboard</WindowHeader>
       <WindowContent>
-        <Table style={{ width: '400px' }}>
+        <Table>
           <TableHead>
             <TableRow>
               <TableHeadCell>Name</TableHeadCell>
