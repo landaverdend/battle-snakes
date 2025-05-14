@@ -211,6 +211,7 @@ export class GameState {
     for (const player of this.players.values()) {
       player.resetForGame();
     }
+    this.foodPositions.clear();  
   }
 
   public beginWaiting() {
