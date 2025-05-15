@@ -114,7 +114,7 @@ export class SpawnService {
     throw new Error('No available positions.');
   }
 
-  public handlePlayerRemoval(player?: Player) {
+  public handlePlayerRemoval() {
     this.spawnPointIndex = this.gameState.getAllPlayers().length;
   }
 
