@@ -32,9 +32,13 @@ export class SpawnService {
     let xDelta = 5;
 
     for (let i = 0; i < MAX_ROOM_SIZE; i++) {
-      const shouldSpawnLeft = i < MAX_ROOM_SIZE / 2;
+      // Alternate between left and right sides
+      const shouldSpawnLeft = i % 2 === 0; // Even indices go left, odd go right
       let x = shouldSpawnLeft ? xDelta : DEFAULT_GRID_SIZE - xDelta;
-      let y = (i % 5) * spawnPositionYDelta + Math.floor(spawnPositionYDelta * 0.75);
+
+      // Calculate y based on the row number (i/2 because we alternate left/right)
+      const rowNumber = Math.floor(i / 2);
+      let y = rowNumber * spawnPositionYDelta + Math.floor(spawnPositionYDelta * 0.75);
 
       this.spawnPoints.push(new Point(x, y));
     }
@@ -46,10 +50,10 @@ export class SpawnService {
     if (spawnPoint) {
       this.spawnPointIndex++;
       player.prepareForNewRound(spawnPoint);
-      if (this.spawnPointIndex < MAX_ROOM_SIZE / 2) {
-        player.setDirection('right');
-      } else {
+      if (this.spawnPointIndex % 2 === 0) {
         player.setDirection('left');
+      } else {
+        player.setDirection('right');
       }
     }
   }

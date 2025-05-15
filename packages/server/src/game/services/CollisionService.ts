@@ -94,6 +94,7 @@ export class CollisionService {
 
   public static convertCollisionsToMessages(collisions: Collision[]): GameMessage[] {
     const messages: GameMessage[] = [];
+    const headOnCollisions = new Set<string>();
 
     for (const collision of collisions) {
       let str = '';
@@ -103,7 +104,16 @@ export class CollisionService {
           break;
         case 'snake':
           if (collision.isHeadOnCollision) {
+            // Create a unique key for this head-on collision
+            const collisionKey = [collision.playerId, collision.otherPlayerId].sort().join('-');
+            
+            // Skip if we've already processed this head-on collision
+            if (headOnCollisions.has(collisionKey)) {
+              continue;
+            }
+            
             str = `{playerName} and {otherPlayerName} collided head on.`;
+            headOnCollisions.add(collisionKey);
           } else {
             str = `{playerName} hit {otherPlayerName}.`;
           }
