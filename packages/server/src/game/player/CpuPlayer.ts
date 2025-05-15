@@ -8,24 +8,16 @@ export class CpuPlayer extends Player {
   gridState: Map<string, Entity> = new Map();
   foodPositions: Set<string> = new Set();
   private pathFinder: PathFinder;
-  private readonly LOOK_AHEAD_DISTANCE = 5;
 
   constructor(id: string, options: PlayerConfigOptions) {
     super(id, options);
     this.pathFinder = new PathFinder();
   }
 
-  public updateGameState(gameState: GameState) {
-    this.gridDimensions = gameState.getGridSize();
-    this.gridState = gameState.getGrid();
-    this.foodPositions = gameState.getFoodPositions();
-  }
-
-  public chooseNextMove() {
+  public chooseNextMove(gameState: GameState) {
     if (!this.gridState) return;
-    // const possibleMoves = this.getPossibleMoves();
 
-    const nextMove = this.pathFinder.getNextMove(this.gridState, this.getHead());
+    const nextMove = this.pathFinder.getNextMove(gameState, this.getHead());
 
     // Fallback to random move if no path found
     this.setDirection(nextMove);

@@ -263,8 +263,7 @@ export class Game {
 
     for (const player of players.values()) {
       if (player instanceof CpuPlayer) {
-        player.updateGameState(this.gameState);
-        player.chooseNextMove();
+        player.chooseNextMove(this.gameState);
       }
 
       player.move();

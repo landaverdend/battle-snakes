@@ -1,9 +1,12 @@
 import { CellType, DEFAULT_GRID_SIZE, Direction, Entity, getRandomNumber, Point } from '@battle-snakes/shared';
 import { CollisionService } from '../services/CollisionService';
+import { GameState } from '../core/GameState';
+import { Player } from './Player';
 
 // Do a BFS to find the shortest path to the nearest food.
 export class PathFinder {
   grid: Map<string, Entity> = new Map();
+  players: Player[] = [];
 
   // Cached path to the nearest food.
   private cachedPath: Point[] = [];
@@ -17,11 +20,11 @@ export class PathFinder {
 
   constructor() {}
 
-  public getNextMove(grid: Map<string, Entity>, head: Point): Direction {
-    this.grid = grid;
+  public getNextMove(gameState: GameState, head: Point): Direction {
+    this.grid = gameState.getGrid();
+    this.players = gameState.getActivePlayers();
 
     if (!this.isValidPath()) {
-      console.log('new bfs');
       this.calculateNewPath(head);
     }
     const nextPoint = this.cachedPath.shift();
