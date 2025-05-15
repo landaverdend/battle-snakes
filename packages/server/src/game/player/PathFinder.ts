@@ -21,9 +21,9 @@ export class PathFinder {
     this.grid = grid;
 
     if (!this.isValidPath()) {
+      console.log('new bfs');
       this.calculateNewPath(head);
     }
-
     const nextPoint = this.cachedPath.shift();
 
     if (nextPoint) {
@@ -53,9 +53,12 @@ export class PathFinder {
       return false;
     }
 
-    for (const point of this.cachedPath) {
+    // Check all cells except the last one (which should be food)
+    for (let i = 0; i < this.cachedPath.length - 1; i++) {
+      const point = this.cachedPath[i] as Point;
       const entity = this.getEntityAtPosition(point);
 
+      // Only check if the cell is empty
       if (entity.type !== CellType.Empty) {
         return false;
       }
