@@ -13,7 +13,7 @@ import { GameLoop } from './GameLoop';
 import { GameState } from './GameState';
 import { GameEventBus } from '../events/GameEventBus';
 import { CollisionService } from '../services/CollisionService';
-import { CpuPlayer } from '../domain/CpuPlayer';
+import { CpuPlayer } from '../player/CpuPlayer';
 import { InputBuffer } from '../input/InputBuffer';
 import { SpawnService } from '../services/SpawnService';
 
@@ -39,10 +39,10 @@ export class Game {
     this.gameEventBus = gameEventBus;
     this.inputBuffer = new InputBuffer(gameEventBus);
     this.spawnService = new SpawnService(this.gameState);
-
     this.isCpuGame = isCpuGame;
     if (isCpuGame) {
-      this.spawnService.addCpuPlayers(MAX_ROOM_SIZE - 1);
+      // this.spawnService.addCpuPlayers(MAX_ROOM_SIZE - 1);
+      this.spawnService.addCpuPlayers(4);
     }
   }
 
@@ -263,8 +263,8 @@ export class Game {
 
     for (const player of players.values()) {
       if (player instanceof CpuPlayer) {
-        player.chooseNextMove();
         player.updateGameState(this.gameState);
+        player.chooseNextMove();
       }
 
       player.move();

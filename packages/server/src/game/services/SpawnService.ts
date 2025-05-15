@@ -7,7 +7,7 @@ import {
   Point,
 } from '@battle-snakes/shared';
 import { GameState } from '../core/GameState';
-import { Player } from '../domain/Player';
+import { Player } from '../player/Player';
 
 // Class that handles the spawning of entities.
 export class SpawnService {

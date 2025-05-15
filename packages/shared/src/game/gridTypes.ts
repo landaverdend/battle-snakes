@@ -33,6 +33,7 @@ export enum CellType {
   Empty = 0,
   Snake = 1,
   Food = 2,
+  Wall = 3
 }
 
 export type Entity = {

@@ -8,8 +8,8 @@ import {
   RoundState,
   SharedGameState,
 } from '@battle-snakes/shared';
-import { Player } from '../domain/Player';
-import { CpuPlayer } from '../domain/CpuPlayer';
+import { Player } from '../player/Player';
+import { CpuPlayer } from '../player/CpuPlayer';
 
 export class GameState {
   private readonly gridSize: number;

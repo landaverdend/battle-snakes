@@ -83,7 +83,7 @@ export class CollisionService {
     return collisions;
   }
 
-  private static isOutOfBounds(point: Point, gridSize: number): boolean {
+  public static isOutOfBounds(point: Point, gridSize: number): boolean {
     const { x, y } = point;
 
     const isXOutOfBounds = x < 0 || x >= gridSize;
