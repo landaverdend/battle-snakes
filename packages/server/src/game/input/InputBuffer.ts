@@ -19,7 +19,7 @@ export class InputBuffer {
   private readonly maxQueuedInputsPerPlayer = 3;
 
   private readonly RATE_LIMIT_WINDOW_MS = 1000;
-  private readonly MAX_INPUTS_PER_WINDOW = 10;
+  private readonly MAX_INPUTS_PER_WINDOW = 20;
 
   constructor(private readonly eventBus: GameEventBus) {
     this.inputValidator = new InputValidator();
