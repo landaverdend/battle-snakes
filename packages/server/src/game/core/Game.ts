@@ -41,8 +41,8 @@ export class Game {
     this.spawnService = new SpawnService(this.gameState);
     this.isCpuGame = isCpuGame;
     if (isCpuGame) {
-      // this.spawnService.addCpuPlayers(MAX_ROOM_SIZE - 1);
-      this.spawnService.addCpuPlayers(4);
+      this.spawnService.addCpuPlayers(MAX_ROOM_SIZE - 1);
+      // this.spawnService.addCpuPlayers(1);
     }
   }
 

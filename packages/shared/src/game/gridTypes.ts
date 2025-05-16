@@ -1,3 +1,5 @@
+import { Direction } from './playerTypes';
+
 export class Point {
   x: number;
   y: number;
@@ -27,13 +29,45 @@ export class Point {
 
     return new Point(x, y);
   }
+
+  public getPointInDirection(direction: Direction): Point {
+    let newPoint: Point = new Point(-1, -1);
+    switch (direction) {
+      case 'up':
+        newPoint = new Point(this.x, this.y - 1);
+        break;
+      case 'down':
+        newPoint = new Point(this.x, this.y + 1);
+        break;
+      case 'left':
+        newPoint = new Point(this.x - 1, this.y);
+        break;
+      case 'right':
+        newPoint = new Point(this.x + 1, this.y);
+        break;
+    }
+    return newPoint;
+  }
+
+  public calculateManhattanDistance(point: Point): number {
+    return Math.abs(this.x - point.x) + Math.abs(this.y - point.y);
+  }
+
+  public getAdjacentPoints(): Point[] {
+    return [
+      this.getPointInDirection('up'),
+      this.getPointInDirection('down'),
+      this.getPointInDirection('left'),
+      this.getPointInDirection('right'),
+    ];
+  }
 }
 
 export enum CellType {
   Empty = 0,
   Snake = 1,
   Food = 2,
-  Wall = 3
+  Wall = 3,
 }
 
 export type Entity = {

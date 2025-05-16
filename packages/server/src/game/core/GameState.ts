@@ -1,5 +1,6 @@
 import {
   CellType,
+  DEFAULT_GRID_SIZE,
   Entity,
   getRandomColor,
   MAX_ROOM_SIZE,
@@ -10,6 +11,7 @@ import {
 } from '@battle-snakes/shared';
 import { Player } from '../player/Player';
 import { CpuPlayer } from '../player/CpuPlayer';
+import { CollisionService } from '../services/CollisionService';
 
 export class GameState {
   private readonly gridSize: number;
@@ -78,8 +80,30 @@ export class GameState {
     return this.foodPositions;
   }
 
-  public isPositionOccupied(point: Point): boolean {
-    return this.grid.has(point.toString());
+  public getFoodPositionsAsPoints(): Point[] {
+    return Array.from(this.foodPositions).map((pos) => Point.parseString(pos));
+  }
+
+  public getEntityAtPosition(point: Point): Entity {
+    // If we're out of bounds, return a wall.
+    if (CollisionService.isOutOfBounds(point, DEFAULT_GRID_SIZE)) {
+      return { type: CellType.Wall };
+    }
+
+    // If the position is not in the grid, it is considered empty.
+    const value = this.grid.get(point.toString());
+    if (!value) {
+      return { type: CellType.Empty };
+    }
+
+    return value;
+  }
+
+  // Positions that a snake can move to without dying are considered valid.
+  public isValidPosition(point: Point): boolean {
+    const entity = this.getEntityAtPosition(point);
+
+    return entity.type === CellType.Empty || entity.type === CellType.Food;
   }
 
   public hasVacancy(): boolean {
