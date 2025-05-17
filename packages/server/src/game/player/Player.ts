@@ -156,4 +156,8 @@ export class Player {
   public addRoundSurvivalBonus() {
     this.score += ROUND_WIN_SCORE;
   }
+
+  public handleEndRound() {
+    // Do nothing...
+  }
 }

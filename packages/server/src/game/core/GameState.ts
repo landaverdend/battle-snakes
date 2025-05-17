@@ -244,6 +244,12 @@ export class GameState {
     this.foodPositions.clear();
   }
 
+  public processPlayerEndRound() {
+    for (const player of this.players.values()) {
+      player.handleEndRound();
+    }
+  }
+
   // Serialization for network
   public toSharedGameState(): SharedGameState {
     return {

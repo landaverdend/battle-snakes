@@ -1,4 +1,4 @@
-import { CellType, Direction, Entity, getRandomNumber, Point } from '@battle-snakes/shared';
+import { Entity } from '@battle-snakes/shared';
 import { Player, PlayerConfigOptions } from './Player';
 import { GameState } from '../core/GameState';
 import { PathFinder } from './PathFinder';
@@ -18,8 +18,10 @@ export class CpuPlayer extends Player {
     if (!this.gridState) return;
 
     const nextMove = this.pathFinder.getNextMove(gameState, this.getHead());
-
-    // Fallback to random move if no path found
     this.setDirection(nextMove);
+  }
+
+  public override handleEndRound() {
+    this.pathFinder.clearData();
   }
 }

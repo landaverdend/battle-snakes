@@ -135,6 +135,7 @@ export class Game {
 
     // Handle round cleanup
     this.inputBuffer.clearAll();
+    this.gameState.processPlayerEndRound();
   }
 
   private handleRoundStart() {
