@@ -1,17 +1,17 @@
 import { Entity } from '@battle-snakes/shared';
 import { Player, PlayerConfigOptions } from './Player';
 import { GameState } from '../core/GameState';
-import { PathFinder } from './PathFinder';
+import { PathFindingStrategy } from './PathfindingStrategy';
 
 export class CpuPlayer extends Player {
   gridDimensions: number = 40;
   gridState: Map<string, Entity> = new Map();
   foodPositions: Set<string> = new Set();
-  private pathFinder: PathFinder;
+  private pathFinder: PathFindingStrategy;
 
   constructor(id: string, options: PlayerConfigOptions) {
     super(id, options);
-    this.pathFinder = new PathFinder();
+    this.pathFinder = new PathFindingStrategy();
   }
 
   public chooseNextMove(gameState: GameState) {

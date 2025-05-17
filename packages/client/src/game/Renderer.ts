@@ -63,8 +63,8 @@ export class Renderer {
     // Dynamically set the font size based on the cell dimensions.
     // This ensures the text scales with the grid and isn't too tiny or overly large.
     // We'll use 40% of the smaller cell dimension, with a minimum of 10px.
-    const fontSize = Math.max(10, Math.min(cellWidth, cellHeight) * 0.4);
-    this.ctx.font = `bold ${fontSize}px `;
+    const fontSize = Math.max(15, Math.min(cellWidth, cellHeight) * 0.4);
+    this.ctx.font = `bold ${fontSize}px windows-95 `;
 
     this.ctx.textAlign = 'center'; // Center the text horizontally
     this.ctx.textBaseline = 'middle'; // Center the text vertically

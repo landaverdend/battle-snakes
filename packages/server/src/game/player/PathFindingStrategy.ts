@@ -3,7 +3,7 @@ import { GameState } from '../core/GameState';
 import { Player } from './Player';
 import { AStarAlgorithm } from '../services/AStarAlgorithm';
 
-export class PathFinder {
+export class PathFindingStrategy {
   grid: Map<string, Entity> = new Map(); // In practice this will be a reference to the game state.
   players: Player[] = [];
   gameStateRef: GameState = new GameState(DEFAULT_GRID_SIZE);
