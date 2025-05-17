@@ -168,8 +168,8 @@ export class NetworkService extends EventEmitter {
       this.io.to(roomId).emit(GameEvents.LEADERBOARD_UPDATE, playerData);
     });
 
-    this.eventBus.on(GameEvents.CLIENT_STATUS_UPDATE, (socketId, clientStatusUpdate) => {
-      this.io.to(socketId).emit(GameEvents.CLIENT_STATUS_UPDATE, clientStatusUpdate);
+    this.eventBus.on(GameEvents.CLIENT_SPECIFIC_DATA, (socketId, clientStatusUpdate) => {
+      this.io.to(socketId).emit(GameEvents.CLIENT_SPECIFIC_DATA, clientStatusUpdate);
     });
 
     this.eventBus.on(GameEvents.OVERLAY_MESSAGE, (roomId, message) => {

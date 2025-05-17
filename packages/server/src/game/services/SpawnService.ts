@@ -67,6 +67,7 @@ export class SpawnService {
     }
   }
 
+  // Fisher-Yates shuffle algorithm.
   private shuffle(array: Player[]): Player[] {
     const shuffled = [...array]; // Create a copy
     let currentIndex = shuffled.length - 1;

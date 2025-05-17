@@ -1,16 +1,11 @@
+import { ClientSpecificData } from '@battle-snakes/shared';
 import ObservableStateManager from './ObservableStateManager';
 
-type PlayerState = {
-  isAlive: boolean;
-};
-
-export class ClientPlayerObservable extends ObservableStateManager<PlayerState> {
+export class ClientPlayerObservable extends ObservableStateManager<ClientSpecificData> {
   private static instance: ClientPlayerObservable;
 
   private constructor() {
-    const initialState: PlayerState = {
-      isAlive: true,
-    };
+    const initialState: ClientSpecificData = {};
     super(initialState);
   }
 

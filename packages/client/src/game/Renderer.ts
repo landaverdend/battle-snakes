@@ -1,5 +1,6 @@
 import { CellType, Point } from '@battle-snakes/shared';
 import { ClientGameState } from '../state/ClientGameState';
+import { ClientPlayerObservable } from '@/state/ClientPlayerObservable';
 
 export class Renderer {
   private ctx: CanvasRenderingContext2D;
@@ -32,6 +33,60 @@ export class Renderer {
     // Draw grid first (as background)
     this.drawGrid();
     this.drawCells();
+    this.drawSpawnToolTip();
+  }
+
+  private drawSpawnToolTip() {
+    // if we're not waiting or no player has a spawn point, don't draw the tooltip.
+    if (!ClientGameState.getInstance().isRoundWaiting() || !ClientPlayerObservable.getInstance().getState().spawnPoint) return;
+    // Get the player's state, which includes the spawn point
+    const playerState = ClientPlayerObservable.getInstance().getState();
+    const spawnPoint = playerState.spawnPoint;
+
+    // Defensive check: if for some reason spawnPoint isn't set, exit.
+    // (The condition in the `render` method should already ensure it's set).
+    if (!spawnPoint) {
+      return;
+    }
+
+    // Get the grid size from the game state
+    const { gridSize } = this.gameState.getState();
+
+    // Calculate the width and height of each cell in the grid
+    const cellWidth = this.canvasWidth / gridSize;
+    const cellHeight = this.canvasHeight / gridSize;
+
+    // Determine the center coordinates of the spawn cell
+    const centerX = spawnPoint.x * cellWidth + cellWidth / 2;
+    const centerY = spawnPoint.y * cellHeight - cellHeight;
+
+    // Dynamically set the font size based on the cell dimensions.
+    // This ensures the text scales with the grid and isn't too tiny or overly large.
+    // We'll use 40% of the smaller cell dimension, with a minimum of 10px.
+    const fontSize = Math.max(10, Math.min(cellWidth, cellHeight) * 0.4);
+    this.ctx.font = `bold ${fontSize}px `;
+
+    this.ctx.textAlign = 'center'; // Center the text horizontally
+    this.ctx.textBaseline = 'middle'; // Center the text vertically
+
+    // Draw the "YOU" text at the calculated center of the spawn cell
+    this.ctx.fillText('YOU', centerX, centerY);
+
+    const textMetrics = this.ctx.measureText('YOU');
+    const textBackgroundWidth = textMetrics.width + fontSize * 0.4;
+    const textBackgroundHeight = fontSize * 1.2;
+
+    this.ctx.fillStyle = '#060084';
+    this.ctx.fillRect(
+      centerX - textBackgroundWidth / 2,
+      centerY - textBackgroundHeight / 2,
+      textBackgroundWidth,
+      textBackgroundHeight
+    );
+
+    // Re-set fillStyle for the text if you draw a background
+    this.ctx.fillStyle = 'white';
+    this.ctx.fillText('YOU', centerX, centerY);
   }
 
   private drawCells() {

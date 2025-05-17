@@ -1,4 +1,4 @@
-import { GameEvents, SharedGameState, PlayerData, GameMessage, OverlayMessage } from '@battle-snakes/shared';
+import { GameEvents, SharedGameState, PlayerData, GameMessage, OverlayMessage, ClientSpecificData } from '@battle-snakes/shared';
 import { io, Socket } from 'socket.io-client';
 import { ClientGameState } from '../state/ClientGameState';
 import { LeaderboardObservable } from '../state/LeaderboardObservable';
@@ -48,7 +48,8 @@ export class NetworkService {
       MessageFeedObservable.getInstance().publishMessages(messages);
     });
 
-    this.socket.on(GameEvents.CLIENT_STATUS_UPDATE, (playerUpdate) => {
+    this.socket.on(GameEvents.CLIENT_SPECIFIC_DATA, (playerUpdate: ClientSpecificData) => {
+      console.log('client specific data', playerUpdate);
       ClientPlayerObservable.getInstance().publish(playerUpdate);
     });
 

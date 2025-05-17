@@ -29,4 +29,8 @@ export class ClientGameState extends ObservableStateManager<SharedGameState> {
   public isRoundActive(): boolean {
     return this.state.roundInfo.roundState === RoundState.ACTIVE;
   }
+
+  public isRoundWaiting(): boolean {
+    return this.state.roundInfo.roundState === RoundState.WAITING;
+  }
 }

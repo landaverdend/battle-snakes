@@ -244,7 +244,7 @@ export class GameState {
     this.foodPositions.clear();
   }
 
-  public processPlayerEndRound() {
+  public cleanupPlayerObjects() {
     for (const player of this.players.values()) {
       player.handleEndRound();
     }

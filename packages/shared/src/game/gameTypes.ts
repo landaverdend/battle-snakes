@@ -8,7 +8,7 @@ export enum GameEvents {
   LEADERBOARD_UPDATE = 'game:leaderboard_update',
   PLAYER_JOIN = 'game:player_join',
   PLAYER_EXIT = 'game:player_exit',
-  CLIENT_STATUS_UPDATE = 'game:client_status_update',
+  CLIENT_SPECIFIC_DATA = 'game:client_specific_data',
   OVERLAY_MESSAGE = 'game:overlay_message',
   INPUT_RATE_LIMIT_EXCEEDED = 'game:input_rate_limit_exceeded',
   CHAT_MESSAGE = 'game:chat_message',

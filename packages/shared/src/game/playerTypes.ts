@@ -1,3 +1,5 @@
+import { Point } from './gridTypes';
+
 export type Direction = 'up' | 'down' | 'left' | 'right';
 
 export const OppositeDirection: Record<Direction, Direction> = {
@@ -17,10 +19,9 @@ export interface PlayerData {
   gamesWon: number;
 }
 
-// Server to client messages
-export interface ClientStatusUpdate {
+export interface ClientSpecificData {
   isAlive?: boolean;
-  message?: string;
+  spawnPoint?: Point;
 }
 
 export interface MoveRequest {

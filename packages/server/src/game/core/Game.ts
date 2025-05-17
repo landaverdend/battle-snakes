@@ -111,11 +111,10 @@ export class Game {
       roundSurvivor.addRoundSurvivalBonus();
     }
 
+    // Check if the game should end.
     if (this.gameState.shouldGameEnd()) {
       this.handleGameEnd();
-    }
-    // Normal round end.
-    else {
+    } else {
       this.sendOverlayMessage({ type: 'round_over', message: 'Round Over!', player: roundSurvivor?.toPlayerData() });
       setTimeout(() => {
         this.gameState.beginWaiting();
@@ -135,7 +134,7 @@ export class Game {
 
     // Handle round cleanup
     this.inputBuffer.clearAll();
-    this.gameState.processPlayerEndRound();
+    this.gameState.cleanupPlayerObjects();
   }
 
   private handleRoundStart() {
@@ -144,7 +143,9 @@ export class Game {
     this.isRoundEnding = false;
 
     for (const player of this.gameState.getAllPlayers()) {
-      this.gameEventBus.emit(GameEvents.CLIENT_STATUS_UPDATE, player.getPlayerId(), { isAlive: true });
+      this.gameEventBus.emit(GameEvents.CLIENT_SPECIFIC_DATA, player.getPlayerId(), {
+        isAlive: true,
+      });
     }
 
     this.sendLeaderboardUpdate();
@@ -185,6 +186,14 @@ export class Game {
         this.sendDefaultMessage('Waiting for players to join...');
         this.sendOverlayMessage({ type: 'waiting', message: 'Waiting for players to join...' });
       }
+
+      // This is bad.
+      this.gameState.getAllPlayers().forEach((p) =>
+        this.gameEventBus.emit(GameEvents.CLIENT_SPECIFIC_DATA, p.getPlayerId(), {
+          isAlive: false,
+          spawnPoint: p.getHead(),
+        })
+      );
     }
 
     // Switch to intermission countdown if there is more than one player.
@@ -233,6 +242,10 @@ export class Game {
     const thePlayer = this.gameState.addPlayer(playerId, playerName, playerColor);
     if (this.gameState.isWaiting()) {
       this.spawnService.spawnPlayer(thePlayer);
+      this.gameEventBus.emit(GameEvents.CLIENT_SPECIFIC_DATA, thePlayer.getPlayerId(), {
+        isAlive: false,
+        spawnPoint: thePlayer.getHead(),
+      });
     }
 
     return true;
@@ -303,7 +316,7 @@ export class Game {
         case 'snake':
         case 'wall':
           this.gameState.killPlayer(collision.playerId);
-          this.gameEventBus.emit(GameEvents.CLIENT_STATUS_UPDATE, collision.playerId, { isAlive: false });
+          this.gameEventBus.emit(GameEvents.CLIENT_SPECIFIC_DATA, collision.playerId, { isAlive: false });
           break;
         case 'food':
           this.gameState.removeFood(collision.point);
