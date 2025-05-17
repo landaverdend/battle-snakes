@@ -47,7 +47,7 @@ export class PathFindingStrategy {
 
     let proposedDirection: Direction | null = null;
 
-    // Grab off the cached path. 
+    // Grab off the cached path.
     if (this.cachedPath.length > 0) {
       const currentHeadPosition = head;
       const nextPositionInPath = this.cachedPath.shift() as Point;
@@ -64,7 +64,7 @@ export class PathFindingStrategy {
       } else if (deltaX === 0 && deltaY === 1) {
         proposedDirection = 'down';
       }
-    } 
+    }
     // Pick a random spot to move to.
     else {
       proposedDirection = this.getRandomValidDirection(head);
@@ -153,8 +153,8 @@ export class PathFindingStrategy {
         this.isPositionSafeOnNextTick(head.getPointInDirection(direction.direction))
     );
 
+    // This guy is stuck, he's dead no matter what.
     if (validDirections.length === 0) {
-      console.error('this guy is stuck', this.cpuId);
       return 'up';
     }
 
