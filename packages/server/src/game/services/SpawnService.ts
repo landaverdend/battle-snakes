@@ -60,11 +60,27 @@ export class SpawnService {
 
   public spawnAllPlayers() {
     this.spawnPointIndex = 0;
-    const players = this.gameState.getAllPlayers();
+    const players = this.shuffle(this.gameState.getAllPlayers());
 
     for (const player of players) {
       this.spawnPlayer(player);
     }
+  }
+
+  private shuffle(array: Player[]): Player[] {
+    const shuffled = [...array]; // Create a copy
+    let currentIndex = shuffled.length - 1;
+
+    // While there remain elements to shuffle
+    while (currentIndex > 0) {
+      const randomIndex = getRandomNumber(0, currentIndex - 1);
+
+      const temp = shuffled[currentIndex];
+      shuffled[currentIndex] = shuffled[randomIndex] as Player;
+      shuffled[randomIndex] = temp as Player;
+      currentIndex--;
+    }
+    return shuffled;
   }
 
   public spawnInitialFood() {
