@@ -276,11 +276,13 @@ export class Game {
     const players = this.gameState.getActivePlayers();
 
     for (const player of players.values()) {
+      player.move();
+    }
+
+    for (const player of players.values()) {
       if (player instanceof CpuPlayer) {
         player.chooseNextMove(this.gameState);
       }
-
-      player.move();
     }
   }
 

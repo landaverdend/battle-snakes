@@ -12,13 +12,15 @@ export class PathFindingStrategy {
   private cachedPath: Point[] = [];
 
   private readonly DIRECTIONS = [
-    { x: 0, y: -1, direction: 'up' },
-    { x: 0, y: 1, direction: 'down' },
-    { x: 1, y: 0, direction: 'right' },
-    { x: -1, y: 0, direction: 'left' },
+    { x: 0, y: -1, direction: 'up' as Direction },
+    { x: 0, y: 1, direction: 'down' as Direction },
+    { x: 1, y: 0, direction: 'right' as Direction },
+    { x: -1, y: 0, direction: 'left' as Direction },
   ];
 
-  constructor() {}
+  constructor(private readonly cpuId: string) {
+    this.cpuId = cpuId;
+  }
 
   public clearData() {
     this.cachedPath = [];
@@ -43,6 +45,9 @@ export class PathFindingStrategy {
       this.cachedPath = AStarAlgorithm.calculateAStar(this.gameStateRef, head, target);
     }
 
+    let proposedDirection: Direction | null = null;
+
+    // Grab off the cached path. 
     if (this.cachedPath.length > 0) {
       const currentHeadPosition = head;
       const nextPositionInPath = this.cachedPath.shift() as Point;
@@ -51,17 +56,29 @@ export class PathFindingStrategy {
       const deltaY = nextPositionInPath.y - currentHeadPosition.y;
 
       if (deltaX === 1 && deltaY === 0) {
-        return 'right';
+        proposedDirection = 'right';
       } else if (deltaX === -1 && deltaY === 0) {
-        return 'left';
+        proposedDirection = 'left';
       } else if (deltaX === 0 && deltaY === -1) {
-        return 'up';
+        proposedDirection = 'up';
       } else if (deltaX === 0 && deltaY === 1) {
-        return 'down';
+        proposedDirection = 'down';
       }
+    } 
+    // Pick a random spot to move to.
+    else {
+      proposedDirection = this.getRandomValidDirection(head);
     }
 
-    return this.getRandomValidDirection(head);
+    const proposedNextPosition = head.getPointInDirection(proposedDirection as Direction);
+
+    // Look at all the players and see if the next move is safe, if not, reset the path and pick a new random direction.
+    if (!this.isPositionSafeOnNextTick(proposedNextPosition)) {
+      this.cachedPath = [];
+      proposedDirection = this.getRandomValidDirection(head, [proposedDirection as Direction]);
+    }
+
+    return proposedDirection as Direction;
   }
 
   private calculateShortestManhattanDistance(origin: Point, targets: Point[]) {
@@ -109,11 +126,37 @@ export class PathFindingStrategy {
     return true;
   }
 
-  private getRandomValidDirection(head: Point): Direction {
+  // Check all the currently active players and their current directions.
+  private isPositionSafeOnNextTick(point: Point): boolean {
+    const players = this.gameStateRef.getActivePlayers();
+
+    for (const player of players) {
+      if (player.getPlayerId() === this.cpuId) continue;
+
+      const nextPosition = player.getNextPosition();
+      if (nextPosition.equals(point)) {
+        return false;
+      }
+    }
+
+    return true;
+  }
+
+  private getRandomValidDirection(head: Point, badDirections: Direction[] = []): Direction {
     const validDirections = this.DIRECTIONS.filter(
       (direction) =>
-        this.gameStateRef.getEntityAtPosition(new Point(head.x + direction.x, head.y + direction.y)).type === CellType.Empty
+        // Entity is empty.
+        this.gameStateRef.getEntityAtPosition(new Point(head.x + direction.x, head.y + direction.y)).type === CellType.Empty &&
+        // Pass in already checked directions...
+        !badDirections.includes(direction.direction) &&
+        // Check random direction
+        this.isPositionSafeOnNextTick(head.getPointInDirection(direction.direction))
     );
+
+    if (validDirections.length === 0) {
+      console.error('this guy is stuck', this.cpuId);
+      return 'up';
+    }
 
     return validDirections[getRandomNumber(0, validDirections.length - 1)]?.direction as Direction;
   }

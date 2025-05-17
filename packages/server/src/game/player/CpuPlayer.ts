@@ -1,7 +1,7 @@
 import { Entity } from '@battle-snakes/shared';
 import { Player, PlayerConfigOptions } from './Player';
 import { GameState } from '../core/GameState';
-import { PathFindingStrategy } from './PathfindingStrategy';
+import { PathFindingStrategy } from './PathFindingStrategy';
 
 export class CpuPlayer extends Player {
   gridDimensions: number = 40;
@@ -11,7 +11,7 @@ export class CpuPlayer extends Player {
 
   constructor(id: string, options: PlayerConfigOptions) {
     super(id, options);
-    this.pathFinder = new PathFindingStrategy();
+    this.pathFinder = new PathFindingStrategy(id);
   }
 
   public chooseNextMove(gameState: GameState) {

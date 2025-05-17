@@ -160,4 +160,9 @@ export class Player {
   public handleEndRound() {
     // Do nothing...
   }
+
+  public getNextPosition(): Point {
+    const head = this.getHead();
+    return head.getPointInDirection(this.pendingDirection); 
+  }
 }
