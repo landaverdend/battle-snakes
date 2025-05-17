@@ -1,6 +1,6 @@
 import { Point } from '@battle-snakes/shared';
 import { MinPriorityQueue } from '@datastructures-js/priority-queue';
-import { GameState } from '../core/GameState';
+import { GameState } from '../../core/GameState';
 
 type Node = {
   position: Point;

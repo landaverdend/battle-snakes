@@ -1,7 +1,7 @@
 import { Entity } from '@battle-snakes/shared';
 import { Player, PlayerConfigOptions } from './Player';
 import { GameState } from '../core/GameState';
-import { PathFindingStrategy } from './PathFindingStrategy';
+import { PathFindingStrategy } from './pathfinding/PathFindingStrategy';
 
 export class CpuPlayer extends Player {
   gridDimensions: number = 40;
