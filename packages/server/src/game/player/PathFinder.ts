@@ -42,13 +42,13 @@ export class PathFinder {
     const target = this.calculateShortestManhattanDistance(head, foodPositions);
 
     // Check if we need to recalculate path
-    // if (!this.isValidPath()) {
-    this.cachedPath = this.calculateAStar(head, target);
-    // }
+    if (!this.isValidPath()) {
+      this.cachedPath = this.calculateAStar(head, target);
+    }
 
-    if (this.cachedPath.length > 1) {
+    if (this.cachedPath.length > 0) {
       const currentHeadPosition = head;
-      const nextPositionInPath = this.cachedPath[1] as Point;
+      const nextPositionInPath = this.cachedPath.shift() as Point;
 
       const deltaX = nextPositionInPath.x - currentHeadPosition.x;
       const deltaY = nextPositionInPath.y - currentHeadPosition.y;
@@ -58,10 +58,8 @@ export class PathFinder {
       } else if (deltaX === -1 && deltaY === 0) {
         return 'left';
       } else if (deltaX === 0 && deltaY === -1) {
-        // y decreases for 'up' based on your DIRECTIONS constant
         return 'up';
       } else if (deltaX === 0 && deltaY === 1) {
-        // y increases for 'down'
         return 'down';
       }
     }
@@ -123,7 +121,7 @@ export class PathFinder {
         const currentGScore = gScores.get(current.position.toString()) ?? 0;
         const tentativeGScore = currentGScore + 1; // only add 1 since we're moving 1 cell at a time.
 
-        // if the neighbor isn't in the open set, add it.
+        // Do a check to see if there is a better path to the neighbor (lower g score), default to infinity if the neighbor is not in the gScores map
         if (tentativeGScore < (gScores.get(neighborKey) ?? Infinity)) {
           const heuristicScore = neighbor.calculateManhattanDistance(target);
           const node = {
@@ -137,6 +135,7 @@ export class PathFinder {
       }
     }
 
+    // It's possible that we didn't find a path.
     return [];
   }
 
@@ -149,7 +148,8 @@ export class PathFinder {
       currentNode = currentNode.parent;
     }
 
-    return path.reverse();
+    // remove the first element from the path since it's the origin...
+    return path.reverse().slice(1);
   }
 
   private getValidNeighbors(node: Node): Point[] {
