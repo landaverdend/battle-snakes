@@ -1,16 +1,16 @@
 import { GameEvents, GameState, SpawnService } from '@battle-snakes/shared';
-import { GameEventBus } from '../events/GameEventBus';
 import { NetworkGameContext } from '../core/NetworkGame';
+import { MessageDispatchService } from './MessageDispatchService';
 
 export class LobbyService {
   private readonly gameState: GameState;
-  private readonly gameEventBus: GameEventBus;
   private readonly spawnService: SpawnService;
+  private readonly messageDispatchService: MessageDispatchService;
 
-  constructor({ gameState, gameEventBus, spawnService }: NetworkGameContext) {
+  constructor({ gameState, messageDispatchService, spawnService }: NetworkGameContext) {
     this.gameState = gameState;
-    this.gameEventBus = gameEventBus;
     this.spawnService = spawnService;
+    this.messageDispatchService = messageDispatchService;
   }
 
   public tryToAddPlayerToRoom(playerId: string, playerName: string, playerColor: string): boolean {
@@ -22,7 +22,8 @@ export class LobbyService {
     const thePlayer = this.gameState.addPlayer(playerId, playerName, playerColor);
     if (this.gameState.isWaiting()) {
       this.spawnService.spawnPlayer(thePlayer);
-      this.gameEventBus.emit(GameEvents.CLIENT_SPECIFIC_DATA, thePlayer.getPlayerId(), {
+
+      this.messageDispatchService.sendClientSpecificData(thePlayer.getPlayerId(), {
         isAlive: false,
         spawnPoint: thePlayer.getHead(),
       });

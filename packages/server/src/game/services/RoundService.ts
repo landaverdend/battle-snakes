@@ -1,20 +1,18 @@
 import { GameEvents, GameMessage, GameState, OverlayMessage } from '@battle-snakes/shared';
-import { GameEventBus } from '../events/GameEventBus';
 import { NetworkGameContext } from '../core/NetworkGame';
 import { InputBuffer } from '../input/InputBuffer';
+import { MessageDispatchService } from './MessageDispatchService';
 
 export class RoundService {
   private readonly gameState: GameState;
-  private readonly gameEventBus: GameEventBus;
-  private readonly roomId: string;
   private readonly inputBuffer: InputBuffer;
+  private readonly messageDispatchService: MessageDispatchService;
 
   private isRoundEnding = false;
 
-  constructor({ roomId, gameState, gameEventBus, inputBuffer }: NetworkGameContext) {
-    this.roomId = roomId;
+  constructor({ gameState, messageDispatchService, inputBuffer }: NetworkGameContext) {
     this.gameState = gameState;
-    this.gameEventBus = gameEventBus;
+    this.messageDispatchService = messageDispatchService;
     this.inputBuffer = inputBuffer;
   }
 
@@ -23,12 +21,10 @@ export class RoundService {
     this.isRoundEnding = false;
 
     for (const player of this.gameState.getAllPlayers()) {
-      this.gameEventBus.emit(GameEvents.CLIENT_SPECIFIC_DATA, player.getPlayerId(), {
-        isAlive: true,
-      });
+      this.messageDispatchService.sendClientSpecificData(player.getPlayerId(), { isAlive: true });
     }
 
-    this.sendLeaderboardUpdate();
+    this.messageDispatchService.sendLeaderboardUpdate();
   }
 
   onRoundEnd() {
@@ -44,7 +40,11 @@ export class RoundService {
     if (this.gameState.shouldGameEnd()) {
       this.onGameEnd();
     } else {
-      this.sendOverlayMessage({ type: 'round_over', message: 'Round Over!', player: roundSurvivor?.toPlayerData() });
+      this.messageDispatchService.sendOverlayMessage({
+        type: 'round_over',
+        message: 'Round Over!',
+        player: roundSurvivor?.toPlayerData(),
+      });
       setTimeout(() => {
         this.gameState.beginWaiting();
 
@@ -52,14 +52,14 @@ export class RoundService {
         let message = `Round ${this.gameState.getRoundNumber()} over!`;
         if (roundSurvivor) {
           message += ` {playerName} survived round ${this.gameState.getRoundNumber()}!`;
-          this.sendPlayerMessage(message, roundSurvivor.getPlayerId());
+          this.messageDispatchService.sendPlayerMessage(message, roundSurvivor.getPlayerId());
         } else {
-          this.sendDefaultMessage(message);
+          this.messageDispatchService.sendDefaultMessage(message);
         }
       }, 2000);
     }
 
-    this.sendLeaderboardUpdate();
+    this.messageDispatchService.sendLeaderboardUpdate();
 
     // Handle round cleanup
     this.inputBuffer.clearAll();
@@ -76,11 +76,11 @@ export class RoundService {
       overlayMessage.player = highestScorers[0]?.toPlayerData();
       highestScorers[0]?.addGameWin();
 
-      this.sendPlayerMessage(message, highestScorers[0]?.getPlayerId() ?? '');
+      this.messageDispatchService.sendPlayerMessage(message, highestScorers[0]?.getPlayerId() ?? '');
     } else {
       message = 'Tie Game!';
       overlayMessage.message = message;
-      this.sendDefaultMessage(message);
+      this.messageDispatchService.sendDefaultMessage(message);
     }
 
     // Let the players see the game over message for a few seconds...
@@ -88,28 +88,6 @@ export class RoundService {
       this.gameState.resetGame();
     }, 2000);
 
-    this.sendOverlayMessage(overlayMessage);
-  }
-
-  private sendDefaultMessage(message: string, type: GameMessage['type'] = 'default') {
-    this.gameEventBus.emit(GameEvents.MESSAGE_EVENT, this.roomId, [{ type, message }]);
-  }
-
-  private sendPlayerMessage(message: string, playerId: string) {
-    this.gameEventBus.emit(GameEvents.MESSAGE_EVENT, this.roomId, [
-      { type: 'player', message: message, playerData: this.gameState.getPlayerDataById(playerId) },
-    ]);
-  }
-
-  private sendLeaderboardUpdate() {
-    this.gameEventBus.emit(
-      GameEvents.LEADERBOARD_UPDATE,
-      this.roomId,
-      this.gameState.getPlayerData().sort((a, b) => b.score - a.score)
-    );
-  }
-
-  private sendOverlayMessage(overlayMessage: OverlayMessage) {
-    this.gameEventBus.emit(GameEvents.OVERLAY_MESSAGE, this.roomId, overlayMessage);
+    this.messageDispatchService.sendOverlayMessage(overlayMessage);
   }
 }

@@ -6,9 +6,7 @@ import {
   Game,
   GameEvents,
   GameLoop,
-  GameMessage,
   GameState,
-  OverlayMessage,
   RoundState,
   SpawnService,
 } from '@battle-snakes/shared';
@@ -17,6 +15,7 @@ import { InputBuffer } from '../input/InputBuffer';
 import { CollisionService } from '@battle-snakes/shared/src/services/CollisionService';
 import { LobbyService } from '../services/LobbyService';
 import { RoundService } from '../services/RoundService';
+import { MessageDispatchService } from '../services/MessageDispatchService';
 
 export type NetworkGameConfig = {
   roomId: string;
@@ -25,10 +24,10 @@ export type NetworkGameConfig = {
 };
 export interface NetworkGameContext {
   roomId: string;
-  gameEventBus: GameEventBus;
   spawnService: SpawnService;
   inputBuffer: InputBuffer;
   gameState: GameState;
+  messageDispatchService: MessageDispatchService;
 }
 
 export class NetworkGame extends Game {
@@ -38,6 +37,7 @@ export class NetworkGame extends Game {
 
   private lobbyService: LobbyService;
   private roundService: RoundService;
+  private messageDispatchService: MessageDispatchService;
 
   private haveEntitiesBeenSpawned = false;
   private movementAccumulator = 0;
@@ -51,13 +51,14 @@ export class NetworkGame extends Game {
     this.roomId = roomId;
     this.gameEventBus = gameEventBus;
     this.inputBuffer = new InputBuffer(gameEventBus);
+    this.messageDispatchService = new MessageDispatchService(roomId, this.gameState, this.gameEventBus);
 
     const context: NetworkGameContext = {
       roomId,
-      gameEventBus,
       spawnService: this.spawnService,
       inputBuffer: this.inputBuffer,
       gameState: this.gameState,
+      messageDispatchService: this.messageDispatchService,
     };
 
     this.lobbyService = new LobbyService(context);
@@ -123,9 +124,10 @@ export class NetworkGame extends Game {
       this.spawnService.spawnInitialFood();
       this.spawnService.spawnAllPlayers();
       this.haveEntitiesBeenSpawned = true;
+
       if (this.gameState.getAllPlayers().length === 1) {
-        this.sendDefaultMessage('Waiting for players to join...');
-        this.sendOverlayMessage({ type: 'waiting', message: 'Waiting for players to join...' });
+        this.messageDispatchService.sendDefaultMessage('Waiting for players to join...');
+        this.messageDispatchService.sendOverlayMessage({ type: 'waiting', message: 'Waiting for players to join...' });
       }
 
       // This is bad.
@@ -148,7 +150,7 @@ export class NetworkGame extends Game {
 
   private beginCountdown() {
     this.countdownValue = COUNTDOWN_TIME;
-    this.sendOverlayMessage({ type: 'countdown', message: String(this.countdownValue) });
+    this.messageDispatchService.sendOverlayMessage({ type: 'countdown', message: String(this.countdownValue) });
 
     this.countdownIntervalRef = setInterval(() => {
       if (this.countdownValue === null) {
@@ -157,12 +159,12 @@ export class NetworkGame extends Game {
 
       this.countdownValue--;
       if (this.countdownValue > 0) {
-        this.sendOverlayMessage({ type: 'countdown', message: String(this.countdownValue) });
+        this.messageDispatchService.sendOverlayMessage({ type: 'countdown', message: String(this.countdownValue) });
       } else {
         this.clearCountdown();
         this.haveEntitiesBeenSpawned = false;
         this.roundService.onRoundStart();
-        this.sendOverlayMessage({ type: 'clear' });
+        this.messageDispatchService.sendOverlayMessage({ type: 'clear' });
       }
     }, 1000);
   }
@@ -216,12 +218,12 @@ export class NetworkGame extends Game {
   public removePlayerFromRoom(playerId: string) {
     this.gameState.removePlayer(playerId);
     this.inputBuffer.clearPlayer(playerId);
-    this.sendLeaderboardUpdate();
+    this.messageDispatchService.sendLeaderboardUpdate();
 
     // Clear the countdown if there was one...
     if (this.gameState.getAllPlayers().length === 1) {
       this.clearCountdown();
-      this.sendOverlayMessage({ type: 'waiting', message: 'Waiting for players to join...' });
+      this.messageDispatchService.sendOverlayMessage({ type: 'waiting', message: 'Waiting for players to join...' });
     }
     this.spawnService.handlePlayerRemoval();
   }
@@ -252,37 +254,11 @@ export class NetworkGame extends Game {
 
     if (wasScoreUpdated) {
       this.spawnService.spawnFood();
-      this.sendLeaderboardUpdate();
+      this.messageDispatchService.sendLeaderboardUpdate();
     }
   }
 
-  /****************************************/
-  /***********MESSAGE SENDING STUFF********/
-  /****************************************/
-
   public getPlayerDataById(playerId: string) {
     return this.gameState.getPlayerDataById(playerId);
-  }
-
-  private sendDefaultMessage(message: string, type: GameMessage['type'] = 'default') {
-    this.gameEventBus.emit(GameEvents.MESSAGE_EVENT, this.roomId, [{ type, message }]);
-  }
-
-  private sendPlayerMessage(message: string, playerId: string) {
-    this.gameEventBus.emit(GameEvents.MESSAGE_EVENT, this.roomId, [
-      { type: 'player', message: message, playerData: this.getPlayerDataById(playerId) },
-    ]);
-  }
-
-  private sendLeaderboardUpdate() {
-    this.gameEventBus.emit(
-      GameEvents.LEADERBOARD_UPDATE,
-      this.roomId,
-      this.gameState.getPlayerData().sort((a, b) => b.score - a.score)
-    );
-  }
-
-  private sendOverlayMessage(overlayMessage: OverlayMessage) {
-    this.gameEventBus.emit(GameEvents.OVERLAY_MESSAGE, this.roomId, overlayMessage);
   }
 }
