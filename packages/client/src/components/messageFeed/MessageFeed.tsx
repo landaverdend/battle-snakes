@@ -56,7 +56,7 @@ export function MessageFeed() {
         toRender = <PlayerMessageComponent key={crypto.randomUUID()} message={message} />;
         break;
       case 'default':
-        toRender = <>{message.message}</>;
+        toRender = <span>{message.message}</span>;
         break;
     }
 
