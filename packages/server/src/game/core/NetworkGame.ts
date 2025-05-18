@@ -7,27 +7,40 @@ import {
   GameEvents,
   GameLoop,
   GameMessage,
+  GameState,
   OverlayMessage,
   RoundState,
+  SpawnService,
 } from '@battle-snakes/shared';
 import { GameEventBus } from '../events/GameEventBus';
 import { InputBuffer } from '../input/InputBuffer';
 import { CollisionService } from '@battle-snakes/shared/src/services/CollisionService';
+import { LobbyService } from '../services/LobbyService';
+import { RoundService } from '../services/RoundService';
 
 export type NetworkGameConfig = {
   roomId: string;
   gridSize: number;
   gameEventBus: GameEventBus;
 };
+export interface NetworkGameContext {
+  roomId: string;
+  gameEventBus: GameEventBus;
+  spawnService: SpawnService;
+  inputBuffer: InputBuffer;
+  gameState: GameState;
+}
 
 export class NetworkGame extends Game {
   private roomId: string;
   private gameEventBus: GameEventBus;
   private inputBuffer: InputBuffer;
 
+  private lobbyService: LobbyService;
+  private roundService: RoundService;
+
   private haveEntitiesBeenSpawned = false;
   private movementAccumulator = 0;
-  private isRoundEnding = false;
 
   private countdownIntervalRef: NodeJS.Timeout | null = null;
   private countdownValue: number | null = null;
@@ -38,6 +51,17 @@ export class NetworkGame extends Game {
     this.roomId = roomId;
     this.gameEventBus = gameEventBus;
     this.inputBuffer = new InputBuffer(gameEventBus);
+
+    const context: NetworkGameContext = {
+      roomId,
+      gameEventBus,
+      spawnService: this.spawnService,
+      inputBuffer: this.inputBuffer,
+      gameState: this.gameState,
+    };
+
+    this.lobbyService = new LobbyService(context);
+    this.roundService = new RoundService(context);
   }
 
   override tick(deltaTime: number): void {
@@ -81,7 +105,7 @@ export class NetworkGame extends Game {
     }
 
     if (this.gameState.shouldRoundEnd()) {
-      this.onRoundEnd();
+      this.roundService.onRoundEnd();
     }
   }
 
@@ -136,7 +160,8 @@ export class NetworkGame extends Game {
         this.sendOverlayMessage({ type: 'countdown', message: String(this.countdownValue) });
       } else {
         this.clearCountdown();
-        this.onRoundStart();
+        this.haveEntitiesBeenSpawned = false;
+        this.roundService.onRoundStart();
         this.sendOverlayMessage({ type: 'clear' });
       }
     }, 1000);
@@ -177,7 +202,7 @@ export class NetworkGame extends Game {
   }
 
   public override stop(): void {
-    throw new Error('Method not implemented.');
+    this.gameLoop.stop();
   }
 
   public getPlayerData() {
@@ -185,21 +210,7 @@ export class NetworkGame extends Game {
   }
 
   public tryToAddPlayerToRoom(playerId: string, playerName: string, playerColor: string): boolean {
-    // Race condition: check if there is vacancy before trying to add a player.
-    if (!this.gameState.hasVacancy()) {
-      return false;
-    }
-
-    const thePlayer = this.gameState.addPlayer(playerId, playerName, playerColor);
-    if (this.gameState.isWaiting()) {
-      this.spawnService.spawnPlayer(thePlayer);
-      this.gameEventBus.emit(GameEvents.CLIENT_SPECIFIC_DATA, thePlayer.getPlayerId(), {
-        isAlive: false,
-        spawnPoint: thePlayer.getHead(),
-      });
-    }
-
-    return true;
+    return this.lobbyService.tryToAddPlayerToRoom(playerId, playerName, playerColor);
   }
 
   public removePlayerFromRoom(playerId: string) {
@@ -246,89 +257,11 @@ export class NetworkGame extends Game {
   }
 
   /****************************************/
-  /***********ROUND HANDLING STUFF ********/
-  /****************************************/
-  override onRoundStart() {
-    this.gameState.beginRound();
-    this.haveEntitiesBeenSpawned = false;
-    this.isRoundEnding = false;
-
-    for (const player of this.gameState.getAllPlayers()) {
-      this.gameEventBus.emit(GameEvents.CLIENT_SPECIFIC_DATA, player.getPlayerId(), {
-        isAlive: true,
-      });
-    }
-
-    this.sendLeaderboardUpdate();
-  }
-
-  // Stagger the round end by like 4 seconds so it's not so abrupt.
-  override onRoundEnd() {
-    if (this.isRoundEnding) return;
-    this.isRoundEnding = true;
-
-    const roundSurvivor = this.gameState.getActivePlayers()[0];
-    if (roundSurvivor) {
-      roundSurvivor.addRoundSurvivalBonus();
-    }
-
-    // Check if the game should end.
-    if (this.gameState.shouldGameEnd()) {
-      this.onGameEnd();
-    } else {
-      this.sendOverlayMessage({ type: 'round_over', message: 'Round Over!', player: roundSurvivor?.toPlayerData() });
-      setTimeout(() => {
-        this.gameState.beginWaiting();
-
-        // Sometimes players can die on the same tick.
-        let message = `Round ${this.gameState.getRoundNumber()} over!`;
-        if (roundSurvivor) {
-          message += ` {playerName} survived round ${this.gameState.getRoundNumber()}!`;
-          this.sendPlayerMessage(message, roundSurvivor.getPlayerId());
-        } else {
-          this.sendDefaultMessage(message);
-        }
-      }, 2000);
-    }
-
-    this.sendLeaderboardUpdate();
-
-    // Handle round cleanup
-    this.inputBuffer.clearAll();
-    this.gameState.cleanupPlayerObjects();
-  }
-
-  override onGameEnd() {
-    let message = '';
-    let overlayMessage: OverlayMessage = { type: 'game_over' };
-
-    const highestScorers = this.gameState.calculateGameWinner();
-    if (highestScorers.length === 1) {
-      message = `{playerName} wins the game!`;
-      overlayMessage.player = highestScorers[0]?.toPlayerData();
-      highestScorers[0]?.addGameWin();
-
-      this.sendPlayerMessage(message, highestScorers[0]?.getPlayerId() ?? '');
-    } else {
-      message = 'Tie Game!';
-      overlayMessage.message = message;
-      this.sendDefaultMessage(message);
-    }
-
-    // Let the players see the game over message for a few seconds...
-    setTimeout(() => {
-      this.gameState.resetGame();
-    }, 2000);
-
-    this.sendOverlayMessage(overlayMessage);
-  }
-
-  /****************************************/
   /***********MESSAGE SENDING STUFF********/
   /****************************************/
 
   public getPlayerDataById(playerId: string) {
-    return this.gameState.getPlayer(playerId)?.toPlayerData();
+    return this.gameState.getPlayerDataById(playerId);
   }
 
   private sendDefaultMessage(message: string, type: GameMessage['type'] = 'default') {

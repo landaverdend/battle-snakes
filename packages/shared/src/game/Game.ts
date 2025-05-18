@@ -13,13 +13,7 @@ export abstract class Game {
     this.spawnService = new SpawnService(this.gameState);
   }
 
-
   public abstract start(): void;
   public abstract tick(deltaTime: number): void;
   public abstract stop(): void;
-
-  public abstract onRoundStart(): void;
-  public abstract onRoundEnd(): void;
-
-  public abstract onGameEnd(): void;
 }

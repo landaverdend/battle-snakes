@@ -212,6 +212,10 @@ export class GameState {
     return toRet;
   }
 
+  public getPlayerDataById(playerId: string) {
+    return this.getPlayer(playerId)?.toPlayerData();
+  }
+
   // Initialize the round:
   // - Set the round state to active.
   // - reset intermission end time.
