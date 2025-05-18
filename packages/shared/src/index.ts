@@ -9,3 +9,4 @@ export * from './game/GameState';
 export * from './game/GameLoop';
 export * from './services/CollisionService';
 export * from './services/SpawnService';
+export * from './utils/CountdownTimer';
