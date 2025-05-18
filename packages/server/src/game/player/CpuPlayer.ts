@@ -1,10 +1,9 @@
-import { Entity } from '@battle-snakes/shared';
+import { DEFAULT_GRID_SIZE, Entity, GameState } from '@battle-snakes/shared';
 import { Player, PlayerConfigOptions } from './Player';
-import { GameState } from '../core/GameState';
 import { PathFindingStrategy } from './pathfinding/PathFindingStrategy';
 
 export class CpuPlayer extends Player {
-  gridDimensions: number = 40;
+  gridDimensions: number = DEFAULT_GRID_SIZE;
   gridState: Map<string, Entity> = new Map();
   foodPositions: Set<string> = new Set();
   private pathFinder: PathFindingStrategy;

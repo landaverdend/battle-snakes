@@ -1,12 +1,4 @@
-import {
-  Collision,
-  CollisionService,
-  DEFAULT_FOOD_COUNT,
-  GameEvents,
-  GameLoop,
-  GameState,
-  SpawnService,
-} from '@battle-snakes/shared';
+import { Collision, CollisionService, DEFAULT_FOOD_COUNT, GameLoop, GameState, SpawnService } from '@battle-snakes/shared';
 import { NetworkGameContext } from './NetworkGame';
 import { RoundService } from '../services/RoundService';
 import { MessageDispatchService } from '../services/MessageDispatchService';
@@ -16,7 +8,6 @@ export class ActiveGameStrategy {
   private movementAccumulator = 0;
 
   private gameState: GameState;
-  private roomId: string;
 
   private roundService: RoundService;
   private messageDispatchService: MessageDispatchService;
@@ -25,11 +16,10 @@ export class ActiveGameStrategy {
   private inputBuffer: InputBuffer;
 
   constructor(
-    { roomId, gameState, messageDispatchService, inputBuffer }: NetworkGameContext,
+    { gameState, messageDispatchService, inputBuffer }: NetworkGameContext,
     roundService: RoundService,
     spawnService: SpawnService
   ) {
-    this.roomId = roomId;
     this.gameState = gameState;
 
     this.roundService = roundService;
@@ -96,6 +86,10 @@ export class ActiveGameStrategy {
           wasScoreUpdated = true;
           break;
       }
+    }
+
+    if (wasScoreUpdated) {
+      this.messageDispatchService.sendLeaderboardUpdate();
     }
   }
 

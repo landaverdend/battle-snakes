@@ -17,6 +17,7 @@ import { LobbyService } from '../services/LobbyService';
 import { RoundService } from '../services/RoundService';
 import { MessageDispatchService } from '../services/MessageDispatchService';
 import { ActiveGameStrategy } from './ActiveGameStrategy';
+import { WaitingGameStrategy } from './WaitingGameStrategy';
 
 export type NetworkGameConfig = {
   roomId: string;
@@ -41,11 +42,7 @@ export class NetworkGame extends Game {
   private messageDispatchService: MessageDispatchService;
 
   private activeGameStrategy: ActiveGameStrategy;
-
-  private haveEntitiesBeenSpawned = false;
-
-  private countdownIntervalRef: NodeJS.Timeout | null = null;
-  private countdownValue: number | null = null;
+  private waitingGameStrategy: WaitingGameStrategy;
 
   constructor({ roomId, gridSize, gameEventBus }: NetworkGameConfig) {
     super(gridSize);
@@ -65,7 +62,9 @@ export class NetworkGame extends Game {
 
     this.lobbyService = new LobbyService(context);
     this.roundService = new RoundService(context);
-    this.activeGameStrategy = new ActiveGameStrategy({ ...context }, this.roundService, this.spawnService);
+
+    this.activeGameStrategy = new ActiveGameStrategy(context, this.roundService, this.spawnService);
+    this.waitingGameStrategy = new WaitingGameStrategy(context, this.roundService, this.spawnService);
   }
 
   override tick(deltaTime: number): void {
@@ -75,7 +74,7 @@ export class NetworkGame extends Game {
         break;
 
       case RoundState.WAITING:
-        this.waitingTick();
+        this.waitingGameStrategy.tick(deltaTime);
         break;
     }
   }
@@ -87,65 +86,6 @@ export class NetworkGame extends Game {
 
   public override stop(): void {
     this.gameLoop.stop();
-  }
-
-  private waitingTick(): void {
-    // Spawn initial entities if they aren't there yet.
-    if (!this.haveEntitiesBeenSpawned) {
-      this.spawnService.spawnInitialFood();
-      this.spawnService.spawnAllPlayers();
-      this.haveEntitiesBeenSpawned = true;
-
-      if (this.gameState.getAllPlayers().length === 1) {
-        this.messageDispatchService.sendDefaultMessage('Waiting for players to join...');
-        this.messageDispatchService.sendOverlayMessage({ type: 'waiting', message: 'Waiting for players to join...' });
-      }
-
-      // This is bad.
-      this.gameState.getAllPlayers().forEach((p) =>
-        this.messageDispatchService.sendClientSpecificData(p.getPlayerId(), {
-          isAlive: false,
-          spawnPoint: p.getHead(),
-        })
-      );
-    }
-
-    // Switch to intermission countdown if there is more than one player.
-    if (!this.countdownIntervalRef && this.gameState.getAllPlayers().length > 1) {
-      this.beginCountdown();
-    }
-
-    this.gameState.updateGrid(); // We want to show the players spawn positions before the game starts.
-    this.gameEventBus.emit(GameEvents.STATE_UPDATE, this.roomId, this.gameState.toSharedGameState());
-  }
-
-  private beginCountdown() {
-    this.countdownValue = COUNTDOWN_TIME;
-    this.messageDispatchService.sendOverlayMessage({ type: 'countdown', message: String(this.countdownValue) });
-
-    this.countdownIntervalRef = setInterval(() => {
-      if (this.countdownValue === null) {
-        return;
-      }
-
-      this.countdownValue--;
-      if (this.countdownValue > 0) {
-        this.messageDispatchService.sendOverlayMessage({ type: 'countdown', message: String(this.countdownValue) });
-      } else {
-        this.clearCountdown();
-        this.haveEntitiesBeenSpawned = false;
-        this.roundService.onRoundStart();
-        this.messageDispatchService.sendOverlayMessage({ type: 'clear' });
-      }
-    }, 1000);
-  }
-
-  private clearCountdown() {
-    if (this.countdownIntervalRef) {
-      clearInterval(this.countdownIntervalRef);
-      this.countdownIntervalRef = null;
-      this.countdownValue = null;
-    }
   }
 
   public handleSingularPlayerInput(playerId: string, direction: Direction) {
@@ -163,13 +103,7 @@ export class NetworkGame extends Game {
   }
 
   public removePlayerFromLobby(playerId: string) {
-    // TODO: implement some clock object or something
-    // Clear the countdown if there was one...
-    if (this.gameState.getAllPlayers().length === 1) {
-      this.clearCountdown();
-      this.messageDispatchService.sendOverlayMessage({ type: 'waiting', message: 'Waiting for players to join...' });
-    }
-
+    this.waitingGameStrategy.handlePlayerRemoval();
     this.lobbyService.removePlayerFromLobby(playerId);
   }
 
