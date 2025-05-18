@@ -5,7 +5,7 @@ import Canvas from '@components/canvas/Canvas';
 
 import { MessageFeed } from '@components/messageFeed/MessageFeed';
 import RoundHeader from '@/components/roundHeader/RoundHeader';
-import { GameConfigOptions } from '@/game/GameClient';
+import { GameConfigOptions } from '@/game/GameRunner';
 
 interface MVProps {
   gameConfig: GameConfigOptions;

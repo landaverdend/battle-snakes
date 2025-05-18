@@ -1,12 +1,12 @@
 import { MainView } from '@views/mainView/MainView';
 import { useState } from 'react';
 import SplashView from './splashView/SplashView';
-import { GameConfigOptions } from '@/game/GameClient';
 import { createGlobalStyle, ThemeProvider } from 'styled-components';
 
 /* Pick a theme of your choice */
 import original from 'react95/dist/themes/original';
 import { styleReset } from 'react95';
+import { GameConfigOptions } from '@/game/GameRunner';
 
 const GlobalStyles = createGlobalStyle`${styleReset}`;
 
@@ -20,13 +20,13 @@ export default function App() {
   const [gameConfig, setGameConfig] = useState<GameConfigOptions>({
     playerName: '',
     playerColor: '',
-    isCpuGame: false,
+    isLocalGame: false,
   });
 
-  const handleComplete = (playerName: string, playerColor: string, isCpuGame: boolean) => {
+  const handleComplete = (playerName: string, playerColor: string, isLocalGame: boolean) => {
     setView(View.MAIN);
 
-    setGameConfig({ playerName, playerColor, isCpuGame });
+    setGameConfig({ playerName, playerColor, isLocalGame: isLocalGame });
   };
 
   let viewToRender = null;

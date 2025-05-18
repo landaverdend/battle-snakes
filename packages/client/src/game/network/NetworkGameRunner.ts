@@ -1,14 +1,10 @@
-import { Renderer } from './Renderer';
-import { NetworkService } from '../service/NetworkService';
-import { InputService } from '../service/InputService';
+import { NetworkService } from '@/service/NetworkService';
+import { Renderer } from '../Renderer';
+import { InputService } from '@/service/InputService';
 import { ChatService } from '@/service/ChatService';
+import { GameConfigOptions, GameRunner } from '../GameRunner';
 
-export interface GameConfigOptions {
-  playerName: string;
-  playerColor: string;
-  isCpuGame?: boolean;
-}
-export class GameClient {
+export class NetworkGameRunner extends GameRunner {
   private renderer: Renderer;
   private network: NetworkService;
   private inputService: InputService;
@@ -18,20 +14,22 @@ export class GameClient {
   private animationFrameId: number | null = null;
 
   constructor(ctx: CanvasRenderingContext2D, gameConfig: GameConfigOptions) {
+    super();
+
     this.renderer = new Renderer(ctx);
     this.network = new NetworkService(gameConfig);
     this.inputService = new InputService(this.network.getSocket());
     this.chatService = ChatService.getInstance(this.network.getSocket());
   }
 
-  public start() {
+  start() {
     if (this.isRunning) return;
 
     this.isRunning = true;
     this.gameLoop();
   }
 
-  public stop() {
+  stop() {
     this.isRunning = false;
 
     if (this.animationFrameId !== null) {
@@ -40,14 +38,14 @@ export class GameClient {
     }
   }
 
-  private gameLoop() {
+  gameLoop() {
     if (!this.isRunning) return;
 
     this.renderer.render();
     this.animationFrameId = requestAnimationFrame(() => this.gameLoop());
   }
 
-  public resize(width: number, height: number) {
+  resize(width: number, height: number) {
     this.renderer.resize(width, height);
   }
 }

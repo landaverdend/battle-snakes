@@ -1,18 +1,18 @@
 import { useEffect, useRef } from 'react';
 import './canvas.css';
-import { GameClient, GameConfigOptions } from '../../game/GameClient';
 import { Window, WindowContent } from 'react95';
 import { CanvasOverlay } from '../canvasOverlay/CanvasOverlay';
 import Draggable from 'react-draggable';
+import { NetworkGameRunner } from '@/game/network/NetworkGameRunner';
+import { GameConfigOptions, GameRunner } from '@/game/GameRunner';
 
 interface CanvasProps {
   gameConfig: GameConfigOptions;
 }
-
 const Canvas = ({ gameConfig }: CanvasProps) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
-  const gameRef = useRef<GameClient | null>(null);
+  const gameRunnerRef = useRef<GameRunner | null>(null);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -22,8 +22,8 @@ const Canvas = ({ gameConfig }: CanvasProps) => {
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
 
-    gameRef.current = new GameClient(ctx, gameConfig);
-    gameRef.current.start();
+    gameRunnerRef.current = new NetworkGameRunner(ctx, gameConfig);
+    gameRunnerRef.current.start();
 
     const resizeCanvas = () => {
       const { width, height } = canvas.getBoundingClientRect();
@@ -32,7 +32,8 @@ const Canvas = ({ gameConfig }: CanvasProps) => {
       canvas.width = width;
       canvas.height = height;
 
-      gameRef.current?.resize(width, height);
+      // gameRef.current?.resize(width, height);
+      gameRunnerRef.current?.resize(width, height);
     };
 
     // Set up ResizeObserver

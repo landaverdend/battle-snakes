@@ -3,17 +3,17 @@ import { io, Socket } from 'socket.io-client';
 import { ClientGameState } from '../state/ClientGameState';
 import { LeaderboardObservable } from '../state/LeaderboardObservable';
 import { MessageFeedObservable } from '../state/MessageFeedObservable';
-import { GameConfigOptions } from '../game/GameClient';
 import { ClientPlayerObservable } from '../state/ClientPlayerObservable';
 import { OverlayMessageEventBus } from './OverlayMessageEventBus';
+import { GameConfigOptions } from '@/game/GameRunner';
 
 const SOCKET_URL = window.location.hostname === 'localhost' ? 'http://localhost:3030' : window.location.origin;
 
 export class NetworkService {
   private socket: Socket;
 
-  constructor({ playerName, playerColor, isCpuGame }: GameConfigOptions) {
-    this.socket = io(SOCKET_URL, { auth: { playerName, playerColor, isCpuGame } });
+  constructor({ playerName, playerColor }: GameConfigOptions) {
+    this.socket = io(SOCKET_URL, { auth: { playerName, playerColor } });
     this.initializeSocket();
   }
 
