@@ -51,7 +51,6 @@ export class WaitingGameStrategy {
     this.messageDispatchService.sendGameStateUpdate();
   }
 
-
   // Special case for when we go back to one player.
   public handlePlayerRemoval() {
     if (this.gameState.getAllPlayers().length === 1) {
