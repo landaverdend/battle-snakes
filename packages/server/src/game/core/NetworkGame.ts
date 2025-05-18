@@ -132,7 +132,7 @@ export class NetworkGame extends Game {
 
       // This is bad.
       this.gameState.getAllPlayers().forEach((p) =>
-        this.gameEventBus.emit(GameEvents.CLIENT_SPECIFIC_DATA, p.getPlayerId(), {
+        this.messageDispatchService.sendClientSpecificData(p.getPlayerId(), {
           isAlive: false,
           spawnPoint: p.getHead(),
         })
@@ -211,21 +211,19 @@ export class NetworkGame extends Game {
     return this.gameState.getPlayerData();
   }
 
-  public tryToAddPlayerToRoom(playerId: string, playerName: string, playerColor: string): boolean {
-    return this.lobbyService.tryToAddPlayerToRoom(playerId, playerName, playerColor);
+  public tryToAddPlayerToLobby(playerId: string, playerName: string, playerColor: string): boolean {
+    return this.lobbyService.tryToAddPlayerToLobby(playerId, playerName, playerColor);
   }
 
-  public removePlayerFromRoom(playerId: string) {
-    this.gameState.removePlayer(playerId);
-    this.inputBuffer.clearPlayer(playerId);
-    this.messageDispatchService.sendLeaderboardUpdate();
-
+  public removePlayerFromLobby(playerId: string) {
+    // TODO: implement some clock object or something
     // Clear the countdown if there was one...
     if (this.gameState.getAllPlayers().length === 1) {
       this.clearCountdown();
       this.messageDispatchService.sendOverlayMessage({ type: 'waiting', message: 'Waiting for players to join...' });
     }
-    this.spawnService.handlePlayerRemoval();
+
+    this.lobbyService.removePlayerFromLobby(playerId);
   }
 
   private processCollisions(collisions: Collision[]) {

@@ -15,7 +15,7 @@ export class RoomService {
     console.log('Trying to add clientId to a room.', playerId);
 
     for (const [roomId, game] of this.rooms) {
-      if (game.tryToAddPlayerToRoom(playerId, playerName, playerColor)) {
+      if (game.tryToAddPlayerToLobby(playerId, playerName, playerColor)) {
         console.log('Room with vacancy was found for clientId', playerId, ` in room: ${roomId}`);
         return roomId;
       }
@@ -27,7 +27,7 @@ export class RoomService {
     const theRoom = new NetworkGame({ roomId, gridSize: DEFAULT_GRID_SIZE, gameEventBus: this.gameEventBus });
 
     theRoom.start(); // start up the room...
-    theRoom.tryToAddPlayerToRoom(playerId, playerName, playerColor); // add player before setting adding room to the map..
+    theRoom.tryToAddPlayerToLobby(playerId, playerName, playerColor); // add player before setting adding room to the map..
 
     this.rooms.set(roomId, theRoom);
     return roomId;
@@ -38,7 +38,7 @@ export class RoomService {
     if (!theRoom) {
       throw new Error(`Room ${roomId} doesn't exist!`);
     }
-    theRoom.removePlayerFromRoom(playerId);
+    theRoom.removePlayerFromLobby(playerId);
 
     if (theRoom.getPlayerData().length === 0) {
       console.warn(`Room ${roomId} is empty, deleting...`);

@@ -1,4 +1,4 @@
-import { GameEvents, GameMessage, GameState, OverlayMessage } from '@battle-snakes/shared';
+import { GameState, OverlayMessage } from '@battle-snakes/shared';
 import { NetworkGameContext } from '../core/NetworkGame';
 import { InputBuffer } from '../input/InputBuffer';
 import { MessageDispatchService } from './MessageDispatchService';

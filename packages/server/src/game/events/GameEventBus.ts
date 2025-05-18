@@ -18,8 +18,4 @@ export class GameEventBus extends EventEmitter {
   override on<E extends keyof GameEventPayloads>(event: E, listener: (...args: GameEventPayloads[E]) => void): this {
     return super.on(event, listener);
   }
-
-  emitPlayerExit(roomId: string, playerName: string) {
-    this.emit(GameEvents.MESSAGE_EVENT, roomId, [{ type: 'player_exit', message: `${playerName} has left the game` }]);
-  }
 }
