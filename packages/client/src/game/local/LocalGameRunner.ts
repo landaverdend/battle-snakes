@@ -8,11 +8,28 @@ export class LocalGameRunner extends GameRunner {
   constructor(ctx: CanvasRenderingContext2D, gameConfig: GameConfigOptions) {
     super(ctx);
 
-    this.game = new LocalGame(DEFAULT_GRID_SIZE);
+    this.game = new LocalGame(DEFAULT_GRID_SIZE, gameConfig);
   }
 
   start(): void {
+    if (this.isRunning) return;
+
+    this.isRunning = true;
     this.game.start();
+
+    this.gameLoop();
+  }
+
+  gameLoop() {
+    if (!this.isRunning) return;
+
+    // TODO: this can be improved in the future by just passing in the gamestate directly to the renderer. For now, this works.
+    this.game.tick(0);
+    this.renderer.render();
+
+    this.animationFrameId = requestAnimationFrame(() => {
+      this.gameLoop();
+    });
   }
 
   stop(): void {

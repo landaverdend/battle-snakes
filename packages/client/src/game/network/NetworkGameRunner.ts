@@ -16,6 +16,13 @@ export class NetworkGameRunner extends GameRunner {
     this.chatService = ChatService.getInstance(this.connectionService.getSocket());
   }
 
+  gameLoop() {
+    if (!this.isRunning) return;
+
+    this.renderer.render();
+    this.animationFrameId = requestAnimationFrame(() => this.gameLoop());
+  }
+
   start() {
     if (this.isRunning) return;
 

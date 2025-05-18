@@ -7,8 +7,7 @@ export interface GameConfigOptions {
 }
 
 export abstract class GameRunner {
-  private renderer: Renderer;
-
+  protected renderer: Renderer;
   protected isRunning: boolean = false;
   protected animationFrameId: number | null = null;
 
@@ -18,15 +17,9 @@ export abstract class GameRunner {
 
   abstract start(): void;
   abstract stop(): void;
+  abstract gameLoop(): void;
 
   resize(width: number, height: number) {
     this.renderer.resize(width, height);
-  }
-
-  gameLoop() {
-    if (!this.isRunning) return;
-
-    this.renderer.render();
-    this.animationFrameId = requestAnimationFrame(() => this.gameLoop());
   }
 }

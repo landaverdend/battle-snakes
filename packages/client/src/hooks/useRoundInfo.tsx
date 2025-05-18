@@ -21,7 +21,7 @@ export function useRoundInfo() {
 
     const handleStateUpdate = ({ roundInfo }: SharedGameState) => {
       const roundInfoChanged = roundInfo.roundState !== memoizedRoundInfo.current.roundState;
-
+      
       // Only call React state setters if the relevant data *actually* changed
       if (roundInfoChanged) {
         setRoundInfo(roundInfo);
