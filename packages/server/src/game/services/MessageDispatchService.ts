@@ -12,6 +12,10 @@ export class MessageDispatchService {
     this.gameState = gameState;
   }
 
+  sendGameStateUpdate() {
+    this.gameEventBus.emit(GameEvents.STATE_UPDATE, this.roomId, this.gameState.toSharedGameState());
+  }
+
   sendLeaderboardUpdate() {
     this.gameEventBus.emit(
       GameEvents.LEADERBOARD_UPDATE,
