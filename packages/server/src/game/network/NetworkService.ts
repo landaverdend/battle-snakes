@@ -73,7 +73,7 @@ export class NetworkService extends EventEmitter {
     }
 
     console.log('A user connected:', playerId, ' from IP: ', clientIp);
-    const { playerName, playerColor, isCpuGame } = socket.handshake.auth;
+    const { playerName, playerColor } = socket.handshake.auth;
 
     if (clientIp && this.bannedIPs.has(clientIp)) {
       console.log(`IP ${clientIp} is banned. Disconnecting.`);
@@ -88,11 +88,8 @@ export class NetworkService extends EventEmitter {
       }
 
       let roomId = '';
-      if (isCpuGame) {
-        roomId = this.roomService.assignPlayerToCpuGame(playerId, playerName, playerColor);
-      } else {
-        roomId = this.roomService.assignPlayerToRoom(playerId, playerName, playerColor);
-      }
+
+      roomId = this.roomService.assignPlayerToRoom(playerId, playerName, playerColor);
       socket.join(roomId);
 
       const game = this.roomService.getGameByRoomId(roomId);
@@ -110,7 +107,7 @@ export class NetworkService extends EventEmitter {
 
         const game = this.roomService.getGameByRoomId(roomId);
         if (game) {
-          game.handlePlayerInput(playerId, moveRequest.direction);
+          game.handleSingularPlayerInput(playerId, moveRequest.direction);
         }
       });
 

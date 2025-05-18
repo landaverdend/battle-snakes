@@ -3,27 +3,27 @@ import {
   COUNTDOWN_TIME,
   DEFAULT_FOOD_COUNT,
   Direction,
+  Game,
   GameEvents,
-  MAX_ROOM_SIZE,
+  GameLoop,
   GameMessage,
   OverlayMessage,
   RoundState,
 } from '@battle-snakes/shared';
-import { GameLoop } from './GameLoop';
-import { GameState } from './GameState';
 import { GameEventBus } from '../events/GameEventBus';
-import { CollisionService } from '../services/CollisionService';
-import { CpuPlayer } from '../player/CpuPlayer';
 import { InputBuffer } from '../input/InputBuffer';
-import { SpawnService } from '../services/SpawnService';
+import { CollisionService } from '@battle-snakes/shared/src/services/CollisionService';
 
-export class Game {
+export type NetworkGameConfig = {
+  roomId: string;
+  gridSize: number;
+  gameEventBus: GameEventBus;
+};
+
+export class NetworkGame extends Game {
   private roomId: string;
-  private gameState: GameState;
-  private gameLoop: GameLoop;
+  private gameEventBus: GameEventBus;
   private inputBuffer: InputBuffer;
-  private spawnService: SpawnService;
-  isCpuGame: boolean;
 
   private haveEntitiesBeenSpawned = false;
   private movementAccumulator = 0;
@@ -32,31 +32,15 @@ export class Game {
   private countdownIntervalRef: NodeJS.Timeout | null = null;
   private countdownValue: number | null = null;
 
-  constructor(roomId: string, gridSize: number, private readonly gameEventBus: GameEventBus, isCpuGame = false) {
+  constructor({ roomId, gridSize, gameEventBus }: NetworkGameConfig) {
+    super(gridSize);
+
     this.roomId = roomId;
-    this.gameState = new GameState(gridSize);
-    this.gameLoop = new GameLoop((deltaTime: number) => this.tick(deltaTime));
     this.gameEventBus = gameEventBus;
     this.inputBuffer = new InputBuffer(gameEventBus);
-    this.spawnService = new SpawnService(this.gameState);
-    this.isCpuGame = isCpuGame;
-    if (isCpuGame) {
-      this.spawnService.addCpuPlayers(MAX_ROOM_SIZE - 1);
-      // this.spawnService.addCpuPlayers(1);
-    }
   }
 
-  public startRoom() {
-    this.gameState.beginWaiting();
-    this.gameLoop.start();
-  }
-
-  public stop() {
-    this.gameLoop.stop();
-  }
-
-  // Main update loop.
-  private tick(deltaTime: number): void {
+  override tick(deltaTime: number): void {
     switch (this.gameState.getRoundState()) {
       case RoundState.ACTIVE:
         this.gameLoopTick(deltaTime);
@@ -76,7 +60,7 @@ export class Game {
     }
 
     // Step One: process all inputs.
-    this.processInputs();
+    this.handleRoomInput();
     this.movementAccumulator -= GameLoop.GAME_STATE_UPDATE_INTERVAL_MS;
 
     // Step Two: update all player positions.
@@ -97,83 +81,16 @@ export class Game {
     }
 
     if (this.gameState.shouldRoundEnd()) {
-      this.handleRoundEnd();
+      this.onRoundEnd();
     }
   }
 
-  // Stagger the round end by like 4 seconds so it's not so abrupt.
-  private handleRoundEnd() {
-    if (this.isRoundEnding) return;
-    this.isRoundEnding = true;
+  private movementTick() {
+    const players = this.gameState.getActivePlayers();
 
-    const roundSurvivor = this.gameState.getActivePlayers()[0];
-    if (roundSurvivor) {
-      roundSurvivor.addRoundSurvivalBonus();
+    for (const player of players.values()) {
+      player.move();
     }
-
-    // Check if the game should end.
-    if (this.gameState.shouldGameEnd()) {
-      this.handleGameEnd();
-    } else {
-      this.sendOverlayMessage({ type: 'round_over', message: 'Round Over!', player: roundSurvivor?.toPlayerData() });
-      setTimeout(() => {
-        this.gameState.beginWaiting();
-
-        // Sometimes players can die on the same tick.
-        let message = `Round ${this.gameState.getRoundNumber()} over!`;
-        if (roundSurvivor) {
-          message += ` {playerName} survived round ${this.gameState.getRoundNumber()}!`;
-          this.sendPlayerMessage(message, roundSurvivor.getPlayerId());
-        } else {
-          this.sendDefaultMessage(message);
-        }
-      }, 2000);
-    }
-
-    this.sendLeaderboardUpdate();
-
-    // Handle round cleanup
-    this.inputBuffer.clearAll();
-    this.gameState.cleanupPlayerObjects();
-  }
-
-  private handleRoundStart() {
-    this.gameState.beginRound();
-    this.haveEntitiesBeenSpawned = false;
-    this.isRoundEnding = false;
-
-    for (const player of this.gameState.getAllPlayers()) {
-      this.gameEventBus.emit(GameEvents.CLIENT_SPECIFIC_DATA, player.getPlayerId(), {
-        isAlive: true,
-      });
-    }
-
-    this.sendLeaderboardUpdate();
-  }
-
-  private handleGameEnd() {
-    let message = '';
-    let overlayMessage: OverlayMessage = { type: 'game_over' };
-
-    const highestScorers = this.gameState.calculateGameWinner();
-    if (highestScorers.length === 1) {
-      message = `{playerName} wins the game!`;
-      overlayMessage.player = highestScorers[0]?.toPlayerData();
-      highestScorers[0]?.addGameWin();
-
-      this.sendPlayerMessage(message, highestScorers[0]?.getPlayerId() ?? '');
-    } else {
-      message = 'Tie Game!';
-      overlayMessage.message = message;
-      this.sendDefaultMessage(message);
-    }
-
-    // Let the players see the game over message for a few seconds...
-    setTimeout(() => {
-      this.gameState.resetGame();
-    }, 2000);
-
-    this.sendOverlayMessage(overlayMessage);
   }
 
   private waitingTick(): void {
@@ -182,7 +99,7 @@ export class Game {
       this.spawnService.spawnInitialFood();
       this.spawnService.spawnAllPlayers();
       this.haveEntitiesBeenSpawned = true;
-      if (!this.isCpuGame && this.gameState.getAllPlayers().length === 1) {
+      if (this.gameState.getAllPlayers().length === 1) {
         this.sendDefaultMessage('Waiting for players to join...');
         this.sendOverlayMessage({ type: 'waiting', message: 'Waiting for players to join...' });
       }
@@ -219,7 +136,7 @@ export class Game {
         this.sendOverlayMessage({ type: 'countdown', message: String(this.countdownValue) });
       } else {
         this.clearCountdown();
-        this.handleRoundStart();
+        this.onRoundStart();
         this.sendOverlayMessage({ type: 'clear' });
       }
     }, 1000);
@@ -231,6 +148,40 @@ export class Game {
       this.countdownIntervalRef = null;
       this.countdownValue = null;
     }
+  }
+
+  /**
+   * TODO: maybe move this to an InputService class
+   */
+  protected handleRoomInput(): void {
+    const inputs = this.inputBuffer.processInputsForTick();
+
+    for (const input of inputs) {
+      const player = this.gameState.getPlayer(input.playerId);
+      if (!player || !player.isActive()) continue;
+
+      // Input validation is done in the player class.
+      player.setDirection(input.direction);
+    }
+  }
+
+  public handleSingularPlayerInput(playerId: string, direction: Direction) {
+    if (this.gameState.isActive()) {
+      this.inputBuffer.addInput(playerId, direction);
+    }
+  }
+
+  public override start(): void {
+    this.gameState.beginWaiting();
+    this.gameLoop.start();
+  }
+
+  public override stop(): void {
+    throw new Error('Method not implemented.');
+  }
+
+  public getPlayerData() {
+    return this.gameState.getPlayerData();
   }
 
   public tryToAddPlayerToRoom(playerId: string, playerName: string, playerColor: string): boolean {
@@ -264,51 +215,6 @@ export class Game {
     this.spawnService.handlePlayerRemoval();
   }
 
-  public getPlayerData() {
-    return this.gameState.getPlayerData();
-  }
-
-  public getPlayerDataById(playerId: string) {
-    return this.gameState.getPlayer(playerId)?.toPlayerData();
-  }
-
-  private movementTick() {
-    const players = this.gameState.getActivePlayers();
-
-    for (const player of players.values()) {
-      player.move();
-    }
-
-    for (const player of players.values()) {
-      if (player instanceof CpuPlayer) {
-        player.chooseNextMove(this.gameState);
-      }
-    }
-  }
-
-  public handlePlayerInput(playerId: string, direction: Direction) {
-    if (this.gameState.isActive()) {
-      this.inputBuffer.addInput(playerId, direction);
-    }
-  }
-
-  // Grab the inputs for the current tick, update the player's direction based off the buffer.
-  private processInputs() {
-    const inputs = this.inputBuffer.processInputsForTick();
-
-    for (const input of inputs) {
-      const player = this.gameState.getPlayer(input.playerId);
-      if (!player || !player.isActive()) continue;
-
-      // Input validation is done in the player class.
-      player.setDirection(input.direction);
-    }
-  }
-
-  /**
-   * Take the collisions that happened in the last tick, and update the game state accordingly.
-   * @param collisions
-   */
   private processCollisions(collisions: Collision[]) {
     let wasScoreUpdated = false;
 
@@ -337,6 +243,92 @@ export class Game {
       this.spawnService.spawnFood();
       this.sendLeaderboardUpdate();
     }
+  }
+
+  /****************************************/
+  /***********ROUND HANDLING STUFF ********/
+  /****************************************/
+  override onRoundStart() {
+    this.gameState.beginRound();
+    this.haveEntitiesBeenSpawned = false;
+    this.isRoundEnding = false;
+
+    for (const player of this.gameState.getAllPlayers()) {
+      this.gameEventBus.emit(GameEvents.CLIENT_SPECIFIC_DATA, player.getPlayerId(), {
+        isAlive: true,
+      });
+    }
+
+    this.sendLeaderboardUpdate();
+  }
+
+  // Stagger the round end by like 4 seconds so it's not so abrupt.
+  override onRoundEnd() {
+    if (this.isRoundEnding) return;
+    this.isRoundEnding = true;
+
+    const roundSurvivor = this.gameState.getActivePlayers()[0];
+    if (roundSurvivor) {
+      roundSurvivor.addRoundSurvivalBonus();
+    }
+
+    // Check if the game should end.
+    if (this.gameState.shouldGameEnd()) {
+      this.onGameEnd();
+    } else {
+      this.sendOverlayMessage({ type: 'round_over', message: 'Round Over!', player: roundSurvivor?.toPlayerData() });
+      setTimeout(() => {
+        this.gameState.beginWaiting();
+
+        // Sometimes players can die on the same tick.
+        let message = `Round ${this.gameState.getRoundNumber()} over!`;
+        if (roundSurvivor) {
+          message += ` {playerName} survived round ${this.gameState.getRoundNumber()}!`;
+          this.sendPlayerMessage(message, roundSurvivor.getPlayerId());
+        } else {
+          this.sendDefaultMessage(message);
+        }
+      }, 2000);
+    }
+
+    this.sendLeaderboardUpdate();
+
+    // Handle round cleanup
+    this.inputBuffer.clearAll();
+    this.gameState.cleanupPlayerObjects();
+  }
+
+  override onGameEnd() {
+    let message = '';
+    let overlayMessage: OverlayMessage = { type: 'game_over' };
+
+    const highestScorers = this.gameState.calculateGameWinner();
+    if (highestScorers.length === 1) {
+      message = `{playerName} wins the game!`;
+      overlayMessage.player = highestScorers[0]?.toPlayerData();
+      highestScorers[0]?.addGameWin();
+
+      this.sendPlayerMessage(message, highestScorers[0]?.getPlayerId() ?? '');
+    } else {
+      message = 'Tie Game!';
+      overlayMessage.message = message;
+      this.sendDefaultMessage(message);
+    }
+
+    // Let the players see the game over message for a few seconds...
+    setTimeout(() => {
+      this.gameState.resetGame();
+    }, 2000);
+
+    this.sendOverlayMessage(overlayMessage);
+  }
+
+  /****************************************/
+  /***********MESSAGE SENDING STUFF********/
+  /****************************************/
+
+  public getPlayerDataById(playerId: string) {
+    return this.gameState.getPlayer(playerId)?.toPlayerData();
   }
 
   private sendDefaultMessage(message: string, type: GameMessage['type'] = 'default') {

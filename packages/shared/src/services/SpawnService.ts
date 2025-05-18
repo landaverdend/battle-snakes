@@ -1,13 +1,8 @@
-import {
-  DEFAULT_FOOD_COUNT,
-  DEFAULT_GRID_SIZE,
-  getRandomColor,
-  getRandomNumber,
-  MAX_ROOM_SIZE,
-  Point,
-} from '@battle-snakes/shared';
-import { GameState } from '../core/GameState';
+import { DEFAULT_FOOD_COUNT, DEFAULT_GRID_SIZE, MAX_ROOM_SIZE } from '../constants/gameConstants';
+import { Point } from '../constants/gridTypes';
+import { GameState } from '../game/GameState';
 import { Player } from '../player/Player';
+import { getRandomColor, getRandomNumber } from '../utils/random';
 
 // Class that handles the spawning of entities.
 export class SpawnService {

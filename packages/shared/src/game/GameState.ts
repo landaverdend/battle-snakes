@@ -1,17 +1,9 @@
-import {
-  CellType,
-  DEFAULT_GRID_SIZE,
-  Entity,
-  getRandomColor,
-  MAX_ROOM_SIZE,
-  Point,
-  ROUNDS_PER_GAME,
-  RoundState,
-  SharedGameState,
-} from '@battle-snakes/shared';
+import { DEFAULT_GRID_SIZE, MAX_ROOM_SIZE, ROUNDS_PER_GAME } from '../constants/gameConstants';
+import { RoundState, SharedGameState } from '../constants/gameTypes';
+import { Entity, Point, CellType } from '../constants/gridTypes';
 import { Player } from '../player/Player';
-import { CpuPlayer } from '../player/CpuPlayer';
 import { CollisionService } from '../services/CollisionService';
+import { getRandomColor } from '../utils/random';
 
 export class GameState {
   private readonly gridSize: number;
@@ -126,8 +118,10 @@ export class GameState {
   public addPlayer(playerId: string, playerName: string, playerColor: string, isCpu = false): Player {
     // Set the player to alive if the round is waiting or in intermission.
     const isAlive = this.roundState === RoundState.WAITING;
+
+    // TODO: add separate method for cpu players??
     const thePlayer = isCpu
-      ? new CpuPlayer(playerId, {
+      ? new Player(playerId, {
           color: getRandomColor(),
           isAlive,
           name: playerId,

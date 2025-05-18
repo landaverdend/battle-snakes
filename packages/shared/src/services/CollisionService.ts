@@ -1,5 +1,6 @@
-import { Collision, GameMessage, Point } from '@battle-snakes/shared';
-import { GameState } from '../core/GameState';
+import { Collision, GameMessage } from '../constants/gameTypes';
+import { Point } from '../constants/gridTypes';
+import { GameState } from '../game/GameState';
 
 export class CollisionService {
   public static detectCollisions(gameState: GameState): Collision[] {
@@ -106,12 +107,12 @@ export class CollisionService {
           if (collision.isHeadOnCollision) {
             // Create a unique key for this head-on collision
             const collisionKey = [collision.playerId, collision.otherPlayerId].sort().join('-');
-            
+
             // Skip if we've already processed this head-on collision
             if (headOnCollisions.has(collisionKey)) {
               continue;
             }
-            
+
             str = `{playerName} and {otherPlayerName} collided head on.`;
             headOnCollisions.add(collisionKey);
           } else {

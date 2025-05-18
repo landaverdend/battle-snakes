@@ -1,3 +1,5 @@
+
+
 export class GameLoop {
   private interval: NodeJS.Timeout | null = null;
 

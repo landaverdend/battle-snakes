@@ -1,9 +1,9 @@
 import { DEFAULT_GRID_SIZE } from '@battle-snakes/shared';
-import { Game } from '../core/Game';
 import { GameEventBus } from '../events/GameEventBus';
+import { NetworkGame } from '../core/NetworkGame';
 
 export class RoomService {
-  private rooms: Map<string, Game>;
+  private rooms: Map<string, NetworkGame>;
 
   constructor(private readonly gameEventBus: GameEventBus) {
     this.rooms = new Map();
@@ -23,24 +23,13 @@ export class RoomService {
     console.warn('No empty rooms, making a new one...');
     // If there are no rooms, then create a new one and return it's id..
     const roomId = crypto.randomUUID();
-    const theRoom = new Game(roomId, DEFAULT_GRID_SIZE, this.gameEventBus);
+    // const theRoom = new Game(roomId, DEFAULT_GRID_SIZE, this.gameEventBus);
+    const theRoom = new NetworkGame({ roomId, gridSize: DEFAULT_GRID_SIZE, gameEventBus: this.gameEventBus });
 
-    theRoom.startRoom(); // start up the room...
+    theRoom.start(); // start up the room...
     theRoom.tryToAddPlayerToRoom(playerId, playerName, playerColor); // add player before setting adding room to the map..
 
     this.rooms.set(roomId, theRoom);
-    return roomId;
-  }
-
-  public assignPlayerToCpuGame(playerId: string, playerName: string, playerColor: string): string {
-    const roomId = crypto.randomUUID();
-
-    const theRoom = new Game(roomId, DEFAULT_GRID_SIZE, this.gameEventBus, true);
-    theRoom.startRoom();
-    theRoom.tryToAddPlayerToRoom(playerId, playerName, playerColor);
-
-    this.rooms.set(roomId, theRoom);
-
     return roomId;
   }
 
@@ -51,14 +40,14 @@ export class RoomService {
     }
     theRoom.removePlayerFromRoom(playerId);
 
-    if (theRoom.getPlayerData().length === 0 || theRoom.isCpuGame) {
+    if (theRoom.getPlayerData().length === 0) {
       console.warn(`Room ${roomId} is empty, deleting...`);
       theRoom.stop();
       this.rooms.delete(roomId);
     }
   }
 
-  public getGameByRoomId(roomId: string): Game | undefined {
+  public getGameByRoomId(roomId: string): NetworkGame | undefined {
     return this.rooms.get(roomId);
   }
 
