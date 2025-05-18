@@ -5,6 +5,7 @@ import { CanvasOverlay } from '../canvasOverlay/CanvasOverlay';
 import Draggable from 'react-draggable';
 import { NetworkGameRunner } from '@/game/network/NetworkGameRunner';
 import { GameConfigOptions, GameRunner } from '@/game/GameRunner';
+import { LocalGameRunner } from '@/game/local/LocalGameRunner';
 
 interface CanvasProps {
   gameConfig: GameConfigOptions;
@@ -22,8 +23,12 @@ const Canvas = ({ gameConfig }: CanvasProps) => {
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
 
-    gameRunnerRef.current = new NetworkGameRunner(ctx, gameConfig);
-    gameRunnerRef.current.start();
+    // Initialize which type of game runner to use.
+    gameRunnerRef.current = gameConfig.isLocalGame
+      ? new LocalGameRunner(ctx, gameConfig)
+      : new NetworkGameRunner(ctx, gameConfig);
+    
+      gameRunnerRef.current.start();
 
     const resizeCanvas = () => {
       const { width, height } = canvas.getBoundingClientRect();

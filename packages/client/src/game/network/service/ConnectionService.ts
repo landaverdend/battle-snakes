@@ -1,15 +1,15 @@
 import { GameEvents, SharedGameState, PlayerData, GameMessage, OverlayMessage, ClientSpecificData } from '@battle-snakes/shared';
 import { io, Socket } from 'socket.io-client';
-import { ClientGameState } from '../state/ClientGameState';
-import { LeaderboardObservable } from '../state/LeaderboardObservable';
-import { MessageFeedObservable } from '../state/MessageFeedObservable';
-import { ClientPlayerObservable } from '../state/ClientPlayerObservable';
-import { OverlayMessageEventBus } from './OverlayMessageEventBus';
+import { ClientGameState } from '../../../state/ClientGameState';
+import { LeaderboardObservable } from '../../../state/LeaderboardObservable';
+import { MessageFeedObservable } from '../../../state/MessageFeedObservable';
+import { ClientPlayerObservable } from '../../../state/ClientPlayerObservable';
+import { OverlayMessageEventBus } from '../../../service/OverlayMessageEventBus';
 import { GameConfigOptions } from '@/game/GameRunner';
 
 const SOCKET_URL = window.location.hostname === 'localhost' ? 'http://localhost:3030' : window.location.origin;
 
-export class NetworkService {
+export class ConnectionService {
   private socket: Socket;
 
   constructor({ playerName, playerColor }: GameConfigOptions) {

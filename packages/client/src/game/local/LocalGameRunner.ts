@@ -1,21 +1,21 @@
+import { DEFAULT_GRID_SIZE } from '@battle-snakes/shared';
 import { GameConfigOptions, GameRunner } from '../GameRunner';
+import { LocalGame } from './LocalGame';
 
 export class LocalGameRunner extends GameRunner {
-  
+  private game: LocalGame;
+
   constructor(ctx: CanvasRenderingContext2D, gameConfig: GameConfigOptions) {
     super(ctx);
+
+    this.game = new LocalGame(DEFAULT_GRID_SIZE);
   }
 
-  override start(): void {
-    throw new Error('Method not implemented.');
+  start(): void {
+    this.game.start();
   }
-  override stop(): void {
-    throw new Error('Method not implemented.');
-  }
-  override resize(width: number, height: number): void {
-    throw new Error('Method not implemented.');
-  }
-  override gameLoop(): void {
-    throw new Error('Method not implemented.');
+
+  stop(): void {
+    this.game.stop();
   }
 }

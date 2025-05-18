@@ -3,7 +3,7 @@ import { MessageFeedObservable } from '@/state/MessageFeedObservable';
 import './message-feed.css';
 import { GameMessage, PlayerMessage } from '@battle-snakes/shared';
 import { Button, Frame, TextInput, Window, WindowContent, WindowHeader } from 'react95';
-import { ChatService } from '@/service/ChatService';
+import { ChatService } from '@/game/network/service/ChatService';
 import Draggable from 'react-draggable';
 
 type MCProps = {

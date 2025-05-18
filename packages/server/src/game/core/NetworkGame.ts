@@ -1,18 +1,6 @@
-import {
-  Collision,
-  COUNTDOWN_TIME,
-  DEFAULT_FOOD_COUNT,
-  Direction,
-  Game,
-  GameEvents,
-  GameLoop,
-  GameState,
-  RoundState,
-  SpawnService,
-} from '@battle-snakes/shared';
+import { Direction, Game, GameState, RoundState, SpawnService } from '@battle-snakes/shared';
 import { GameEventBus } from '../events/GameEventBus';
 import { InputBuffer } from '../input/InputBuffer';
-import { CollisionService } from '@battle-snakes/shared/src/services/CollisionService';
 import { LobbyService } from '../services/LobbyService';
 import { RoundService } from '../services/RoundService';
 import { MessageDispatchService } from '../services/MessageDispatchService';
@@ -33,7 +21,6 @@ export interface NetworkGameContext {
 }
 
 export class NetworkGame extends Game {
-  private roomId: string;
   private gameEventBus: GameEventBus;
   private inputBuffer: InputBuffer;
 
@@ -47,7 +34,6 @@ export class NetworkGame extends Game {
   constructor({ roomId, gridSize, gameEventBus }: NetworkGameConfig) {
     super(gridSize);
 
-    this.roomId = roomId;
     this.gameEventBus = gameEventBus;
     this.inputBuffer = new InputBuffer(gameEventBus);
     this.messageDispatchService = new MessageDispatchService(roomId, this.gameState, this.gameEventBus);

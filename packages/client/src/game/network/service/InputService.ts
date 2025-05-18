@@ -1,7 +1,7 @@
 import { Direction, GameEvents, getCurrentTimeISOString } from '@battle-snakes/shared';
 import { Socket } from 'socket.io-client';
-import { ClientGameState } from '../state/ClientGameState';
-import { ClientPlayerObservable } from '../state/ClientPlayerObservable';
+import { ClientGameState } from '../../../state/ClientGameState';
+import { ClientPlayerObservable } from '../../../state/ClientPlayerObservable';
 
 export class InputService {
   private socket: Socket;
