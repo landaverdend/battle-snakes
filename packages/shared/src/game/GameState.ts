@@ -1,6 +1,7 @@
 import { DEFAULT_GRID_SIZE, MAX_ROOM_SIZE, ROUNDS_PER_GAME } from '../constants/gameConstants';
 import { RoundState, SharedGameState } from '../constants/gameTypes';
 import { Entity, Point, CellType } from '../constants/gridTypes';
+import { CpuPlayer } from '../player/cpu/CpuPlayer';
 import { Player } from '../player/Player';
 import { CollisionService } from '../services/CollisionService';
 import { getRandomColor } from '../utils/random';
@@ -115,22 +116,29 @@ export class GameState {
   }
 
   // State Mutation Methods
-  public addPlayer(playerId: string, playerName: string, playerColor: string, isCpu = false): Player {
+  public addPlayer(playerId: string, playerName: string, playerColor: string): Player {
     // Set the player to alive if the round is waiting or in intermission.
     const isAlive = this.roundState === RoundState.WAITING;
 
     // TODO: add separate method for cpu players??
-    const thePlayer = isCpu
-      ? new Player(playerId, {
-          color: getRandomColor(),
-          isAlive,
-          name: playerId,
-        })
-      : new Player(playerId, {
-          color: playerColor || getRandomColor(),
-          isAlive,
-          name: playerName,
-        });
+    const thePlayer = new Player(playerId, {
+      color: playerColor || getRandomColor(),
+      isAlive,
+      name: playerName,
+    });
+
+    this.players.set(playerId, thePlayer);
+
+    return thePlayer;
+  }
+
+  public addCpuPlayer(playerId: string, playerName: string, playerColor?: string) {
+
+    const thePlayer = new CpuPlayer(playerId, {
+      color: playerColor || getRandomColor(),
+      isAlive: false,
+      name: playerName,
+    });
 
     this.players.set(playerId, thePlayer);
 

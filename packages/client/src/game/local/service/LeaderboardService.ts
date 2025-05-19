@@ -6,8 +6,5 @@ export class LeaderboardService {
 
   constructor({ gameState, gameConfigOptions }: LocalGameContext) {
     this.gameStateRef = gameState;
-
-    const { playerName, playerColor } = gameConfigOptions;
-    this.gameStateRef.addPlayer(playerName, playerName, playerColor);
   }
 }

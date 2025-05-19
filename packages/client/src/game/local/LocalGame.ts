@@ -1,4 +1,4 @@
-import { Game, GameState, RoundState, SpawnService } from '@battle-snakes/shared';
+import { Game, GameState, getRandomColor, RoundState, SpawnService } from '@battle-snakes/shared';
 import { LeaderboardService } from './service/LeaderboardService';
 import { GameConfigOptions } from '../GameRunner';
 import { ClientGameState } from '@/state/ClientGameState';
@@ -27,9 +27,10 @@ export class LocalGame extends Game {
     };
 
     this.leaderboardService = new LeaderboardService(context);
-
     this.activeGameStrategy = new ActiveGameStrategy(context);
     this.waitingGameStrategy = new WaitingGameStrategy(context);
+
+    this.fillPlayers(gameConfigOptions.playerName, gameConfigOptions.playerColor);
   }
 
   start() {
@@ -51,4 +52,15 @@ export class LocalGame extends Game {
   }
 
   stop() {}
+
+  private fillPlayers(playerName: string, playerColor: string) {
+    this.gameState.addPlayer(playerName, playerName, playerColor);
+
+    for (let i = 0; i < 3; i++) {
+      const name = `CPU ${i + 1}`;
+      const color = getRandomColor();
+
+      this.gameState.addCpuPlayer(name, name, color);
+    }
+  }
 }

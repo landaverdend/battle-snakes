@@ -1,4 +1,12 @@
-import { Collision, CollisionService, DEFAULT_FOOD_COUNT, GameLoop, GameState, SpawnService } from '@battle-snakes/shared';
+import {
+  Collision,
+  CollisionService,
+  CpuPlayer,
+  DEFAULT_FOOD_COUNT,
+  GameLoop,
+  GameState,
+  SpawnService,
+} from '@battle-snakes/shared';
 import { LocalGameContext } from '../LocalGame';
 import { InputBuffer } from './InputBuffer';
 
@@ -60,6 +68,10 @@ export class ActiveGameStrategy {
 
     for (const player of players.values()) {
       player.move();
+
+      if (player instanceof CpuPlayer) {
+        player.chooseNextMove(this.gameState);
+      }
     }
   }
 

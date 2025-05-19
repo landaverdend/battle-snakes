@@ -10,3 +10,7 @@ export * from './game/GameLoop';
 export * from './services/CollisionService';
 export * from './services/SpawnService';
 export * from './utils/CountdownTimer';
+export * from './player/Player';
+export * from './player/cpu/CpuPlayer';
+export * from './player/cpu/pathfinding/AStarAlgorithm';
+export * from './player/cpu/pathfinding/PathFindingStrategy';

@@ -2,7 +2,7 @@ import { DEFAULT_FOOD_COUNT, DEFAULT_GRID_SIZE, MAX_ROOM_SIZE } from '../constan
 import { Point } from '../constants/gridTypes';
 import { GameState } from '../game/GameState';
 import { Player } from '../player/Player';
-import { getRandomColor, getRandomNumber } from '../utils/random';
+import { getRandomNumber } from '../utils/random';
 
 // Class that handles the spawning of entities.
 export class SpawnService {
@@ -128,11 +128,5 @@ export class SpawnService {
 
   public handlePlayerRemoval() {
     this.spawnPointIndex = this.gameState.getAllPlayers().length;
-  }
-
-  addCpuPlayers(num: number) {
-    for (let i = 0; i < num; i++) {
-      this.gameState.addPlayer(`CPU ${i + 1}`, `CPU ${i + 1}`, getRandomColor(), true);
-    }
   }
 }
