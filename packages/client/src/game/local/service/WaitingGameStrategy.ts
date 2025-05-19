@@ -1,8 +1,11 @@
-import { COUNTDOWN_TIME, CountdownTimer, GameState, SpawnService } from '@battle-snakes/shared';
+import { COUNTDOWN_TIME, CountdownTimer, GameState, Point, SpawnService } from '@battle-snakes/shared';
 import { LocalGameContext } from '../LocalGame';
-import { OverlayMessageEventBus } from '@/service/OverlayMessageEventBus';
+import { publishOverlayMessage } from '@/service/OverlayMessageEventBus';
+import { publishClientSpecificData } from '@/state/ClientPlayerObservable';
 
 export class WaitingGameStrategy {
+  private localPlayerId: string;
+
   private gameState: GameState;
   private spawnService: SpawnService;
 
@@ -10,30 +13,34 @@ export class WaitingGameStrategy {
 
   private haveEntitiesBeenSpawned = false;
 
-  constructor({ gameState, spawnService }: LocalGameContext) {
+  constructor({ gameState, spawnService, gameConfigOptions }: LocalGameContext) {
     this.gameState = gameState;
     this.spawnService = spawnService;
+    this.localPlayerId = gameConfigOptions.playerName;
 
     this.countdownTimer = new CountdownTimer(
       COUNTDOWN_TIME,
       // publish countdown message on tick.
       (val) => {
-        OverlayMessageEventBus.getInstance().publish({ type: 'countdown', message: String(val) });
+        publishOverlayMessage({ type: 'countdown', message: String(val) });
       },
       // when the countdown is done, begin the round
       () => {
         this.gameState.beginRound();
-        OverlayMessageEventBus.getInstance().publish({ type: 'clear' });
+        publishOverlayMessage({ type: 'clear' });
+        this.haveEntitiesBeenSpawned = false;
       }
     );
   }
 
   tick(deltaTime: number) {
-    if (!this.haveEntitiesBeenSpawned) {
+    if (!this.haveEntitiesBeenSpawned && !this.countdownTimer.isRunning()) {
       this.spawnService.spawnInitialFood();
       this.spawnService.spawnAllPlayers();
       this.haveEntitiesBeenSpawned = true;
-      OverlayMessageEventBus.getInstance().publish({ type: 'waiting', message: '...' });
+
+      publishOverlayMessage({ type: 'waiting', message: '...' });
+      publishClientSpecificData({ isAlive: false, spawnPoint: this.gameState.getPlayer(this.localPlayerId)?.getHead() as Point });
     }
 
     if (!this.countdownTimer.isRunning()) {

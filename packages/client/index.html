@@ -5,8 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <title>Battle Snakes</title>
-
+    <script defer src="https://umami.landaverde.in/script.js" data-website-id="335ba2d3-a250-41f2-891e-70d6aec137d0"></script>
     <script type="module">
+      console.log('vite enabled analytics: ', import.meta.env.VITE_ENABLE_ANALYTICS);
       if (import.meta.env.VITE_ENABLE_ANALYTICS === 'true') {
         const script = document.createElement('script');
         script.defer = true;

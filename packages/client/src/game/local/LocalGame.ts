@@ -56,11 +56,11 @@ export class LocalGame extends Game {
   private fillPlayers(playerName: string, playerColor: string) {
     this.gameState.addPlayer(playerName, playerName, playerColor);
 
-    for (let i = 0; i < 3; i++) {
+    for (let i = 0; i < 1; i++) {
       const name = `CPU ${i + 1}`;
       const color = getRandomColor();
 
-      this.gameState.addCpuPlayer(name, name, color);
+      this.gameState.addCpuPlayer(crypto.randomUUID(), name, color);
     }
   }
 }

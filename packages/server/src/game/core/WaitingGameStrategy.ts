@@ -24,7 +24,6 @@ export class WaitingGameStrategy {
         this.messageDispatchService.sendOverlayMessage({ type: 'countdown', message: String(val) });
       },
       () => {
-        console.log('countdown complete...');
         this.haveEntitiesBeenSpawned = false;
         this.roundService.onRoundStart();
         this.messageDispatchService.sendOverlayMessage({ type: 'clear' });

@@ -45,6 +45,7 @@ export class RoundService {
         message: 'Round Over!',
         player: roundSurvivor?.toPlayerData(),
       });
+
       setTimeout(() => {
         this.gameState.beginWaiting();
 

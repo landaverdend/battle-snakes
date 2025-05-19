@@ -133,7 +133,6 @@ export class GameState {
   }
 
   public addCpuPlayer(playerId: string, playerName: string, playerColor?: string) {
-
     const thePlayer = new CpuPlayer(playerId, {
       color: playerColor || getRandomColor(),
       isAlive: false,
@@ -229,7 +228,6 @@ export class GameState {
   // - reset intermission end time.
   // - reset players to active and then set their spawn positions.
   public beginRound() {
-    console.log(`Round ${this.roundNumber} beginning for room`);
     this.roundState = RoundState.ACTIVE;
     this.roundIntermissionEndTime = null;
   }

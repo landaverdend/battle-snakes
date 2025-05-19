@@ -1,5 +1,8 @@
 import { OverlayMessage } from '@battle-snakes/shared';
 
+export function publishOverlayMessage(overlayMessage: OverlayMessage) {
+  OverlayMessageEventBus.getInstance().publish(overlayMessage);
+}
 export class OverlayMessageEventBus {
   private static instance: OverlayMessageEventBus;
   private subscribers: ((data: OverlayMessage) => void)[] = [];

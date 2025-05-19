@@ -1,6 +1,7 @@
 import {
   Collision,
   CollisionService,
+  CountdownTimer,
   CpuPlayer,
   DEFAULT_FOOD_COUNT,
   GameLoop,
@@ -9,12 +10,15 @@ import {
 } from '@battle-snakes/shared';
 import { LocalGameContext } from '../LocalGame';
 import { InputBuffer } from './InputBuffer';
+import { publishMessage } from '@/state/MessageFeedObservable';
+import { publishOverlayMessage } from '@/service/OverlayMessageEventBus';
 
 export class ActiveGameStrategy {
   private localPlayerId;
 
   private gameState: GameState;
   private inputBuffer: InputBuffer;
+  private countdownTimer: CountdownTimer;
 
   private spawnService: SpawnService;
 
@@ -27,9 +31,17 @@ export class ActiveGameStrategy {
     this.spawnService = spawnService;
 
     this.inputBuffer = new InputBuffer(gameState);
+    this.countdownTimer = new CountdownTimer(
+      2,
+      () => {},
+      () => {
+        this.gameState.beginWaiting();
+      }
+    );
   }
 
   tick(deltaTime: number) {
+    console.log('active tick');
     // requestAnimationFrame() is fast af. we only want to update game state after a certain amount of time has accumulated...
     // The speed of each snake is tied to the update interval.
     this.movementAccumulator += deltaTime;
@@ -58,20 +70,20 @@ export class ActiveGameStrategy {
       this.spawnService.spawnFood();
     }
 
-    // if (this.gameState.shouldRoundEnd()) {
-    //   this.gameState.beginWaiting();
-    // }
+    if (this.gameState.shouldRoundEnd() && !this.countdownTimer.isRunning()) {
+      publishOverlayMessage({ type: 'round_over', message: 'Round Over!' });
+      this.countdownTimer.start();
+    }
   }
 
   private movementTick() {
     const players = this.gameState.getActivePlayers();
 
     for (const player of players.values()) {
-      player.move();
-
       if (player instanceof CpuPlayer) {
         player.chooseNextMove(this.gameState);
       }
+      player.move();
     }
   }
 
