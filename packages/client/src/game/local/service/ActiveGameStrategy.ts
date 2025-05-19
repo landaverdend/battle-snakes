@@ -112,11 +112,8 @@ export class ActiveGameStrategy {
   private handleInput() {
     const input = this.inputBuffer.getNextInput();
 
-    for (const player of this.gameState.getActivePlayers()) {
-      if (input && player.getPlayerId() === this.localPlayerId) {
-        player.setDirection(input);
-      }
-      // CPU players.
+    if (input) {
+      this.gameState.getPlayer(this.localPlayerId)?.setDirection(input);
     }
   }
 }

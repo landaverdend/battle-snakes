@@ -47,6 +47,8 @@ export class WaitingGameStrategy {
       this.countdownTimer.start();
     }
 
+    
+
     this.gameState.updateGrid();
   }
 }
