@@ -43,11 +43,15 @@ function PlayerMessageComponent({ message }: MCProps) {
   );
 }
 
-export function MessageFeed() {
+type MessageFeedProps = {
+  isLocalGame: boolean;
+};
+export function MessageFeed({ isLocalGame }: MessageFeedProps) {
   const [messages, setMessages] = useState<GameMessage[]>([]);
   const scrollRef = useRef<HTMLDivElement>(null);
   const [playerChat, setPlayerChat] = useState('');
 
+  console.log('isLocalGame', isLocalGame);
   const getMessageComponent = (message: GameMessage) => {
     let toRender = <></>;
     switch (message.type) {
@@ -103,23 +107,25 @@ export function MessageFeed() {
             <div className="message-feed-container">{messages.map((message) => getMessageComponent(message))}</div>
           </Frame>
 
-          <div style={{ display: 'flex' }}>
-            <TextInput
-              value={playerChat}
-              onChange={(e) => {
-                setPlayerChat(e.target.value);
-              }}
-              onKeyDown={(e) => {
-                if (e.key === 'Enter') {
-                  sendMessage();
-                }
-              }}
-              fullWidth
-            />
-            <Button onClick={() => sendMessage()} style={{ marginLeft: 4 }}>
-              Send
-            </Button>
-          </div>
+          {!isLocalGame && (
+            <div style={{ display: 'flex' }}>
+              <TextInput
+                value={playerChat}
+                onChange={(e) => {
+                  setPlayerChat(e.target.value);
+                }}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') {
+                    sendMessage();
+                  }
+                }}
+                fullWidth
+              />
+              <Button onClick={() => sendMessage()} style={{ marginLeft: 4 }}>
+                Send
+              </Button>
+            </div>
+          )}
         </WindowContent>
       </Window>
     </Draggable>

@@ -17,7 +17,7 @@ export function MainView({ gameConfig }: MVProps) {
       <div className="dock-container">
         <PlayerList />
         <Canvas gameConfig={gameConfig} />
-        <MessageFeed />
+        <MessageFeed isLocalGame={gameConfig.isLocalGame} />
       </div>
     </div>
   );

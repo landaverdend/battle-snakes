@@ -1,4 +1,4 @@
-import { Game, GameState, getRandomColor, RoundState, SpawnService } from '@battle-snakes/shared';
+import { Game, GameState, getRandomColor, MAX_ROOM_SIZE, RoundState, SpawnService } from '@battle-snakes/shared';
 import { LeaderboardService } from './service/LeaderboardService';
 import { GameConfigOptions } from '../GameRunner';
 import { ClientGameState } from '@/state/ClientGameState';
@@ -56,7 +56,7 @@ export class LocalGame extends Game {
   private fillPlayers(playerName: string, playerColor: string) {
     this.gameState.addPlayer(playerName, playerName, playerColor);
 
-    for (let i = 0; i < 1; i++) {
+    for (let i = 0; i < MAX_ROOM_SIZE - 1; i++) {
       const name = `CPU ${i + 1}`;
       const color = getRandomColor();
 
