@@ -2,7 +2,7 @@ import { GameEvents, SharedGameState, PlayerData, GameMessage, OverlayMessage, C
 import { io, Socket } from 'socket.io-client';
 import { ClientGameState } from '../../../state/ClientGameState';
 import { LeaderboardObservable } from '../../../state/LeaderboardObservable';
-import { MessageFeedObservable } from '../../../state/MessageFeedObservable';
+import { MessageFeedObservable, publishMessage } from '../../../state/MessageFeedObservable';
 import { ClientPlayerObservable } from '../../../state/ClientPlayerObservable';
 import { OverlayMessageEventBus } from '../../../service/OverlayMessageEventBus';
 import { GameConfigOptions } from '@/game/GameRunner';
@@ -31,7 +31,7 @@ export class ConnectionService {
     });
 
     this.socket.on(GameEvents.MESSAGE_EVENT, (messages: GameMessage[]) => {
-      MessageFeedObservable.getInstance().publishMessages(messages);
+      publishMessage(messages);
     });
 
     this.socket.on(GameEvents.CLIENT_SPECIFIC_DATA, (playerUpdate: ClientSpecificData) => {

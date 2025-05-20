@@ -27,7 +27,7 @@ export class LocalGame extends Game {
     };
 
     this.leaderboardService = new LeaderboardService(context);
-    this.activeGameStrategy = new ActiveGameStrategy(context);
+    this.activeGameStrategy = new ActiveGameStrategy(context, this.leaderboardService);
     this.waitingGameStrategy = new WaitingGameStrategy(context);
 
     this.fillPlayers(gameConfigOptions.playerName, gameConfigOptions.playerColor);
@@ -48,7 +48,7 @@ export class LocalGame extends Game {
     }
     // At the end of each tick, send the latest game state to each component that expects something.
     ClientGameState.getInstance().publish(this.gameState.toSharedGameState());
-    LeaderboardObservable.getInstance().publish(this.gameState.getPlayerData());
+    LeaderboardObservable.getInstance().publish(this.gameState.getPlayerData().sort((a, b) => b.score - a.score));
   }
 
   stop() {}

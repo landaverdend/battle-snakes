@@ -10,26 +10,29 @@ import {
 } from '@battle-snakes/shared';
 import { LocalGameContext } from '../LocalGame';
 import { InputBuffer } from './InputBuffer';
-import { publishMessage } from '@/state/MessageFeedObservable';
 import { publishOverlayMessage } from '@/service/OverlayMessageEventBus';
+import { LeaderboardService } from './LeaderboardService';
 
 export class ActiveGameStrategy {
   private localPlayerId;
 
   private gameState: GameState;
+
   private inputBuffer: InputBuffer;
   private roundIntermissionTimer: CountdownTimer;
   private gameOverTimer: CountdownTimer;
 
   private spawnService: SpawnService;
+  private leaderboardService: LeaderboardService;
 
   private movementAccumulator = 0;
 
-  constructor({ gameState, spawnService, gameConfigOptions }: LocalGameContext) {
+  constructor({ gameState, spawnService, gameConfigOptions }: LocalGameContext, leaderboardService: LeaderboardService) {
     this.localPlayerId = gameConfigOptions.playerName;
 
     this.gameState = gameState;
     this.spawnService = spawnService;
+    this.leaderboardService = leaderboardService;
 
     this.inputBuffer = new InputBuffer(gameState);
     this.roundIntermissionTimer = new CountdownTimer(
@@ -50,7 +53,6 @@ export class ActiveGameStrategy {
   }
 
   tick(deltaTime: number) {
-    console.log('active tick');
     // requestAnimationFrame() is fast af. we only want to update game state after a certain amount of time has accumulated...
     // The speed of each snake is tied to the update interval.
     this.movementAccumulator += deltaTime;
@@ -80,12 +82,17 @@ export class ActiveGameStrategy {
     }
 
     if (this.gameState.shouldGameEnd() && !this.gameOverTimer.isRunning()) {
-      console.log('here');
+
       publishOverlayMessage({ type: 'game_over' });
+      this.leaderboardService.broadcastGameOverMessage();
       this.gameOverTimer.start();
+
     } else if (!this.gameOverTimer.isRunning() && this.gameState.shouldRoundEnd() && !this.roundIntermissionTimer.isRunning()) {
+   
       publishOverlayMessage({ type: 'round_over', message: 'Round Over!' });
+      this.leaderboardService.broadcastRoundOverMessage();
       this.roundIntermissionTimer.start();
+
     }
   }
 
