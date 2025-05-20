@@ -5,7 +5,7 @@ export function publishMessage(message: GameMessage | GameMessage[]) {
   if (Array.isArray(message)) {
     MessageFeedObservable.getInstance().publishMessages(message);
   } else {
-    MessageFeedObservable.getInstance().publish([message]);
+    MessageFeedObservable.getInstance().publishMessages([message]);
   }
 }
 export class MessageFeedObservable extends ObservableStateManager<GameMessage[]> {
