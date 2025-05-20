@@ -18,7 +18,8 @@ export class ActiveGameStrategy {
 
   private gameState: GameState;
   private inputBuffer: InputBuffer;
-  private countdownTimer: CountdownTimer;
+  private roundIntermissionTimer: CountdownTimer;
+  private gameOverTimer: CountdownTimer;
 
   private spawnService: SpawnService;
 
@@ -31,11 +32,19 @@ export class ActiveGameStrategy {
     this.spawnService = spawnService;
 
     this.inputBuffer = new InputBuffer(gameState);
-    this.countdownTimer = new CountdownTimer(
+    this.roundIntermissionTimer = new CountdownTimer(
       2,
       () => {},
       () => {
         this.gameState.beginWaiting();
+      }
+    );
+
+    this.gameOverTimer = new CountdownTimer(
+      4,
+      () => {},
+      () => {
+        this.gameState.resetGame();
       }
     );
   }
@@ -70,9 +79,13 @@ export class ActiveGameStrategy {
       this.spawnService.spawnFood();
     }
 
-    if (this.gameState.shouldRoundEnd() && !this.countdownTimer.isRunning()) {
+    if (this.gameState.shouldGameEnd() && !this.gameOverTimer.isRunning()) {
+      console.log('here');
+      publishOverlayMessage({ type: 'game_over' });
+      this.gameOverTimer.start();
+    } else if (!this.gameOverTimer.isRunning() && this.gameState.shouldRoundEnd() && !this.roundIntermissionTimer.isRunning()) {
       publishOverlayMessage({ type: 'round_over', message: 'Round Over!' });
-      this.countdownTimer.start();
+      this.roundIntermissionTimer.start();
     }
   }
 

@@ -6,7 +6,7 @@ export const DEFAULT_FOOD_COUNT = 4; // There should always be at least one food
 export const DEFAULT_GROWTH_RATE = 3;
 
 export const ROUND_WIN_SCORE = 50;
-export const ROUNDS_PER_GAME = 5;
+export const ROUNDS_PER_GAME = 3;
 
 export const MAX_ROOM_SIZE = 10;
 export const MAX_PLAYER_INPUT_BUFFER_SIZE = 3; // max of 3 inputs per player per.

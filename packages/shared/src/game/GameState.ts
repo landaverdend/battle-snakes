@@ -112,7 +112,7 @@ export class GameState {
   }
 
   public shouldGameEnd(): boolean {
-    return this.roundNumber >= ROUNDS_PER_GAME;
+    return this.roundNumber >= ROUNDS_PER_GAME && this.shouldRoundEnd();
   }
 
   // State Mutation Methods
