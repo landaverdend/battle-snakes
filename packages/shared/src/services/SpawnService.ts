@@ -80,7 +80,7 @@ export class SpawnService {
   }
 
   public spawnInitialFood() {
-    let spawnPositionYDelta = Math.floor((DEFAULT_GRID_SIZE / DEFAULT_FOOD_COUNT) * 0.9);
+    let spawnPositionYDelta = Math.floor((DEFAULT_GRID_SIZE / DEFAULT_FOOD_COUNT) * 1.1);
     let x = Math.floor(DEFAULT_GRID_SIZE / 2);
     for (let i = 0; i < DEFAULT_FOOD_COUNT; i++) {
       const y = Math.floor(i * spawnPositionYDelta) + spawnPositionYDelta;

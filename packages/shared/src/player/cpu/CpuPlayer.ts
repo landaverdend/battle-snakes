@@ -16,8 +16,6 @@ export class CpuPlayer extends Player {
   }
 
   public chooseNextMove(gameState: GameState) {
-    if (!this.gridState) return;
-
     const nextMove = this.pathFinder.getNextMove(gameState, this.getHead());
     this.setDirection(nextMove);
   }

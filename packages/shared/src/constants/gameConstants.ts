@@ -2,7 +2,7 @@ export const COUNTDOWN_TIME = 5;
 export const ROOM_CLEANUP_INTERVAL_MS = 1000 * 60 * 5; // 2 minute.
 
 export const DEFAULT_GRID_SIZE = 40;
-export const DEFAULT_FOOD_COUNT = 4; // There should always be at least one food on the board. Maybe make this configurable?
+export const DEFAULT_FOOD_COUNT = 5; // There should always be at least one food on the board. Maybe make this configurable?
 export const DEFAULT_GROWTH_RATE = 3;
 
 export const ROUND_WIN_SCORE = 50;

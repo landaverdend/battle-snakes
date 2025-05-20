@@ -41,7 +41,8 @@ export class PathFindingStrategy {
     this.gameStateRef = gameState;
 
     const foodPositions = this.gameStateRef.getFoodPositionsAsPoints();
-    const target = this.calculateShortestManhattanDistance(head, foodPositions);
+    // const target = this.calculateShortestManhattanDistance(head, foodPositions);
+    const target = foodPositions[getRandomNumber(0, foodPositions.length - 1)] as Point;
 
     // Check if we need to recalculate the current path (stale data, blockage, etc..)
     if (!this.isValidPath()) {
@@ -84,20 +85,20 @@ export class PathFindingStrategy {
     return proposedDirection as Direction;
   }
 
-  private calculateShortestManhattanDistance(origin: Point, targets: Point[]) {
-    let minDistance = Infinity;
-    let minDistanceTarget: Point = new Point(-1, -1);
+  // private calculateShortestManhattanDistance(origin: Point, targets: Point[]) {
+  //   let minDistance = Infinity;
+  //   let minDistanceTarget: Point = new Point(-1, -1);
 
-    for (const possibleTarget of targets) {
-      const distance = origin.calculateManhattanDistance(possibleTarget);
-      if (distance < minDistance) {
-        minDistance = distance;
-        minDistanceTarget = possibleTarget;
-      }
-    }
+  //   for (const possibleTarget of targets) {
+  //     const distance = origin.calculateManhattanDistance(possibleTarget);
+  //     if (distance < minDistance) {
+  //       minDistance = distance;
+  //       minDistanceTarget = possibleTarget;
+  //     }
+  //   }
 
-    return minDistanceTarget;
-  }
+  //   return minDistanceTarget;
+  // }
 
   /**
    * A valid path is a few things:

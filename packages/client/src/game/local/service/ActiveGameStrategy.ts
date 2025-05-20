@@ -12,6 +12,7 @@ import { LocalGameContext } from '../LocalGame';
 import { InputBuffer } from './InputBuffer';
 import { publishOverlayMessage } from '@/service/OverlayMessageEventBus';
 import { LeaderboardService } from './LeaderboardService';
+import { publishMessage } from '@/state/MessageFeedObservable';
 
 export class ActiveGameStrategy {
   private localPlayerId;
@@ -73,6 +74,7 @@ export class ActiveGameStrategy {
 
     // Step Four: handle collision effects
     this.processCollisions(collisions);
+    publishMessage(CollisionService.convertCollisionsToMessages(collisions));
 
     // Step Five: Resolve the grid state.
     this.gameState.updateGrid();
@@ -82,17 +84,13 @@ export class ActiveGameStrategy {
     }
 
     if (this.gameState.shouldGameEnd() && !this.gameOverTimer.isRunning()) {
-
       publishOverlayMessage({ type: 'game_over' });
       this.leaderboardService.broadcastGameOverMessage();
       this.gameOverTimer.start();
-
     } else if (!this.gameOverTimer.isRunning() && this.gameState.shouldRoundEnd() && !this.roundIntermissionTimer.isRunning()) {
-   
       publishOverlayMessage({ type: 'round_over', message: 'Round Over!' });
       this.leaderboardService.broadcastRoundOverMessage();
       this.roundIntermissionTimer.start();
-
     }
   }
 
@@ -100,10 +98,11 @@ export class ActiveGameStrategy {
     const players = this.gameState.getActivePlayers();
 
     for (const player of players.values()) {
+      player.move();
+
       if (player instanceof CpuPlayer) {
         player.chooseNextMove(this.gameState);
       }
-      player.move();
     }
   }
 
