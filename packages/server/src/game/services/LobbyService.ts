@@ -31,6 +31,7 @@ export class LobbyService {
         isAlive: false,
         spawnPoint: thePlayer.getHead(), // lol
       });
+      this.messageDispatchService.sendClientSpecificOverlay({ type: 'waiting', message: '...' }, playerId);
     }
 
     return true;

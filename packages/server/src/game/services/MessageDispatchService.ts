@@ -36,6 +36,10 @@ export class MessageDispatchService {
     this.gameEventBus.emit(GameEvents.OVERLAY_MESSAGE, this.roomId, overlayMessage);
   }
 
+  sendClientSpecificOverlay(overlayMessage: OverlayMessage, playerId: string) {
+    this.gameEventBus.emit(GameEvents.OVERLAY_MESSAGE, playerId, overlayMessage);
+  }
+
   sendDefaultMessage(message: string, type: GameMessage['type'] = 'default') {
     this.gameEventBus.emit(GameEvents.MESSAGE_EVENT, this.roomId, [{ type, message }]);
   }
