@@ -31,7 +31,7 @@ export class WaitingGameStrategy {
     );
   }
 
-  tick(deltaTime: number) {
+  tick() {
     // Spawn initial entities if they aren't there yet.
     if (!this.haveEntitiesBeenSpawned) {
       this.spawnService.spawnInitialFood();

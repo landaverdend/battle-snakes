@@ -60,7 +60,7 @@ export class NetworkGame extends Game {
         break;
 
       case RoundState.WAITING:
-        this.waitingGameStrategy.tick(deltaTime);
+        this.waitingGameStrategy.tick();
         break;
     }
   }
