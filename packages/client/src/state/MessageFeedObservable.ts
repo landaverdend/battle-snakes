@@ -12,7 +12,10 @@ export class MessageFeedObservable extends ObservableStateManager<GameMessage[]>
   private static instance: MessageFeedObservable;
 
   private constructor() {
-    const initialState: GameMessage[] = [];
+    const initialState: GameMessage[] = [
+      { type: 'default', message: 'Use WASD or the arrow keys to move! Try to survive as long as possible!' },
+      { type: 'default', message: '-----------------------------------------' },
+    ];
     super(initialState);
   }
 
