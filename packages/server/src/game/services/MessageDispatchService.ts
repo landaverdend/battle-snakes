@@ -1,4 +1,12 @@
-import { ClientSpecificData, GameEvents, GameMessage, GameState, OverlayMessage } from '@battle-snakes/shared';
+import {
+  ClientSpecificData,
+  Collision,
+  CollisionService,
+  GameEvents,
+  GameMessage,
+  GameState,
+  OverlayMessage,
+} from '@battle-snakes/shared';
 import { GameEventBus } from '../events/GameEventBus';
 
 export class MessageDispatchService {
@@ -40,5 +48,14 @@ export class MessageDispatchService {
 
   sendClientSpecificData(playerId: string, pData: ClientSpecificData) {
     this.gameEventBus.emit(GameEvents.CLIENT_SPECIFIC_DATA, playerId, pData);
+  }
+
+  sendCollisionMessages(collisions: Collision[]) {
+    this.gameEventBus.emit(GameEvents.MESSAGE_EVENT, this.roomId, CollisionService.convertCollisionsToMessages(collisions));
+  }
+
+  broadcastWaitingMessage() {
+    this.sendDefaultMessage('Waiting for players...');
+    this.sendOverlayMessage({ type: 'waiting', message: 'Waiting for players...' });
   }
 }

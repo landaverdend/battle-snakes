@@ -39,8 +39,7 @@ export class WaitingGameStrategy {
       this.haveEntitiesBeenSpawned = true;
 
       if (this.gameState.getAllPlayers().length === 1) {
-        this.messageDispatchService.sendDefaultMessage('Waiting for players to join...');
-        this.messageDispatchService.sendOverlayMessage({ type: 'waiting', message: 'Waiting for players to join...' });
+        this.messageDispatchService.broadcastWaitingMessage();
       }
 
       // This is bad.
@@ -54,6 +53,11 @@ export class WaitingGameStrategy {
 
     if (!this.countdownTimer.isRunning() && this.gameState.getAllPlayers().length > 1) {
       this.countdownTimer.start();
+    }
+
+    if (this.countdownTimer.isRunning() && this.gameState.getAllPlayers().length <= 1) {
+      this.messageDispatchService.broadcastWaitingMessage();
+      this.countdownTimer.clear();
     }
 
     this.gameState.updateGrid(); // We want to show the players spawn positions before the game starts.

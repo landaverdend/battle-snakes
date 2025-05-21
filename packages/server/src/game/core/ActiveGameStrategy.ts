@@ -47,6 +47,7 @@ export class ActiveGameStrategy {
 
     // Step Four: handle collision effects on the game state...
     this.processCollisions(collisions);
+    this.messageDispatchService.sendCollisionMessages(collisions);
 
     // Step Five: update the visual grid for display, send out the updated map.
     this.gameState.updateGrid();
