@@ -1,0 +1,25 @@
+.canvas-window {
+  padding-bottom: 5px;
+
+  height: fit-content;
+}
+
+.handle:hover {
+  cursor: grab;
+}
+
+canvas {
+  border: 5px solid black;
+  background-color: white;
+  width: 600px;
+  height: 600px;
+
+  width: clamp(300px, 30vw, 600px);
+  height: clamp(300px, 30vw, 600px);
+
+  padding: 5px;
+}
+
+.canvas-content {
+  position: relative; /* Allows for absolute positioning of canvas overlay. */
+}

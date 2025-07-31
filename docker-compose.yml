@@ -1,0 +1,29 @@
+version: '3.8'
+
+services:
+  backend:
+    container_name: battle-snakes-backend
+    build:
+      context: .
+      dockerfile: Dockerfile.backend
+    ports:
+      - '3005:3030'
+    restart: unless-stopped
+    networks:
+      - web
+  frontend:
+    container_name: battle-snakes-frontend
+    build:
+      context: .
+      dockerfile: Dockerfile.frontend
+    environment:
+      - VITE_ENABLE_ANALYTICS=true
+    ports:
+      - '3004:3031'
+    restart: unless-stopped
+    networks:
+      - web
+
+networks:
+  web:
+    external: true

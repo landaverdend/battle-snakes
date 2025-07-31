@@ -1,0 +1,15 @@
+FROM node:20-alpine
+
+WORKDIR /app
+COPY package*.json ./
+COPY tsconfig*.json ./
+
+COPY ./packages/server ./packages/server
+COPY ./packages/shared ./packages/shared
+
+RUN npm install
+RUN npm run build -w @battle-snakes/shared
+RUN npm run build -w @battle-snakes/server
+
+EXPOSE 3030
+CMD ["npm", "run", "server"]

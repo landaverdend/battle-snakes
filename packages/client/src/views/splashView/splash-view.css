@@ -1,0 +1,32 @@
+.splash-view-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 3vh;
+
+  height: 100vh;
+  width: 100vw;
+  font-family: 'windows-95';
+  background-color: var(--desktop-background-color);
+
+  .splash-view-items {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 25px;
+    background-color: var(--primary-color);
+
+    padding: 15px;
+  }
+
+  h1 {
+    font-size: 3rem;
+  }
+
+  .color-input {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+}
