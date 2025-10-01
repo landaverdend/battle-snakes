@@ -1,7 +1,7 @@
 import './canvas-overlay.css';
 import { useEffect, useState } from 'react';
 import { OverlayMessage } from '@battle-snakes/shared';
-import { OverlayMessageEventBus } from '@/service/OverlayMessageEventBus';
+import { OverlayMessageEventBus } from '@service/OverlayMessageEventBus';
 
 export function CanvasOverlay() {
   const [shouldDisplay, setShouldDisplay] = useState<boolean>(false);
