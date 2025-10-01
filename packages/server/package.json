@@ -6,16 +6,15 @@
   "type": "module",
   "scripts": {
     "build": "tsc",
-    "clean": "rimraf dist",
-    "start": "PORT=3030 tsx ./src/index.ts",
-    "dev": "PORT=3030 tsx watch ./src/index.ts" 
+    "clean": "rm -rf dist",
+    "start": "node tsx ./src/index.ts",
+    "dev": "tsx watch ./src/index.ts"
   },
   "dependencies": {
-    "@battle-snakes/shared": "^1.0.0",
+    "@battle-snakes/shared": "workspace:*",
     "socket.io": "^4.7.4"
   },
   "devDependencies": {
-    "rimraf": "^5.0.5",
     "tsx": "^4.19.3",
     "typescript": "^5.3.3"
   }
