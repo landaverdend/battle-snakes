@@ -1,5 +1,6 @@
 {
   "compilerOptions": {
+    "jsx": "react-jsx",
     "target": "ES2022",
     "useDefineForClassFields": true,
     "module": "ESNext",
@@ -9,7 +10,7 @@
     /* Bundler mode */
     "moduleResolution": "bundler",
     "allowImportingTsExtensions": true,
-    "verbatimModuleSyntax": true,
+    "verbatimModuleSyntax": false,
     "moduleDetection": "force",
     "noEmit": true,
 
@@ -17,9 +18,19 @@
     "strict": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
-    "erasableSyntaxOnly": true,
+    "erasableSyntaxOnly": false,
     "noFallthroughCasesInSwitch": true,
-    "noUncheckedSideEffectImports": true
+    "noUncheckedSideEffectImports": true,
+
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["src/*"],
+      "@components/*": ["src/components/*"],
+      "@game/*": ["src/game/*"],
+      "@views/*": ["src/views/*"],
+      "@state/*": ["src/state/*"],
+      "@service/*": ["src/service/*"]
+    }
   },
-  "include": ["src"]
+  "include": ["src", "vite-env.d.ts"]
 }
