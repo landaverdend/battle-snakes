@@ -1,5 +1,4 @@
 import { useState } from 'react';
-import './splash-view.css';
 import { getRandomColor } from '@battle-snakes/shared';
 import { Button, ColorInput, GroupBox, TextInput, Window, WindowHeader } from 'react95';
 
@@ -23,16 +22,16 @@ export default function SplashView({ onComplete }: SVProps) {
   };
 
   return (
-    <div className="splash-view-container b">
+    <div className="flex flex-col justify-center items-center gap-2 h-screen w-screen bg-windows-bg">
       <Window>
         <WindowHeader>snakes.exe</WindowHeader>
-        <div className="splash-view-items">
-          <h1>Battle Snakes</h1>
+        <div className="flex flex-col justify-center items-center gap-6 !p-3.5">
+          <h1 className="!text-[2.5rem]">Battle Snakes</h1>
           <GroupBox label="Name">
             <TextInput placeholder="Enter your name" onChange={(e) => setPlayerName(e.target.value)} />
-            {error && <span style={{ color: 'red' }}>{error}</span>}
+            {error && <span className="!text-red-500">{error}</span>}
           </GroupBox>
-          <span className="color-input ">
+          <span className="flex items-center gap-2.5">
             Select snake color: {'  '}
             <ColorInput defaultValue={playerColor} onChange={(e) => setPlayerColor(e.target.value)} />
           </span>

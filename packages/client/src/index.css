@@ -1,5 +1,12 @@
 @import 'tailwindcss';
 
+@theme {
+  --color-windows-bg: rgb(0, 128, 128);
+  --color-windows-yellow: rgb(254, 251, 204);
+  --color-windows-gray: #c6c6c6;
+  --color-windows-black: #0a0a0a;
+}
+
 @font-face {
   font-family: 'windows-95';
   src: url('../public/fonts/W95FA.otf');
@@ -8,7 +15,7 @@
 }
 
 body {
-  font-family: 'windows-95';
+  font-family: 'windows-95' !important;
   margin: 0px;
 }
 
