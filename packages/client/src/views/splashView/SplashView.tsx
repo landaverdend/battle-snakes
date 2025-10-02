@@ -23,7 +23,7 @@ export default function SplashView({ onComplete }: SVProps) {
   };
 
   return (
-    <div className="splash-view-container">
+    <div className="splash-view-container b">
       <Window>
         <WindowHeader>snakes.exe</WindowHeader>
         <div className="splash-view-items">
@@ -32,7 +32,7 @@ export default function SplashView({ onComplete }: SVProps) {
             <TextInput placeholder="Enter your name" onChange={(e) => setPlayerName(e.target.value)} />
             {error && <span style={{ color: 'red' }}>{error}</span>}
           </GroupBox>
-          <span className="color-input">
+          <span className="color-input ">
             Select snake color: {'  '}
             <ColorInput defaultValue={playerColor} onChange={(e) => setPlayerColor(e.target.value)} />
           </span>
