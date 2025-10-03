@@ -27,8 +27,8 @@ const Canvas = ({ gameConfig }: CanvasProps) => {
     gameRunnerRef.current = gameConfig.isLocalGame
       ? new LocalGameRunner(ctx, gameConfig)
       : new NetworkGameRunner(ctx, gameConfig);
-    
-      gameRunnerRef.current.start();
+
+    gameRunnerRef.current.start();
 
     const resizeCanvas = () => {
       const { width, height } = canvas.getBoundingClientRect();

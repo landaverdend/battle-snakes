@@ -1,6 +1,6 @@
-import { MainView } from '@views/mainView/MainView';
+import { MainView } from '@views/MainView';
 import { useState } from 'react';
-import SplashView from './splashView/SplashView';
+import SplashView from './SplashView';
 import { createGlobalStyle, ThemeProvider } from 'styled-components';
 
 /* Pick a theme of your choice */
