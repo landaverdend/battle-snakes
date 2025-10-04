@@ -1,7 +1,6 @@
 import { useEffect, useRef } from 'react';
-import './canvas.css';
 import { Window, WindowContent } from 'react95';
-import { CanvasOverlay } from '../canvasOverlay/CanvasOverlay';
+import { CanvasOverlay } from './CanvasOverlay';
 import Draggable from 'react-draggable';
 import { NetworkGameRunner } from '@/game/network/NetworkGameRunner';
 import { GameConfigOptions, GameRunner } from '@/game/GameRunner';
@@ -54,11 +53,11 @@ const Canvas = ({ gameConfig }: CanvasProps) => {
 
   return (
     <Draggable handle=".handle" defaultPosition={{ x: 0, y: 0 }} scale={1}>
-      <Window className="canvas-window handle">
-        <WindowContent className="canvas-content">
+      <Window className="pb-1 h-fit cursor-grab handle">
+        <WindowContent className="relative">
           <CanvasOverlay />
           <div ref={containerRef} className="canvas-container">
-            <canvas ref={canvasRef} />
+            <canvas ref={canvasRef} className="border-5 border-black bg-white w-[600px] h-[600px] p-1.5" />
           </div>
         </WindowContent>
       </Window>

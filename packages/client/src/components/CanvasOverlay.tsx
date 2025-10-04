@@ -1,4 +1,3 @@
-import './canvas-overlay.css';
 import { useEffect, useState } from 'react';
 import { OverlayMessage } from '@battle-snakes/shared';
 import { OverlayMessageEventBus } from '@service/OverlayMessageEventBus';
@@ -30,7 +29,7 @@ export function CanvasOverlay() {
   return (
     <>
       {shouldDisplay && (
-        <div className="canvas-overlay-container">
+        <div className="absolute top-0 left-0 flex justify-center items-center w-full h-full z-50 text-white bg-black/30 text-4xl">
           <DisplayMessage overlayMessage={overlayMessage} />
         </div>
       )}
@@ -40,13 +39,13 @@ export function CanvasOverlay() {
 
 function RoundOverMessage({ overlayMessage }: { overlayMessage: OverlayMessage }) {
   return (
-    <div className="message-container">
+    <div className="flex flex-col text-2xl">
       <span className="normal-text">{overlayMessage.message}</span>
       {overlayMessage.player && (
         <div>
-          <span style={{ color: overlayMessage.player.color }}>{overlayMessage.player.name + ' '}</span> survived!
+          <span className={`text-${overlayMessage.player.color}`}>{overlayMessage.player.name + ' '}</span> survived!
           <br />
-          <span style={{ color: 'green' }}>+50</span> points!
+          <span className="text-green-500">+50</span> points!
         </div>
       )}
     </div>
@@ -57,7 +56,7 @@ function GameOverMessage({ overlayMessage }: { overlayMessage: OverlayMessage })
   let messageText = overlayMessage.message ? overlayMessage.message : '';
 
   return (
-    <div className="message-container">
+    <div className="flex flex-col text-3xl">
       <span className="normal-text">Game Over! {' ' + messageText}</span>
       {overlayMessage.player && (
         <div>
@@ -76,7 +75,7 @@ function DisplayMessage({ overlayMessage }: DMProps) {
 
   switch (overlayMessage?.type) {
     case 'waiting':
-      toRender = <span className="waiting-message">{overlayMessage.message}</span>;
+      toRender = <span className="text-4xl">{overlayMessage.message}</span>;
       break;
     case 'round_over':
       toRender = <RoundOverMessage overlayMessage={overlayMessage} />;
@@ -85,7 +84,7 @@ function DisplayMessage({ overlayMessage }: DMProps) {
       toRender = <GameOverMessage overlayMessage={overlayMessage} />;
       break;
     case 'countdown':
-      toRender = <span style={{ fontSize: '6rem' }}>{overlayMessage.message}</span>;
+      toRender = <span className="!text-9xl">{overlayMessage.message}</span>;
       break;
     default:
       break;
