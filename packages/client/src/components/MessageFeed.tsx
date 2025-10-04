@@ -1,6 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
 import { MessageFeedObservable } from '@/state/MessageFeedObservable';
-import './message-feed.css';
 import { GameMessage, PlayerMessage } from '@battle-snakes/shared';
 import { Button, Frame, TextInput, Window, WindowContent, WindowHeader } from 'react95';
 import { ChatService } from '@/game/network/service/ChatService';
@@ -51,7 +50,6 @@ export function MessageFeed({ isLocalGame }: MessageFeedProps) {
   const scrollRef = useRef<HTMLDivElement>(null);
   const [playerChat, setPlayerChat] = useState('');
 
-  console.log('isLocalGame', isLocalGame);
   const getMessageComponent = (message: GameMessage) => {
     let toRender = <></>;
     switch (message.type) {
@@ -100,15 +98,15 @@ export function MessageFeed({ isLocalGame }: MessageFeedProps) {
 
   return (
     <Draggable handle=".handle" defaultPosition={{ x: 0, y: 0 }} scale={1}>
-      <Window className="message-feed-window handle">
+      <Window className="h-fit handle">
         <WindowHeader> Message Feed</WindowHeader>
         <WindowContent>
-          <Frame variant="field" className="message-feed-scroll-view" ref={scrollRef}>
-            <div className="message-feed-container">{messages.map((message) => getMessageComponent(message))}</div>
+          <Frame variant="field" className="bg-white overflow-y-auto md:h-[300px] !p-2 z-40" ref={scrollRef}>
+            <div className="flex flex-col md:w-[400px]">{messages.map((message) => getMessageComponent(message))}</div>
           </Frame>
 
           {!isLocalGame && (
-            <div style={{ display: 'flex' }}>
+            <div className="flex flex-row">
               <TextInput
                 value={playerChat}
                 onChange={(e) => {

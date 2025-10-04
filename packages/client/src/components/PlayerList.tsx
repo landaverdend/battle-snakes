@@ -1,4 +1,3 @@
-import './player-list.css';
 import {
   Avatar,
   Table,

@@ -1,6 +1,6 @@
 import { PlayerList } from '@/components/PlayerList';
 import Canvas from '@/components/Canvas';
-import { MessageFeed } from '@components/messageFeed/MessageFeed';
+import { MessageFeed } from '@/components/MessageFeed';
 import RoundHeader from '@/components/RoundHeader';
 import { GameConfigOptions } from '@/game/GameRunner';
 
