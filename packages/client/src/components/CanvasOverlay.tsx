@@ -75,7 +75,7 @@ function DisplayMessage({ overlayMessage }: DMProps) {
 
   switch (overlayMessage?.type) {
     case 'waiting':
-      toRender = <span className="text-4xl">{overlayMessage.message}</span>;
+      toRender = <span className="!text-5xl">{overlayMessage.message}</span>;
       break;
     case 'round_over':
       toRender = <RoundOverMessage overlayMessage={overlayMessage} />;

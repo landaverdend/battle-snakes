@@ -1,7 +1,7 @@
-import { PlayerList } from '@components/playerList/PlayerList';
+import { PlayerList } from '@/components/PlayerList';
 import Canvas from '@/components/Canvas';
 import { MessageFeed } from '@components/messageFeed/MessageFeed';
-import RoundHeader from '@/components/roundHeader/RoundHeader';
+import RoundHeader from '@/components/RoundHeader';
 import { GameConfigOptions } from '@/game/GameRunner';
 
 interface MVProps {
