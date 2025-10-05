@@ -18,9 +18,6 @@ export const ComponentSlide = ({ children, position }: ComponentSlideProps) => {
   const [isOpen, setIsOpen] = useState(false);
   const [shouldDisplay, setShouldDisplay] = useState(false);
 
-  const sideClass = position === 'left' ? 'left-0' : 'right-0';
-  const closedTranslate = position === 'left' ? '-translate-x-full' : 'translate-x-full';
-
   useEffect(() => {
     if (windowSize.width < 1000) {
       setShouldDisplay(true);
@@ -33,28 +30,14 @@ export const ComponentSlide = ({ children, position }: ComponentSlideProps) => {
   // Large screens: inline render
   if (!shouldDisplay) return <>{children}</>;
 
-  const wrapperTranslate = isOpen ? 'translate-x-0' : closedTranslate;
-
   return (
-    <div className={`absolute top-1/5 ${sideClass} z-40`}>
-      {/* Sliding wrapper contains panel and attached tab */}
-      <div className={`relative transition-transform duration-300 ease-out ${wrapperTranslate}`}>
-        {/* Panel */}
-        <div className="relative">
-          {children}
-
-          {/* Attached tab (acts as open/close button) */}
-          <Button
-            type="button"
-            onClick={() => setIsOpen((v) => !v)}
-            className={`
-              !absolute ${position === 'left' ? 'right-0' : 'left-0'} !top-4 
-              !font-bold
-              ${position === 'left' ? 'translate-x-full' : '-translate-x-full'}
-            `}>
-            {isOpen ? Labels[position][0] : Labels[position][1]}
-          </Button>
-        </div>
+    <div className={`absolute top-1/5 ${position}-0 z-40`}>
+      {/* Panel */}
+      <div className={`flex flex-row ${position === 'right' ? 'flex-row-reverse' : ''} items-center`}>
+        {children}
+        <Button type="button" onClick={() => setIsOpen((v) => !v)}>
+          {isOpen ? Labels[position][0] : Labels[position][1]}
+        </Button>
       </div>
     </div>
   );
