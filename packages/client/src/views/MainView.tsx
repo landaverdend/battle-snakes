@@ -17,7 +17,9 @@ export function MainView({ gameConfig }: MVProps) {
         <ComponentSlide position="left">
           <PlayerList className="xl:order-1" />
         </ComponentSlide>
-        <MessageFeed isLocalGame={gameConfig.isLocalGame} className="xl:order-3" />
+        <ComponentSlide position="right">
+          <MessageFeed isLocalGame={gameConfig.isLocalGame} className="xl:order-3" />
+        </ComponentSlide>
       </div>
     </div>
   );
