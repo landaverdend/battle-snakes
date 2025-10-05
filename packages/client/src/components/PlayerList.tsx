@@ -13,12 +13,15 @@ import {
 import { useLeaderboard } from '@/hooks/useLeaderboard';
 import Draggable from 'react-draggable';
 
-export function PlayerList() {
+interface PlayerListProps {
+  className?: string;
+}
+export function PlayerList({ className }: PlayerListProps) {
   const { players } = useLeaderboard();
 
   return (
     <Draggable handle=".handle" defaultPosition={{ x: 0, y: 0 }} scale={1}>
-      <Window className="h-fit w-fit handle">
+      <Window className={`h-fit w-fit handle ${className}`}>
         <WindowHeader>Leaderboard</WindowHeader>
         <WindowContent>
           <Table>

@@ -8,8 +8,9 @@ import { LocalGameRunner } from '@/game/local/LocalGameRunner';
 
 interface CanvasProps {
   gameConfig: GameConfigOptions;
+  className?: string;
 }
-const Canvas = ({ gameConfig }: CanvasProps) => {
+const Canvas = ({ gameConfig, className }: CanvasProps) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const gameRunnerRef = useRef<GameRunner | null>(null);
@@ -53,11 +54,14 @@ const Canvas = ({ gameConfig }: CanvasProps) => {
 
   return (
     <Draggable handle=".handle" defaultPosition={{ x: 0, y: 0 }} scale={1}>
-      <Window className="pb-1 h-fit cursor-grab handle">
+      <Window className={`pb-1 h-fit cursor-grab handle ${className}`}>
         <WindowContent className="relative">
           <CanvasOverlay />
-          <div ref={containerRef} className="canvas-container">
-            <canvas ref={canvasRef} className="border-5 border-black bg-white w-[600px] h-[600px] p-1.5" />
+          <div ref={containerRef} className="flex justify-center items-center ">
+            <canvas
+              ref={canvasRef}
+              className="border-5 border-black bg-white w-[80vw] h-[35vh] p-1.5 md:h-[400px] md:w-[400px] xl:h-[600px] xl:w-[600px]"
+            />
           </div>
         </WindowContent>
       </Window>

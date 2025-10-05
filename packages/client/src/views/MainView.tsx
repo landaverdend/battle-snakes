@@ -9,12 +9,12 @@ interface MVProps {
 }
 export function MainView({ gameConfig }: MVProps) {
   return (
-    <div className="flex flex-col gap-[5vh] h-screen w-screen bg-windows-bg">
+    <div className="flex flex-col gap-[5vh] h-screen w-screen bg-windows-bg overflow-y-auto">
       <RoundHeader />
-      <div className="flex flex-row justify-center gap-6">
-        <PlayerList />
-        <Canvas gameConfig={gameConfig} />
-        <MessageFeed isLocalGame={gameConfig.isLocalGame} />
+      <div className="flex flex-col xl:flex-row justify-center items-center gap-6">
+        <Canvas gameConfig={gameConfig} className="" />
+        <PlayerList className="" />
+        <MessageFeed isLocalGame={gameConfig.isLocalGame} className="" />
       </div>
     </div>
   );

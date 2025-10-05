@@ -44,8 +44,9 @@ function PlayerMessageComponent({ message }: MCProps) {
 
 type MessageFeedProps = {
   isLocalGame: boolean;
+  className?: string;
 };
-export function MessageFeed({ isLocalGame }: MessageFeedProps) {
+export function MessageFeed({ isLocalGame, className }: MessageFeedProps) {
   const [messages, setMessages] = useState<GameMessage[]>([]);
   const scrollRef = useRef<HTMLDivElement>(null);
   const [playerChat, setPlayerChat] = useState('');
@@ -98,11 +99,11 @@ export function MessageFeed({ isLocalGame }: MessageFeedProps) {
 
   return (
     <Draggable handle=".handle" defaultPosition={{ x: 0, y: 0 }} scale={1}>
-      <Window className="h-fit handle">
+      <Window className={`h-fit handle ${className} w-8/10 md:w-fit`}>
         <WindowHeader> Message Feed</WindowHeader>
         <WindowContent>
-          <Frame variant="field" className="bg-white overflow-y-auto md:h-[300px] !p-2 z-40" ref={scrollRef}>
-            <div className="flex flex-col md:w-[400px]">{messages.map((message) => getMessageComponent(message))}</div>
+          <Frame variant="field" className="bg-white overflow-y-auto md:h-[300px] md:w-[250px] !p-2 z-40" ref={scrollRef}>
+            <div className="flex flex-col ">{messages.map((message) => getMessageComponent(message))}</div>
           </Frame>
 
           {!isLocalGame && (
