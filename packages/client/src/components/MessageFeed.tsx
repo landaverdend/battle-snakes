@@ -4,6 +4,7 @@ import { GameMessage, PlayerMessage } from '@battle-snakes/shared';
 import { Button, Frame, TextInput, Window, WindowContent, WindowHeader } from 'react95';
 import { ChatService } from '@/game/network/service/ChatService';
 import Draggable from 'react-draggable';
+import { useWindowSize } from '@/hooks/useWindowSize';
 
 type MCProps = {
   message: PlayerMessage;
@@ -47,6 +48,8 @@ type MessageFeedProps = {
   className?: string;
 };
 export function MessageFeed({ isLocalGame, className }: MessageFeedProps) {
+  const windowSize = useWindowSize();
+
   const [messages, setMessages] = useState<GameMessage[]>([]);
   const scrollRef = useRef<HTMLDivElement>(null);
   const [playerChat, setPlayerChat] = useState('');
@@ -99,7 +102,7 @@ export function MessageFeed({ isLocalGame, className }: MessageFeedProps) {
 
   return (
     <Draggable handle=".handle" defaultPosition={{ x: 0, y: 0 }} scale={1}>
-      <Window className={`h-fit handle ${className} w-8/10 md:w-fit`}>
+      <Window className={`h-fit ${windowSize.width < 1000 ? '' : 'handle'} ${className} w-8/10 md:w-fit`}>
         <WindowHeader> Message Feed</WindowHeader>
         <WindowContent>
           <Frame variant="field" className="bg-white overflow-y-auto md:h-[300px] md:w-[250px] !p-2 z-40" ref={scrollRef}>

@@ -12,16 +12,18 @@ import {
 } from 'react95';
 import { useLeaderboard } from '@/hooks/useLeaderboard';
 import Draggable from 'react-draggable';
+import { useWindowSize } from '@/hooks/useWindowSize';
 
 interface PlayerListProps {
   className?: string;
 }
 export function PlayerList({ className }: PlayerListProps) {
   const { players } = useLeaderboard();
+  const windowSize = useWindowSize();
 
   return (
     <Draggable handle=".handle" defaultPosition={{ x: 0, y: 0 }} scale={1}>
-      <Window className={`h-fit w-fit handle ${className}`}>
+      <Window className={`h-fit w-fit ${windowSize.width < 1000 ? '' : 'handle'} ${className}`}>
         <WindowHeader>Leaderboard</WindowHeader>
         <WindowContent>
           <Table>

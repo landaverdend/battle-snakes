@@ -34,15 +34,13 @@ export const ComponentSlide = ({ children, position }: ComponentSlideProps) => {
   if (!shouldDisplay) return <>{children}</>;
 
   const wrapperTranslate = isOpen ? 'translate-x-0' : closedTranslate;
-  const tabSide = position === 'left' ? 'right-0' : 'left-0';
-  const tabCounterShift = isOpen ? 'translate-x-0' : position === 'left' ? 'translate-x-full' : '-translate-x-full';
 
   return (
     <div className={`absolute top-1/5 ${sideClass} z-40`}>
       {/* Sliding wrapper contains panel and attached tab */}
       <div className={`relative transition-transform duration-300 ease-out ${wrapperTranslate}`}>
         {/* Panel */}
-        <div className="relative border border-black bg-windows-bg shadow-[inset_-1px_-1px_0px_#000]">
+        <div className="relative">
           {children}
 
           {/* Attached tab (acts as open/close button) */}
