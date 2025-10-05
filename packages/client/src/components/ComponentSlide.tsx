@@ -42,19 +42,19 @@ export const ComponentSlide = ({ children, position }: ComponentSlideProps) => {
   };
 
   return (
-    <div className={`absolute top-1/5 ${position}-0 w-fit`}>
+    <div className={`absolute top-1/5 ${position}-0 w-fit overflow-hidden z-0 pointer-events-none`}>
       {/* Panel */}
       <div
         className={`flex flex-row ${position === 'right' ? 'flex-row-reverse' : ''} ${
           isOpen ? slideClasses[position].open : slideClasses[position].closed
         }`}>
-        <div>{children}</div>
+        <div className={isOpen ? 'pointer-events-auto' : 'opacity-0 pointer-events-none'}>{children}</div>
         <Button
           type="button"
           onClick={() => {
             setIsOpen((v) => !v);
           }}
-          className="!w-[40px]">
+          className="!w-[40px] !z-40 pointer-events-auto">
           {isOpen ? Labels[position][0] : Labels[position][1]}
         </Button>
       </div>
