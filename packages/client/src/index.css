@@ -5,6 +5,8 @@
   --color-windows-yellow: rgb(254, 251, 204);
   --color-windows-gray: #c6c6c6;
   --color-windows-black: #0a0a0a;
+
+  --breakpoint-xs: 450px;
 }
 
 @font-face {

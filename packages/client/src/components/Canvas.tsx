@@ -60,7 +60,7 @@ const Canvas = ({ gameConfig, className }: CanvasProps) => {
           <div ref={containerRef} className="flex justify-center items-center ">
             <canvas
               ref={canvasRef}
-              className="border-5 border-black bg-white w-[80vw] h-[35vh] p-1.5 md:h-[400px] md:w-[400px] xl:h-[600px] xl:w-[600px]"
+              className="border-5 border-black aspect-square bg-white w-[80vw] h-[30vh] p-1.5 xs:h-[50vh] xs:w-[80vw] sm:h-[60vh] sm:w-[75vw]  md:h-[400px] md:w-[400px] xl:h-[600px] xl:w-[600px]"
             />
           </div>
         </WindowContent>

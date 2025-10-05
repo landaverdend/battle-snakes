@@ -3,7 +3,7 @@ import { OverlayMessage } from '@battle-snakes/shared';
 import { OverlayMessageEventBus } from '@service/OverlayMessageEventBus';
 
 export function CanvasOverlay() {
-  const [shouldDisplay, setShouldDisplay] = useState<boolean>(false);
+  const [shouldDisplay, setShouldDisplay] = useState<boolean>(true);
   const [overlayMessage, setOverlayMessage] = useState<OverlayMessage | null>(null);
 
   function handleOverlayMessage(message: OverlayMessage) {
@@ -37,15 +37,17 @@ export function CanvasOverlay() {
   );
 }
 
+const responsiveTextSizes = '!text-3xl !md:text-5xl';
+
 function RoundOverMessage({ overlayMessage }: { overlayMessage: OverlayMessage }) {
   return (
-    <div className="flex flex-col text-2xl">
-      <span className="normal-text">{overlayMessage.message}</span>
+    <div className="flex flex-col ">
+      <span className={`text-white ${responsiveTextSizes}`}>{overlayMessage.message}</span>
       {overlayMessage.player && (
-        <div>
+        <div className={`${responsiveTextSizes}`}>
           <span className={`text-${overlayMessage.player.color}`}>{overlayMessage.player.name + ' '}</span> survived!
           <br />
-          <span className="text-green-500">+50</span> points!
+          <span className={`text-green-500`}>+50</span> points!
         </div>
       )}
     </div>
@@ -56,10 +58,10 @@ function GameOverMessage({ overlayMessage }: { overlayMessage: OverlayMessage })
   let messageText = overlayMessage.message ? overlayMessage.message : '';
 
   return (
-    <div className="flex flex-col text-3xl">
-      <span className="normal-text">Game Over! {' ' + messageText}</span>
+    <div className="flex flex-col !sm:text-8xl !md:text-6xl">
+      <span className={`${responsiveTextSizes}`}>Game Over! {' ' + messageText}</span>
       {overlayMessage.player && (
-        <div>
+        <div className={`${responsiveTextSizes}`}>
           <span style={{ color: overlayMessage.player.color }}>{overlayMessage.player.name}</span> wins!!
         </div>
       )}
