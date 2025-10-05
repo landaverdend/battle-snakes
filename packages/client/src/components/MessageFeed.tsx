@@ -102,7 +102,7 @@ export function MessageFeed({ isLocalGame, className }: MessageFeedProps) {
 
   return (
     <Draggable handle=".handle" defaultPosition={{ x: 0, y: 0 }} scale={1}>
-      <Window className={`h-fit ${windowSize.width < 1000 ? '' : 'handle'} ${className} w-8/10 md:w-fit`}>
+      <Window className={`h-fit ${windowSize.width < 1000 ? '' : 'handle'} ${className} md:w-fit`}>
         <WindowHeader> Message Feed</WindowHeader>
         <WindowContent>
           <Frame variant="field" className="bg-white overflow-y-auto md:h-[300px] md:w-[250px] !p-2 z-40" ref={scrollRef}>

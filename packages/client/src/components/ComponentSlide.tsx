@@ -30,12 +30,31 @@ export const ComponentSlide = ({ children, position }: ComponentSlideProps) => {
   // Large screens: inline render
   if (!shouldDisplay) return <>{children}</>;
 
+  const slideClasses = {
+    left: {
+      open: 'translate-x-0',
+      closed: '-translate-x-[calc(100%-30px)]',
+    },
+    right: {
+      open: 'translate-x-0',
+      closed: 'translate-x-[calc(100%-25px)]',
+    },
+  };
+
   return (
-    <div className={`absolute top-1/5 ${position}-0 z-40`}>
+    <div className={`absolute top-1/5 ${position}-0 w-fit`}>
       {/* Panel */}
-      <div className={`flex flex-row ${position === 'right' ? 'flex-row-reverse' : ''} items-center`}>
-        {children}
-        <Button type="button" onClick={() => setIsOpen((v) => !v)}>
+      <div
+        className={`flex flex-row ${position === 'right' ? 'flex-row-reverse' : ''} ${
+          isOpen ? slideClasses[position].open : slideClasses[position].closed
+        }`}>
+        <div>{children}</div>
+        <Button
+          type="button"
+          onClick={() => {
+            setIsOpen((v) => !v);
+          }}
+          className="!w-[40px]">
           {isOpen ? Labels[position][0] : Labels[position][1]}
         </Button>
       </div>
