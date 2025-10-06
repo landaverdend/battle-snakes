@@ -31,8 +31,8 @@ export const ComponentSlide = ({ children, position }: ComponentSlideProps) => {
   const pos = position === 'left' ? 'left-0' : 'right-0';
 
   return (
-    <div className={`!fixed top-1/5 ${pos} `}>
-      <div className={`flex flex-row ${position === 'right' ? '' : 'flex-row-reverse'} `}>
+    <div className={`!fixed top-1/5 ${pos} ${isOpen ? '' : 'z-50'}`}>
+      <div className={`flex flex-row items-center ${position === 'right' ? '' : 'flex-row-reverse'}`}>
         <Button className="!w-[30px]" onClick={() => setIsOpen((v) => !v)}>
           {isOpen ? Labels[position][0] : Labels[position][1]}
         </Button>

@@ -23,10 +23,10 @@ export function PlayerList({ className }: PlayerListProps) {
 
   return (
     <Draggable handle=".handle" defaultPosition={{ x: 0, y: 0 }} scale={1}>
-      <Window className={`h-fit w-fit ${windowSize.width < 1000 ? '' : 'handle'} ${className}`}>
+      <Window className={`h-fit ${windowSize.width < 1000 ? '' : 'handle'} ${className} `}>
         <WindowHeader>Leaderboard</WindowHeader>
         <WindowContent>
-          <Table>
+          <Table className="">
             <TableHead>
               <TableRow>
                 <TableHeadCell>Name</TableHeadCell>
