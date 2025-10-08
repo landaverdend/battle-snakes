@@ -1,3 +1,4 @@
+import { Direction } from '@battle-snakes/shared';
 import { Renderer } from './Renderer';
 
 export interface GameConfigOptions {
@@ -18,6 +19,7 @@ export abstract class GameRunner {
   abstract start(): void;
   abstract stop(): void;
   abstract gameLoop(): void;
+  abstract handleInput(dir: Direction): void;
 
   resize(width: number, height: number) {
     this.renderer.resize(width, height);

@@ -9,7 +9,7 @@ import {
   SpawnService,
 } from '@battle-snakes/shared';
 import { LocalGameContext } from '../LocalGame';
-import { InputBuffer } from './InputBuffer';
+import { LocalInputHandler } from './LocalInputHandler';
 import { publishOverlayMessage } from '@/service/OverlayMessageEventBus';
 import { LeaderboardService } from './LeaderboardService';
 import { publishMessage } from '@/state/MessageFeedObservable';
@@ -19,7 +19,7 @@ export class ActiveGameStrategy {
 
   private gameState: GameState;
 
-  private inputBuffer: InputBuffer;
+  private inputHandler: LocalInputHandler;
   private roundIntermissionTimer: CountdownTimer;
   private gameOverTimer: CountdownTimer;
 
@@ -28,14 +28,17 @@ export class ActiveGameStrategy {
 
   private movementAccumulator = 0;
 
-  constructor({ gameState, spawnService, gameConfigOptions }: LocalGameContext, leaderboardService: LeaderboardService) {
+  constructor(
+    { gameState, spawnService, gameConfigOptions, inputHandler }: LocalGameContext,
+    leaderboardService: LeaderboardService
+  ) {
     this.localPlayerId = gameConfigOptions.playerName;
 
     this.gameState = gameState;
     this.spawnService = spawnService;
     this.leaderboardService = leaderboardService;
 
-    this.inputBuffer = new InputBuffer(gameState);
+    this.inputHandler = inputHandler;
     this.roundIntermissionTimer = new CountdownTimer(
       2,
       () => {},
@@ -129,7 +132,7 @@ export class ActiveGameStrategy {
   }
 
   private handleInput() {
-    const input = this.inputBuffer.getNextInput();
+    const input = this.inputHandler.getNextInput();
 
     if (input) {
       this.gameState.getPlayer(this.localPlayerId)?.setDirection(input);

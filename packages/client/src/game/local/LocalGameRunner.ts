@@ -1,4 +1,4 @@
-import { DEFAULT_GRID_SIZE } from '@battle-snakes/shared';
+import { DEFAULT_GRID_SIZE, Direction } from '@battle-snakes/shared';
 import { GameConfigOptions, GameRunner } from '../GameRunner';
 import { LocalGame } from './LocalGame';
 
@@ -40,5 +40,9 @@ export class LocalGameRunner extends GameRunner {
 
   stop(): void {
     this.game.stop();
+  }
+
+  handleInput(dir: Direction): void {
+    this.game.handleInput(dir);
   }
 }

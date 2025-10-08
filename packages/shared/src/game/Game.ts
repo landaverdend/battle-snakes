@@ -1,3 +1,5 @@
+import { InputHandler } from '../../../client/src/game/InputHandler';
+import { Direction } from '../constants/playerTypes';
 import { SpawnService } from '../services/SpawnService';
 import { GameLoop } from './GameLoop';
 import { GameState } from './GameState';
@@ -16,4 +18,5 @@ export abstract class Game {
   public abstract start(): void;
   public abstract tick(deltaTime: number): void;
   public abstract stop(): void;
+  public abstract handleInput(dir: Direction): void;
 }

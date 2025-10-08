@@ -1,29 +1,37 @@
-import { Game, GameState, getRandomColor, MAX_ROOM_SIZE, RoundState, SpawnService } from '@battle-snakes/shared';
+import { Direction, Game, GameState, getRandomColor, MAX_ROOM_SIZE, RoundState, SpawnService } from '@battle-snakes/shared';
 import { LeaderboardService } from './service/LeaderboardService';
 import { GameConfigOptions } from '../GameRunner';
 import { ClientGameState } from '@/state/ClientGameState';
 import { LeaderboardObservable } from '@/state/LeaderboardObservable';
 import { ActiveGameStrategy } from './service/ActiveGameStrategy';
 import { WaitingGameStrategy } from './service/WaitingGameStrategy';
+import { LocalInputHandler } from './service/LocalInputHandler';
 
 export interface LocalGameContext {
   gameConfigOptions: GameConfigOptions;
   gameState: GameState;
   spawnService: SpawnService;
+  inputHandler: LocalInputHandler;
 }
+
 export class LocalGame extends Game {
   private leaderboardService: LeaderboardService;
 
   private activeGameStrategy: ActiveGameStrategy;
   private waitingGameStrategy: WaitingGameStrategy;
 
+  public inputHandler: LocalInputHandler;
+
   constructor(gridSize: number, gameConfigOptions: GameConfigOptions) {
     super(gridSize);
+
+    this.inputHandler = new LocalInputHandler(this.gameState);
 
     const context: LocalGameContext = {
       gameConfigOptions,
       gameState: this.gameState,
       spawnService: this.spawnService,
+      inputHandler: this.inputHandler,
     };
 
     this.leaderboardService = new LeaderboardService(context);
@@ -62,5 +70,9 @@ export class LocalGame extends Game {
 
       this.gameState.addCpuPlayer(crypto.randomUUID(), name, color);
     }
+  }
+
+  handleInput(dir: Direction): void {
+    this.inputHandler.handleInput(dir);
   }
 }

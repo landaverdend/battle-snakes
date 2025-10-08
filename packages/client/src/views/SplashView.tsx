@@ -5,7 +5,6 @@ import { Button, ColorInput, GroupBox, TextInput, Window, WindowHeader } from 'r
 type SVProps = {
   onComplete: (playerName: string, playerColor: string, isCpuGame: boolean) => void;
 };
-
 export default function SplashView({ onComplete }: SVProps) {
   const [playerName, setPlayerName] = useState<string>('');
   const [playerColor, setPlayerColor] = useState<string>(getRandomColor());

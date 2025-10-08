@@ -1,3 +1,4 @@
+import { InputHandler } from '@/game/InputHandler';
 import { Direction, GameState, RoundState } from '@battle-snakes/shared';
 
 type Input = {
@@ -5,7 +6,7 @@ type Input = {
   timestamp: number;
 };
 
-export class InputBuffer {
+export class LocalInputHandler implements InputHandler {
   private gameState: GameState;
 
   private handleKeydown: (event: KeyboardEvent) => void;
@@ -25,39 +26,26 @@ export class InputBuffer {
       if (event.repeat) {
         return;
       }
-      // If the game isn't active, don't send data..
-      if (this.gameState.getRoundState() !== RoundState.ACTIVE) {
-        return;
-      }
-
-      let direction: Direction | null = null;
 
       switch (event.key) {
         case 'ArrowUp':
         case 'w':
-          direction = 'up';
+          this.handleInput('up');
           break;
         case 'ArrowDown':
         case 's':
-          direction = 'down';
+          this.handleInput('down');
           break;
         case 'ArrowLeft':
         case 'a':
-          direction = 'left';
+          this.handleInput('left');
           break;
         case 'ArrowRight':
         case 'd':
-          direction = 'right';
+          this.handleInput('right');
           break;
         default:
           return;
-      }
-
-      if (direction) {
-        // Just drop the oldest input in favor of the incoming.
-        if (this.inputQueue.length < InputBuffer.MAX_BUFFER_SIZE) {
-          this.inputQueue.push({ direction, timestamp: Date.now() });
-        }
       }
     };
   }
@@ -70,5 +58,19 @@ export class InputBuffer {
     }
 
     return undefined;
+  }
+
+  handleInput(direction: Direction): void {
+    // If the game isn't active, don't send data..
+    if (this.gameState.getRoundState() !== RoundState.ACTIVE) {
+      return;
+    }
+
+    if (direction) {
+      // Just drop the oldest input in favor of the incoming.
+      if (this.inputQueue.length < LocalInputHandler.MAX_BUFFER_SIZE) {
+        this.inputQueue.push({ direction, timestamp: Date.now() });
+      }
+    }
   }
 }

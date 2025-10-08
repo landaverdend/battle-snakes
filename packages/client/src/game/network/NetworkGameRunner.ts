@@ -1,18 +1,20 @@
 import { ConnectionService } from '@/game/network/service/ConnectionService';
-import { InputService } from '@/game/network/service/InputService';
+import { NetworkInputHandler } from '@/game/network/service/InputHandler';
 import { ChatService } from '@/game/network/service/ChatService';
 import { GameConfigOptions, GameRunner } from '../GameRunner';
+import { Direction } from '@battle-snakes/shared';
+import { InputHandler } from '../InputHandler';
 
 export class NetworkGameRunner extends GameRunner {
   private connectionService: ConnectionService;
-  private inputService: InputService;
+  private inputHandler: InputHandler;
   private chatService: ChatService;
 
   constructor(ctx: CanvasRenderingContext2D, gameConfig: GameConfigOptions) {
     super(ctx);
 
     this.connectionService = new ConnectionService(gameConfig);
-    this.inputService = new InputService(this.connectionService.getSocket());
+    this.inputHandler = new NetworkInputHandler(this.connectionService.getSocket());
     this.chatService = ChatService.getInstance(this.connectionService.getSocket());
   }
 
@@ -38,7 +40,10 @@ export class NetworkGameRunner extends GameRunner {
       this.animationFrameId = null;
     }
 
-    this.inputService.destroy();
     this.connectionService.disconnect();
+  }
+
+  handleInput(dir: Direction): void {
+    this.inputHandler.handleInput(dir);
   }
 }

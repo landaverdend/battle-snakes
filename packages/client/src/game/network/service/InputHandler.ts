@@ -2,8 +2,9 @@ import { Direction, GameEvents, getCurrentTimeISOString } from '@battle-snakes/s
 import { Socket } from 'socket.io-client';
 import { ClientGameState } from '../../../state/ClientGameState';
 import { ClientPlayerObservable } from '../../../state/ClientPlayerObservable';
+import { InputHandler } from '@/game/InputHandler';
 
-export class InputService {
+export class NetworkInputHandler implements InputHandler {
   private socket: Socket;
   private handleKeydown: (event: KeyboardEvent) => void;
   private gameState: ClientGameState;
@@ -23,37 +24,38 @@ export class InputService {
       if (event.repeat) {
         return;
       }
-      // If the game isn't active, don't send data..
-      if (!this.gameState.isRoundActive() || !this.playerState.getState().isAlive) {
-        return;
-      }
-
-      let direction: Direction | null = null;
 
       switch (event.key) {
         case 'ArrowUp':
         case 'w':
-          direction = 'up';
+          this.handleInput('up');
           break;
         case 'ArrowDown':
         case 's':
-          direction = 'down';
+          this.handleInput('down');
           break;
         case 'ArrowLeft':
         case 'a':
-          direction = 'left';
+          this.handleInput('left');
           break;
         case 'ArrowRight':
         case 'd':
-          direction = 'right';
+          this.handleInput('right');
           break;
         default:
           return;
       }
-
-      console.log(`${getCurrentTimeISOString()} sending out input request: ${direction?.toString()}`);
-      this.socket.emit(GameEvents.MOVE_REQUEST, { direction: direction, timestamp: Date.now() });
     };
+  }
+
+  public handleInput(dir: Direction) {
+    // If the game isn't active, don't send data..
+    if (!this.gameState.isRoundActive() || !this.playerState.getState().isAlive) {
+      return;
+    }
+
+    console.log(`${getCurrentTimeISOString()} sending out input request: ${dir?.toString()}`);
+    this.socket.emit(GameEvents.MOVE_REQUEST, { direction: dir, timestamp: Date.now() });
   }
 
   public destroy() {
