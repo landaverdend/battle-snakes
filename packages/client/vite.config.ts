@@ -19,6 +19,7 @@ export default defineConfig({
       '@views': path.resolve(__dirname, './src/views'),
       '@state': path.resolve(__dirname, './src/state'),
       '@service': path.resolve(__dirname, './src/service'),
+      '@battle-snakes/shared': path.resolve(__dirname, '../shared/src'),
     },
   },
   optimizeDeps: {

@@ -1,5 +1,7 @@
 import { Server, Socket } from 'socket.io';
 import { createServer } from 'http';
+import express, { Request, Response } from 'express';
+import { join } from 'path';
 import { GameEvents, MAX_CHAT_MESSAGE_LENGTH, MoveRequest, ROOM_CLEANUP_INTERVAL_MS } from '@battle-snakes/shared';
 import EventEmitter from 'events';
 import { RoomService } from '../services/RoomService';
@@ -8,6 +10,7 @@ import { RateLimiter } from './RateLimiter';
 import { CooldownManager } from './CooldownManager';
 
 const PORT = process.env['PORT'] || 3030;
+
 export class NetworkService extends EventEmitter {
   private io: Server;
   private bannedIPs: Set<string> = new Set<string>();
@@ -19,11 +22,27 @@ export class NetworkService extends EventEmitter {
   constructor(private readonly roomService: RoomService, private readonly eventBus: GameEventBus) {
     super();
 
-    this.io = new Server();
-    const httpServer = createServer();
+    const app = express();
+
+    // Serve static files from client dist in production
+    if (process.env.NODE_ENV === 'production') {
+      // From server/dist/game/network, go up to packages, then into client/dist
+      const clientDistPath = join(__dirname, '../../../../client/dist');
+      app.use(express.static(clientDistPath));
+
+      // SPA fallback - serve index.html for all routes
+      app.get('*', (req: Request, res: Response) => {
+        res.sendFile(join(clientDistPath, 'index.html'));
+      });
+    }
+
+    const httpServer = createServer(app);
     this.io = new Server(httpServer, {
       cors: {
-        origin: ['http://localhost:3000', 'https://battlesnakes.io'],
+        origin:
+          process.env.NODE_ENV === 'production'
+            ? ['https://battlesnakes.io']
+            : ['http://localhost:3000', 'https://battlesnakes.io'],
         methods: ['GET', 'POST'],
       },
       maxHttpBufferSize: 1024, // limit message size to 1kb

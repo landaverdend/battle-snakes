@@ -1,4 +1,4 @@
-import { MinPriorityQueue } from '../../../../../../node_modules/@datastructures-js/priority-queue/index';
+import { MinPriorityQueue } from '@datastructures-js/priority-queue';
 import { Point } from '../../../constants/gridTypes';
 import { GameState } from '../../../game/GameState';
 
