@@ -1,4 +1,3 @@
-import { InputHandler } from '../../../client/src/game/InputHandler';
 import { Direction } from '../constants/playerTypes';
 import { SpawnService } from '../services/SpawnService';
 import { GameLoop } from './GameLoop';

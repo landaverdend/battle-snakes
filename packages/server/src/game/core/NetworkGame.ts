@@ -74,6 +74,12 @@ export class NetworkGame extends Game {
     this.gameLoop.stop();
   }
 
+  public override handleInput(dir: Direction): void {
+    // NetworkGame handles inputs per player via handleSingularPlayerInput
+    // This method is required by the abstract Game class but not used in network mode
+    // Individual player inputs are handled through the input buffer
+  }
+
   public handleSingularPlayerInput(playerId: string, direction: Direction) {
     if (this.gameState.isActive()) {
       this.inputBuffer.addInput(playerId, direction);

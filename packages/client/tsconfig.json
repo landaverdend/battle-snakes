@@ -32,5 +32,6 @@
       "@service/*": ["src/service/*"]
     }
   },
-  "include": ["src", "vite-env.d.ts"]
+  "include": ["src/**/*.ts", "src/**/*.tsx", "vite-env.d.ts"],
+  "exclude": ["node_modules", "dist", "**/*.js", "**/*.d.ts", "**/*.js.map", "**/*.d.ts.map"]
 }

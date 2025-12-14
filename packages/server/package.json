@@ -7,7 +7,7 @@
   "scripts": {
     "build": "tsc",
     "clean": "rm -rf dist",
-    "start": "node tsx ./src/index.ts",
+    "start": "node dist/index.js",
     "dev": "tsx watch ./src/index.ts"
   },
   "dependencies": {
