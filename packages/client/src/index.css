@@ -29,3 +29,21 @@ body {
 .handle:hover {
   cursor: grab;
 }
+
+/* Touch-optimized controls */
+.touch-btn {
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+  user-select: none;
+}
+
+.touch-btn:active {
+  transform: scale(0.95);
+}
+
+/* Prevent text selection and callouts on mobile */
+@media (pointer: coarse) {
+  * {
+    -webkit-touch-callout: none;
+  }
+}

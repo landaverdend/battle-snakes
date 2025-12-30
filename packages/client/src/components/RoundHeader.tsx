@@ -8,18 +8,18 @@ export default function RoundHeader() {
   const { roundInfo } = useRoundInfo();
   const windowSize = useWindowSize();
 
-  let size: Sizes = 'md';
-  if (windowSize.width > 768) {
-    size = 'md';
-  } else if (windowSize.width > 1024) {
+  let size: Sizes = 'sm';
+  if (windowSize.width > 1024) {
     size = 'lg';
+  } else if (windowSize.width > 768) {
+    size = 'md';
   }
 
   return (
     <div className="flex flex-row justify-center items-center gap-6.5 p-2.5 rounded-md">
       <Draggable handle=".handle" defaultPosition={{ x: 0, y: 0 }} scale={1}>
-        <Frame className="!p-2.5 !flex !flex-col !items-center !justify-center handle">
-          <h2>Round Number</h2>
+        <Frame className="!p-2 sm:!p-2.5 !flex !flex-col !items-center !justify-center handle">
+          <h2 className="text-sm sm:text-base">Round Number</h2>
           <Counter value={roundInfo.roundNumber} minLength={2} size={size} className="" />
         </Frame>
       </Draggable>
